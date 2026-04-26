@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import HomepagePage from '@/app/client/homepage/page';
 import TheArenaPage from '@/app/client/the-arena/page';
-import BookNowPage from '@/app/client/book-now/page';
 import MembershipPage from '@/app/client/membership/page';
 import ContactPage from '@/app/client/contact/page';
 import AdminDashboardPage from '@/app/admin/page';

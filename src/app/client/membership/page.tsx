@@ -1,6 +1,5 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import MembershipHeroSection from './components/MembershipHeroSection';
 import MembershipTiersSection from './components/MembershipTiersSection';
 import MembershipCTASection from './components/MembershipCTASection';
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import AppImage from '@/components/ui/AppImage';
 import { Link } from 'react-router-dom';
 

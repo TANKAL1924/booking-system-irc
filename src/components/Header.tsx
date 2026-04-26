@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AppLogo from '@/components/ui/AppLogo';
 import Icon from '@/components/ui/AppIcon';
 import LoginModal from '@/components/LoginModal';
 import BookingModal from '@/components/BookingModal';
 import { useAuthStore } from '@/store/authStore';
-import { supabase } from '@/lib/supabase';
 
 const navLinks = [
   { href: '/homepage', label: 'Home' },
@@ -46,17 +45,12 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleMenuScroll);
   }, []);
 
-  const { user, clearAuth } = useAuthStore();
+  const { user } = useAuthStore();
 
   const handleLogin = () => {
     navigate('/admin-dashboard');
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    clearAuth();
-    navigate('/homepage');
-  };
 
   return (
     <>

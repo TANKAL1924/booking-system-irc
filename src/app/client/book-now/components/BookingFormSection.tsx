@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Icon from '@/components/ui/AppIcon';
 
 const facilities = [
@@ -31,7 +31,7 @@ export default function BookingFormSection() {
   const [tncAccepted, setTncAccepted] = useState(false);
   const [tncOpen, setTncOpen] = useState(false);
   const [paymentOption, setPaymentOption] = useState<'deposit' | 'full'>('deposit');
-  const [step, setStep] = useState(1);
+  const [, setStep] = useState(1);
   const [form, setForm] = useState({
     name: '',
     phone: '',

@@ -11,7 +11,7 @@ interface AppLogoProps {
 }
 
 const AppLogo = memo(function AppLogo({
-  src = '/assets/images/app_logo.png',
+  src = '/ARENA_IRC_LOGO.png',
   iconName = 'SparklesIcon',
   size = 64,
   className = '',

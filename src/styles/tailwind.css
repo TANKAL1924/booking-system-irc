@@ -34,6 +34,10 @@ input::-ms-clear {
 
   body {
     background-color: var(--background);
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(204, 0, 0, 0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 100% 80%, rgba(204, 0, 0, 0.10) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 0% 60%, rgba(150, 0, 0, 0.08) 0%, transparent 50%);
     color: var(--foreground);
     font-family: var(--font-sans), sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -78,8 +82,8 @@ input::-ms-clear {
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      linear-gradient(rgba(204, 0, 0, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(204, 0, 0, 0.04) 1px, transparent 1px);
     background-size: 50px 50px;
     z-index: -2;
     pointer-events: none;

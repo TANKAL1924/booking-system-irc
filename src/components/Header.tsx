@@ -99,15 +99,7 @@ export default function Header() {
 
           {/* CTA */}
           <div className="hidden md:flex items-center gap-3">
-            {user ? (
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2.5 border border-white/10 bg-white/5 text-white/60 rounded-full font-bold text-[11px] uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all duration-300"
-              >
-                <Icon name="ArrowLeftOnRectangleIcon" size={13} />
-                Logout
-              </button>
-            ) : (
+            {!user && (
               <button
                 onClick={() => setLoginOpen(true)}
                 className="flex items-center gap-2 px-4 py-2.5 border border-white/10 bg-white/5 text-white/60 rounded-full font-bold text-[11px] uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all duration-300"
@@ -167,15 +159,7 @@ export default function Header() {
               </Link>
             ))}
             <div className="mt-6 space-y-3">
-              {user ? (
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center justify-center gap-2 w-full py-4 border border-white/10 bg-white/5 text-white/60 rounded-full font-bold text-sm uppercase tracking-widest hover:text-white transition-all"
-                >
-                  <Icon name="ArrowLeftOnRectangleIcon" size={15} />
-                  Logout
-                </button>
-              ) : (
+              {!user && (
                 <button
                   onClick={() => { setMenuOpen(false); setLoginOpen(true); }}
                   className="flex items-center justify-center gap-2 w-full py-4 border border-white/10 bg-white/5 text-white/60 rounded-full font-bold text-sm uppercase tracking-widest hover:text-white transition-all"

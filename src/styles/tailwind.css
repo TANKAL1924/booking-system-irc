@@ -1,0 +1,161 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0A0A0A;
+  --foreground: #FFFFFF;
+  --primary: #CC0000;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1A1A1A;
+  --secondary-foreground: #FFFFFF;
+  --accent: #FFD700;
+  --accent-foreground: #0A0A0A;
+  --muted: #2A2A2A;
+  --muted-foreground: #888888;
+  --card: #141414;
+  --card-foreground: #FFFFFF;
+  --border: #2A2A2A;
+  --input: #1A1A1A;
+  --ring: #CC0000;
+  --radius: 0.75rem;
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    border-color: var(--border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans), sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  h1, h2, h3, h4, h5, h6, p {
+    margin: 0;
+  }
+}
+
+@layer components {
+  .grain-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .glass-card:hover {
+    border-color: rgba(204, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    background-size: 50px 50px;
+    z-index: -2;
+    pointer-events: none;
+  }
+
+  .gradient-text-brand {
+    background: linear-gradient(90deg, #CC0000, #FFD700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hud-line {
+    height: 1px;
+    background: linear-gradient(90deg, #CC0000, transparent);
+  }
+
+  .section-reveal {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .magnetic-btn {
+    display: inline-block;
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .bento-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    background: #141414;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .bento-item:hover {
+    transform: scale(0.98);
+    border-color: rgba(204, 0, 0, 0.25);
+  }
+
+  .title-outline {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.08);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(204, 0, 0, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(204, 0, 0, 0.6); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.float-anim { animation: float 6s ease-in-out infinite; }
+.pulse-glow-anim { animation: pulse-glow 2s ease-in-out infinite; }
+.spin-slow { animation: spin-slow 20s linear infinite; }
+.animate-fade-in-up { animation: fadeInUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+.animate-slide-in-left { animation: slideInLeft 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+
+.vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

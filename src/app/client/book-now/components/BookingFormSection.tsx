@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Icon from '@/components/ui/AppIcon';
+import { useBase } from '@/lib/useBase';
 
 const facilities = [
   'Upper Field',
@@ -28,6 +29,7 @@ const tncItems = [
 ];
 
 export default function BookingFormSection() {
+  const { base } = useBase();
   const [tncAccepted, setTncAccepted] = useState(false);
   const [tncOpen, setTncOpen] = useState(false);
   const [paymentOption, setPaymentOption] = useState<'deposit' | 'full'>('deposit');
@@ -130,7 +132,7 @@ export default function BookingFormSection() {
               {tncOpen && (
                 <div className="px-5 sm:px-6 pb-6 border-t border-white/5">
                   <ol className="space-y-3 mt-4">
-                    {tncItems.map((item, i) => (
+                    {(base?.tnc ?? tncItems).map((item, i) => (
                       <li key={i} className="flex gap-3 text-white/50 text-xs leading-relaxed">
                         <span className="text-primary font-bold shrink-0">{i + 1}.</span>
                         {item}

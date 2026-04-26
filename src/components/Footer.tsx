@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import AppLogo from '@/components/ui/AppLogo';
 import Icon from '@/components/ui/AppIcon';
+import { useBase } from '@/lib/useBase';
 
 const quickLinks = [
   { href: '/homepage', label: 'Upcoming Events' },
@@ -9,14 +10,14 @@ const quickLinks = [
   { href: '/contact', label: 'Host an Event' },
 ];
 
-const socialLinks = [
-  { href: 'https://facebook.com', label: 'Facebook', icon: 'GlobeAltIcon' },
-  { href: 'https://instagram.com', label: 'Instagram', icon: 'GlobeAltIcon' },
-  { href: 'https://tiktok.com', label: 'TikTok', icon: 'GlobeAltIcon' },
-  { href: 'https://youtube.com', label: 'YouTube', icon: 'GlobeAltIcon' },
-];
-
 export default function Footer() {
+  const { base } = useBase();
+  const socialLinks = [
+    { href: base?.facebook ?? 'https://facebook.com', label: 'Facebook', icon: 'GlobeAltIcon' },
+    { href: base?.insta ?? 'https://instagram.com', label: 'Instagram', icon: 'GlobeAltIcon' },
+    { href: base?.tiktok ?? 'https://tiktok.com', label: 'TikTok', icon: 'GlobeAltIcon' },
+    { href: 'https://youtube.com', label: 'YouTube', icon: 'GlobeAltIcon' },
+  ];
   return (
     <footer className="bg-[#0A0A0A] border-t border-white/5 px-6 py-14">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -78,14 +79,16 @@ export default function Footer() {
             </a>
             <div className="flex items-start gap-3 text-[11px] font-bold tracking-[0.1em] uppercase text-white/40">
               <Icon name="MapPinIcon" size={15} className="text-primary shrink-0 mt-0.5" />
-              <span>Arena IRC, Negeri Sembilan Darul Khusus</span>
+              <span>{base?.address ?? 'Arena IRC, Negeri Sembilan Darul Khusus'}</span>
             </div>
             <a
-              href="tel:+601112345678"
+              href={base?.whatsapp ?? 'https://wa.me/601112345678'}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-3 text-[11px] font-bold tracking-[0.1em] uppercase text-white/40 hover:text-white transition-colors"
             >
               <Icon name="PhoneIcon" size={15} className="text-primary shrink-0" />
-              +601112345678
+              {base?.whatsapp ?? '+601112345678'}
             </a>
           </div>
         </div>

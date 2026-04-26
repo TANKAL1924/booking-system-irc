@@ -1,102 +1,115 @@
-import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import Icon from '@/components/ui/AppIcon';
+import { supabase } from '@/lib/supabase';
 
-interface CompanyInfo {
-  name: string;
-  tagline: string;
-  address: string;
-  phone: string;
-  email: string;
-  operatingHours: string;
-  mapUrl: string;
-}
-
-interface SocialMedia {
-  platform: string;
-  url: string;
-  icon: string;
-}
-
-interface AboutContent {
-  title: string;
+interface AboutForm {
   description: string;
   vision: string;
   mission: string;
 }
 
-const initialAbout: AboutContent = {
-  title: 'Arena IRC & IRC Negeri Sembilan Club',
-  description: 'Arena IRC is a premier multipurpose sports facility in Negeri Sembilan, offering world-class venues for sports events, graduations, weddings, and corporate functions. With state-of-the-art facilities and professional management, we provide an unmatched experience for all our guests.',
-  vision: 'To be the leading sports and events facility in Negeri Sembilan, fostering community growth through sports excellence.',
-  mission: 'To provide world-class facilities and services that inspire athletes, unite communities, and create memorable events for all.',
-};
+interface CompanyForm {
+  location: string;
+  address: string;
+  whatsapp: string;
+}
 
-const initialCompany: CompanyInfo = {
-  name: 'Arena IRC & IRC Negeri Sembilan Club',
-  tagline: 'Premier Sports & Events Facility',
-  address: 'Jalan Stadium, Seremban, 70200 Negeri Sembilan, Malaysia',
-  phone: '+60 6-123 4567',
-  email: 'info@arenairc.com',
-  operatingHours: 'Mon–Sat, 8:00 AM – 5:30 PM',
-  mapUrl: 'https://maps.google.com',
-};
-
-const initialSocials: SocialMedia[] = [
-  { platform: 'Instagram', url: 'https://instagram.com/arenairc', icon: 'PhotoIcon' },
-  { platform: 'Facebook', url: 'https://facebook.com/arenairc', icon: 'GlobeAltIcon' },
-  { platform: 'TikTok', url: 'https://tiktok.com/@arenairc', icon: 'VideoCameraIcon' },
-  { platform: 'WhatsApp', url: 'https://wa.me/601234567', icon: 'ChatBubbleLeftRightIcon' },
-];
+interface SocialForm {
+  facebook: string;
+  insta: string;
+  tiktok: string;
+}
 
 export default function HomeManagementSection() {
-  const [activeTab, setActiveTab] = useState<'about' | 'company' | 'social'>('about');
-  const [about, setAbout] = useState<AboutContent>(initialAbout);
-  const [company, setCompany] = useState<CompanyInfo>(initialCompany);
-  const [socials, setSocials] = useState<SocialMedia[]>(initialSocials);
+  const [activeTab, setActiveTab] = useState<'about' | 'company' | 'social' | 'tnc'>('about');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState('');
-  const [editingSocial, setEditingSocial] = useState<number | null>(null);
-  const [newSocial, setNewSocial] = useState({ platform: '', url: '', icon: 'GlobeAltIcon' });
-  const [showAddSocial, setShowAddSocial] = useState(false);
+
+  const [about, setAbout] = useState<AboutForm>({ description: '', vision: '', mission: '' });
+  const [company, setCompany] = useState<CompanyForm>({ location: '', address: '', whatsapp: '' });
+  const [social, setSocial] = useState<SocialForm>({ facebook: '', insta: '', tiktok: '' });
+  const [tnc, setTnc] = useState<string[]>([]);
+  const [newTnc, setNewTnc] = useState('');
+  const [editingTnc, setEditingTnc] = useState<number | null>(null);
+
+  useEffect(() => {
+    supabase
+      .from('base')
+      .select('*')
+      .eq('id', 1)
+      .single()
+      .then(({ data }) => {
+        if (data) {
+          setAbout({ description: data.about_us ?? '', vision: data.vision ?? '', mission: data.mission ?? '' });
+          setCompany({ location: data.location ?? '', address: data.address ?? '', whatsapp: data.whatsapp ?? '' });
+          setSocial({ facebook: data.facebook ?? '', insta: data.insta ?? '', tiktok: data.tiktok ?? '' });
+          setTnc(Array.isArray(data.tnc) ? data.tnc : []);
+        }
+        setLoading(false);
+      });
+  }, []);
 
   const showSaved = () => {
     setSavedMsg('Changes saved successfully!');
     setTimeout(() => setSavedMsg(''), 3000);
   };
 
-  const handleSaveAbout = (e: React.FormEvent) => {
+  const upsert = async (fields: Record<string, unknown>) => {
+    setSaving(true);
+    await supabase.from('base').upsert({ id: 1, ...fields });
+    setSaving(false);
+    showSaved();
+  };
+
+  const handleSaveAbout = async (e: React.FormEvent) => {
     e.preventDefault();
-    showSaved();
+    await upsert({ about_us: about.description, vision: about.vision, mission: about.mission });
   };
 
-  const handleSaveCompany = (e: React.FormEvent) => {
+  const handleSaveCompany = async (e: React.FormEvent) => {
     e.preventDefault();
-    showSaved();
+    await upsert({ location: company.location, address: company.address, whatsapp: company.whatsapp });
   };
 
-  const handleSaveSocial = (idx: number, url: string) => {
-    setSocials((prev) => prev.map((s, i) => (i === idx ? { ...s, url } : s)));
-    setEditingSocial(null);
-    showSaved();
-  };
-
-  const handleDeleteSocial = (idx: number) => {
-    setSocials((prev) => prev.filter((_, i) => i !== idx));
-  };
-
-  const handleAddSocial = (e: React.FormEvent) => {
+  const handleSaveSocial = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newSocial.platform || !newSocial.url) return;
-    setSocials((prev) => [...prev, { ...newSocial }]);
-    setNewSocial({ platform: '', url: '', icon: 'GlobeAltIcon' });
-    setShowAddSocial(false);
-    showSaved();
+    await upsert({ facebook: social.facebook, insta: social.insta, tiktok: social.tiktok });
+  };
+
+  const handleSaveTnc = async () => {
+    await upsert({ tnc });
+  };
+
+  const handleAddTnc = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTnc.trim()) return;
+    setTnc((prev) => [...prev, newTnc.trim()]);
+    setNewTnc('');
+  };
+
+  const handleDeleteTnc = (idx: number) => {
+    setTnc((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleEditTnc = (idx: number, value: string) => {
+    setTnc((prev) => prev.map((item, i) => (i === idx ? value : item)));
   };
 
   const tabs = [
     { key: 'about', label: 'About Us', icon: 'InformationCircleIcon' },
     { key: 'company', label: 'Company Info', icon: 'BuildingOfficeIcon' },
     { key: 'social', label: 'Social Media', icon: 'ShareIcon' },
+    { key: 'tnc', label: 'Terms & Conditions', icon: 'DocumentTextIcon' },
   ] as const;
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -120,7 +133,7 @@ export default function HomeManagementSection() {
             onClick={() => setActiveTab(t.key)}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all whitespace-nowrap ${
               activeTab === t.key
-                ? 'bg-primary text-white' :'bg-white/5 border border-white/10 text-white/40 hover:text-white'
+                ? 'bg-primary text-white' : 'bg-white/5 border border-white/10 text-white/40 hover:text-white'
             }`}
           >
             <Icon name={t.icon as 'InformationCircleIcon'} size={13} />
@@ -161,8 +174,12 @@ export default function HomeManagementSection() {
               />
             </div>
           </div>
-          <button type="submit" className="px-6 py-2.5 bg-primary text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-red-700 transition-all">
-            Save Changes
+          <button
+            type="submit"
+            disabled={saving}
+            className="px-6 py-2.5 bg-primary text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50"
+          >
+            {saving ? 'Saving...' : 'Save Changes'}
           </button>
         </form>
       )}
@@ -171,113 +188,158 @@ export default function HomeManagementSection() {
       {activeTab === 'company' && (
         <form onSubmit={handleSaveCompany} className="glass-card rounded-2xl p-6 space-y-5">
           <h3 className="font-bold text-white text-sm border-b border-white/5 pb-4">Edit Company Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {(Object.keys(company) as Array<keyof CompanyInfo>).map((key) => (
-              <div key={key} className={key === 'address' || key === 'mapUrl' ? 'md:col-span-2' : ''}>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">
-                  {key.replace(/([A-Z])/g, ' $1').trim()}
-                </label>
-                <input
-                  type="text"
-                  value={company[key]}
-                  onChange={(e) => setCompany((p) => ({ ...p, [key]: e.target.value }))}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
-                />
-              </div>
-            ))}
+          <div className="space-y-4">
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Location</label>
+              <input
+                type="text"
+                value={company.location}
+                onChange={(e) => setCompany((p) => ({ ...p, location: e.target.value }))}
+                placeholder="e.g. Seremban, Negeri Sembilan"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Address</label>
+              <textarea
+                value={company.address}
+                onChange={(e) => setCompany((p) => ({ ...p, address: e.target.value }))}
+                rows={3}
+                placeholder="e.g. Jalan Stadium, 70200 Seremban, Negeri Sembilan"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors resize-none"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">WhatsApp</label>
+              <input
+                type="text"
+                value={company.whatsapp}
+                onChange={(e) => setCompany((p) => ({ ...p, whatsapp: e.target.value }))}
+                placeholder="e.g. +60123456789"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
+              />
+            </div>
           </div>
-          <button type="submit" className="px-6 py-2.5 bg-primary text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-red-700 transition-all">
-            Save Changes
+          <button
+            type="submit"
+            disabled={saving}
+            className="px-6 py-2.5 bg-primary text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50"
+          >
+            {saving ? 'Saving...' : 'Save Changes'}
           </button>
         </form>
       )}
 
       {/* Social Media Tab */}
       {activeTab === 'social' && (
+        <form onSubmit={handleSaveSocial} className="glass-card rounded-2xl p-6 space-y-5">
+          <h3 className="font-bold text-white text-sm border-b border-white/5 pb-4">Social Media Links</h3>
+          <div className="space-y-4">
+            {(
+              [
+                { key: 'facebook', label: 'Facebook', placeholder: 'https://facebook.com/arenairc' },
+                { key: 'insta', label: 'Instagram', placeholder: 'https://instagram.com/arenairc' },
+                { key: 'tiktok', label: 'TikTok', placeholder: 'https://tiktok.com/@arenairc' },
+              ] as const
+            ).map((s) => (
+              <div key={s.key}>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">{s.label}</label>
+                <input
+                  type="url"
+                  value={social[s.key]}
+                  onChange={(e) => setSocial((p) => ({ ...p, [s.key]: e.target.value }))}
+                  placeholder={s.placeholder}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
+                />
+              </div>
+            ))}
+          </div>
+          <button
+            type="submit"
+            disabled={saving}
+            className="px-6 py-2.5 bg-primary text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50"
+          >
+            {saving ? 'Saving...' : 'Save Changes'}
+          </button>
+        </form>
+      )}
+
+      {/* T&C Tab */}
+      {activeTab === 'tnc' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="font-bold text-white text-sm">Social Media Links</h3>
+            <h3 className="font-bold text-white text-sm">Terms & Conditions</h3>
             <button
-              onClick={() => setShowAddSocial(!showAddSocial)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-red-700 transition-all"
+              onClick={handleSaveTnc}
+              disabled={saving}
+              className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50"
             >
-              <Icon name="PlusIcon" size={13} />
-              Add Link
+              <Icon name="CheckIcon" size={13} />
+              {saving ? 'Saving...' : 'Save All'}
             </button>
           </div>
 
-          {showAddSocial && (
-            <form onSubmit={handleAddSocial} className="glass-card rounded-2xl p-5 space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Platform</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Instagram"
-                    value={newSocial.platform}
-                    onChange={(e) => setNewSocial((p) => ({ ...p, platform: e.target.value }))}
-                    required
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">URL</label>
-                  <input
-                    type="url"
-                    placeholder="https://"
-                    value={newSocial.url}
-                    onChange={(e) => setNewSocial((p) => ({ ...p, url: e.target.value }))}
-                    required
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
-                  />
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <button type="submit" className="px-5 py-2.5 bg-primary text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-red-700 transition-all">Add</button>
-                <button type="button" onClick={() => setShowAddSocial(false)} className="px-5 py-2.5 bg-white/5 border border-white/10 text-white/40 rounded-full font-bold text-[11px] uppercase tracking-widest hover:text-white transition-all">Cancel</button>
-              </div>
-            </form>
-          )}
+          <form onSubmit={handleAddTnc} className="glass-card rounded-2xl p-5 flex gap-3">
+            <input
+              type="text"
+              value={newTnc}
+              onChange={(e) => setNewTnc(e.target.value)}
+              placeholder="Add a new T&C item..."
+              className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-primary transition-colors"
+            />
+            <button
+              type="submit"
+              className="flex items-center gap-2 px-4 py-2.5 bg-white/10 border border-white/10 text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-white/15 transition-all"
+            >
+              <Icon name="PlusIcon" size={13} />
+              Add
+            </button>
+          </form>
 
           <div className="glass-card rounded-2xl overflow-hidden">
-            {socials.map((s, i) => (
-              <div key={i} className={`flex items-center gap-4 px-5 py-4 ${i !== socials.length - 1 ? 'border-b border-white/5' : ''}`}>
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                  <Icon name={s.icon as 'PhotoIcon'} size={18} className="text-primary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-white font-bold text-sm">{s.platform}</p>
-                  {editingSocial === i ? (
+            {tnc.length === 0 ? (
+              <p className="px-5 py-8 text-center text-white/20 text-sm">No T&C items yet. Add one above.</p>
+            ) : (
+              tnc.map((item, i) => (
+                <div
+                  key={i}
+                  className={`flex items-start gap-4 px-5 py-4 ${i !== tnc.length - 1 ? 'border-b border-white/5' : ''}`}
+                >
+                  <span className="text-primary font-black text-sm shrink-0 mt-2">{i + 1}.</span>
+                  {editingTnc === i ? (
                     <input
-                      type="url"
-                      defaultValue={s.url}
-                      onBlur={(e) => handleSaveSocial(i, e.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') handleSaveSocial(i, (e.target as HTMLInputElement).value); }}
+                      type="text"
+                      defaultValue={item}
+                      onBlur={(e) => { handleEditTnc(i, e.target.value); setEditingTnc(null); }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') { handleEditTnc(i, (e.target as HTMLInputElement).value); setEditingTnc(null); }
+                        if (e.key === 'Escape') setEditingTnc(null);
+                      }}
                       autoFocus
-                      className="w-full bg-white/5 border border-primary/40 rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none mt-1"
+                      className="flex-1 bg-white/5 border border-primary/40 rounded-lg px-3 py-1.5 text-white text-sm focus:outline-none"
                     />
                   ) : (
-                    <p className="text-white/30 text-xs truncate">{s.url}</p>
+                    <p className="flex-1 text-white/70 text-sm leading-relaxed pt-1">{item}</p>
                   )}
+                  <div className="flex gap-2 shrink-0">
+                    <button
+                      onClick={() => setEditingTnc(editingTnc === i ? null : i)}
+                      className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all"
+                      aria-label="Edit"
+                    >
+                      <Icon name="PencilSquareIcon" size={13} />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteTnc(i)}
+                      className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-all"
+                      aria-label="Delete"
+                    >
+                      <Icon name="TrashIcon" size={13} />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex gap-2 shrink-0">
-                  <button
-                    onClick={() => setEditingSocial(editingSocial === i ? null : i)}
-                    className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all"
-                    aria-label="Edit"
-                  >
-                    <Icon name="PencilSquareIcon" size={13} />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteSocial(i)}
-                    className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-all"
-                    aria-label="Delete"
-                  >
-                    <Icon name="TrashIcon" size={13} />
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       )}

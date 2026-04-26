@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
+import { useBase } from '@/lib/useBase';
 
 // BENTO GRID AUDIT
 // Array has 5 cards: [About(cs-2 rs-2), Vision(cs-1 rs-1), Stats(cs-1 rs-1), Video(cs-1 rs-1), Quick(cs-1 rs-1)]
@@ -18,6 +19,7 @@ const highlights = [
 
 
 export default function AboutBentoSection() {
+  const { base } = useBase();
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -83,7 +85,7 @@ export default function AboutBentoSection() {
                 Arena IRC &<br />IRC Negeri Sembilan Club
               </h3>
               <p className="text-white/50 text-sm leading-relaxed mb-6 max-w-sm">
-                A state-of-the-art multipurpose facility serving athletes, schools, corporations, and families across Negeri Sembilan since 2010.
+                {base?.about_us ?? 'A state-of-the-art multipurpose facility serving athletes, schools, corporations, and families across Negeri Sembilan since 2010.'}
               </p>
               <Link
                 to="/the-arena"
@@ -109,7 +111,7 @@ export default function AboutBentoSection() {
             <div>
               <h3 className="text-xl font-black mb-2 text-white leading-tight">Our Vision</h3>
               <p className="text-white/40 text-xs leading-relaxed">
-                To be the leading sports and event hub in Negeri Sembilan, fostering athletic excellence and community spirit.
+                {base?.vision ?? 'To be the leading sports and event hub in Negeri Sembilan, fostering athletic excellence and community spirit.'}
               </p>
             </div>
           </div>
@@ -169,7 +171,7 @@ export default function AboutBentoSection() {
           <div className="bento-item p-8">
             <h3 className="text-2xl font-black mb-3 text-white">Arena IRC & IRC Negeri Sembilan Club</h3>
             <p className="text-white/50 text-sm leading-relaxed mb-4">
-              A state-of-the-art multipurpose facility serving athletes, schools, corporations, and families across Negeri Sembilan since 2010.
+              {base?.about_us ?? 'A state-of-the-art multipurpose facility serving athletes, schools, corporations, and families across Negeri Sembilan since 2010.'}
             </p>
             <div className="grid grid-cols-2 gap-4">
               {highlights.map((h) =>
@@ -183,11 +185,11 @@ export default function AboutBentoSection() {
           <div className="bento-item p-8">
             <h3 className="text-xl font-black mb-2 text-white">Our Vision</h3>
             <p className="text-white/40 text-sm leading-relaxed">
-              To be the leading sports and event hub in Negeri Sembilan, fostering athletic excellence and community spirit.
+              {base?.vision ?? 'To be the leading sports and event hub in Negeri Sembilan, fostering athletic excellence and community spirit.'}
             </p>
           </div>
           <a
-            href="https://wa.me/60123456789"
+            href={base?.whatsapp ?? 'https://wa.me/60123456789'}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 py-4 bg-[#25D366] text-white rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-[#1ebe5d] transition-all w-full">

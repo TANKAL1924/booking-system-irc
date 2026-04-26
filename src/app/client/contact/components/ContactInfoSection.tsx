@@ -1,4 +1,5 @@
 import Icon from '@/components/ui/AppIcon';
+import { useBase } from '@/lib/useBase';
 
 const hours = [
   { day: 'Monday', time: '8:00 AM – 5:30 PM', open: true },
@@ -10,13 +11,13 @@ const hours = [
   { day: 'Sunday', time: 'Closed', open: false },
 ];
 
-const socials = [
-  { label: 'Instagram', handle: '@arenairc', href: 'https://instagram.com', color: 'text-pink-400' },
-  { label: 'Facebook', handle: 'Arena IRC NS', href: 'https://facebook.com', color: 'text-blue-400' },
-  { label: 'TikTok', handle: '@arenairc.ns', href: 'https://tiktok.com', color: 'text-white' },
-];
-
 export default function ContactInfoSection() {
+  const { base } = useBase();
+  const socials = [
+    { label: 'Instagram', handle: '@arenairc', href: base?.insta ?? 'https://instagram.com', color: 'text-pink-400' },
+    { label: 'Facebook', handle: 'Arena IRC NS', href: base?.facebook ?? 'https://facebook.com', color: 'text-blue-400' },
+    { label: 'TikTok', handle: '@arenairc.ns', href: base?.tiktok ?? 'https://tiktok.com', color: 'text-white' },
+  ];
   return (
     <section className="pt-32 pb-12 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
@@ -46,42 +47,8 @@ export default function ContactInfoSection() {
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-1">Address</p>
                   <p className="text-white text-sm leading-relaxed font-medium">
-                    Arena IRC, Jalan Stadium,<br />
-                    70200 Seremban,<br />
-                    Negeri Sembilan, Malaysia
+                    {base?.address ?? 'Arena IRC, Jalan Stadium, 70200 Seremban, Negeri Sembilan, Malaysia'}
                   </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-[#25D366]/10 flex items-center justify-center shrink-0">
-                  <Icon name="PhoneIcon" size={18} className="text-[#25D366]" />
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-1">WhatsApp</p>
-                  <a
-                    href="https://wa.me/60123456789"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-white text-sm font-bold hover:text-[#25D366] transition-colors"
-                  >
-                    +60 12-345 6789
-                  </a>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
-                  <Icon name="EnvelopeIcon" size={18} className="text-accent" />
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-1">Email</p>
-                  <a
-                    href="mailto:info@arenairc.com.my"
-                    className="text-white text-sm font-bold hover:text-accent transition-colors"
-                  >
-                    info@arenairc.com.my
-                  </a>
                 </div>
               </div>
 
@@ -100,26 +67,6 @@ export default function ContactInfoSection() {
 
           {/* Right: Hours + Social */}
           <div className="space-y-6">
-            {/* Operating Hours */}
-            <div className="glass-card rounded-2xl p-6">
-              <div className="flex items-center gap-3 mb-5">
-                <Icon name="ClockIcon" size={18} className="text-accent" />
-                <h3 className="font-bold text-white text-base">Operating Hours</h3>
-              </div>
-              <div className="space-y-2">
-                {hours?.map((h) => (
-                  <div
-                    key={h?.day}
-                    className={`flex items-center justify-between py-2.5 border-b border-white/5 last:border-0 ${!h?.open ? 'opacity-40' : ''}`}
-                  >
-                    <span className="text-sm font-medium text-white/70">{h?.day}</span>
-                    <span className={`text-sm font-bold ${h?.open ? 'text-accent' : 'text-white/30'}`}>
-                      {h?.time}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
 
             {/* Social Media */}
             <div className="glass-card rounded-2xl p-6">
@@ -148,7 +95,7 @@ export default function ContactInfoSection() {
 
             {/* Quick WhatsApp */}
             <a
-              href="https://wa.me/60123456789?text=Hi%20Arena%20IRC%2C%20I%20have%20an%20enquiry."
+              href={base?.whatsapp ? `${base.whatsapp}?text=Hi%20Arena%20IRC%2C%20I%20have%20an%20enquiry.` : 'https://wa.me/60123456789?text=Hi%20Arena%20IRC%2C%20I%20have%20an%20enquiry.'}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-3 w-full py-5 bg-[#25D366] text-white rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-[#1ebe5d] transition-all"

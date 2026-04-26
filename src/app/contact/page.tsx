@@ -9,7 +9,6 @@ export default function ContactPage() {
       <div className="grain-overlay" />
       <div className="grid-bg" />
       <Header />
-      <ContactHeroSection />
       <ContactInfoSection />
       <Footer />
     </main>

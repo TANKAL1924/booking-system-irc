@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/AppIcon';
 
 export type AdminSection =
-  | 'Dashboard' |'Home' |'Events' |'Facilities' |'Bookings' |'Payments' |'Members';
+  | 'Home' |'Events' |'Facilities' |'Bookings' |'Payments' |'Members';
 
 interface AdminSidebarProps {
   active: AdminSection;
@@ -11,7 +11,6 @@ interface AdminSidebarProps {
 }
 
 const navItems: Array<{ label: AdminSection; icon: string; description: string }> = [
-  { label: 'Dashboard', icon: 'HomeIcon', description: 'Overview & stats' },
   { label: 'Home', icon: 'PencilSquareIcon', description: 'About, company, social' },
   { label: 'Events', icon: 'MegaphoneIcon', description: 'Add & manage events' },
   { label: 'Facilities', icon: 'BuildingOffice2Icon', description: 'Facilities & pricing' },

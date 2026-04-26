@@ -10,7 +10,6 @@ export default function TheArenaPage() {
       <div className="grain-overlay" />
       <div className="grid-bg" />
       <Header />
-      <ArenaHeroSection />
       <FacilitiesGridSection />
       <Footer />
     </main>

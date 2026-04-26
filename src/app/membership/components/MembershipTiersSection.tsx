@@ -59,7 +59,7 @@ const tiers = [
 
 export default function MembershipTiersSection() {
   return (
-    <section className="py-16 px-4 sm:px-6">
+    <section className="pt-32 pb-12 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-12 text-center">
           <span className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-3 block">

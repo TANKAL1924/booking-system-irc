@@ -394,24 +394,6 @@ export default function BookingFormSection() {
                 )}
               </div>
             </div>
-
-            <div className="glass-card rounded-2xl p-5 sm:p-6">
-              <h4 className="font-bold text-white text-sm mb-4 flex items-center gap-2">
-                <Icon name="PhoneIcon" size={16} className="text-[#25D366]" />
-                Need Help?
-              </h4>
-              <p className="text-white/40 text-xs leading-relaxed mb-4">
-                Our team is available Mon–Sat, 8:00 AM – 5:30 PM for booking assistance.
-              </p>
-              <a
-                href="https://wa.me/60123456789"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full py-3 bg-[#25D366] text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-[#1ebe5d] transition-all"
-              >
-                WhatsApp Us
-              </a>
-            </div>
           </div>
         </div>
       </div>

@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function ContactHeroSection() {
   return (
     <section className="relative pt-32 pb-12 px-6 overflow-hidden">

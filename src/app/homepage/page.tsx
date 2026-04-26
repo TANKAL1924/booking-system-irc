@@ -13,9 +13,8 @@ export default function HomepagePage() {
       <div className="grain-overlay" />
       <div className="grid-bg" />
       <Header />
-      <HeroSection />
       <AboutBentoSection />
-            <AnnouncementsSection />
+      <AnnouncementsSection />
       <EventsSection />
 
       <Footer />

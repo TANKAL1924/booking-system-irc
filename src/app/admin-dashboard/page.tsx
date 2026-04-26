@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import AdminSidebar from './components/AdminSidebar';
 import type { AdminSection } from './components/AdminSidebar';
-import AdminStatsSection from './components/AdminStatsSection';
 import HomeManagementSection from './components/HomeManagementSection';
 import EventManagementSection from './components/EventManagementSection';
 import FacilitiesManagementSection from './components/FacilitiesManagementSection';
@@ -12,7 +11,6 @@ import Icon from '@/components/ui/AppIcon';
 import { Link } from 'react-router-dom';
 
 const sectionTitles: Record<AdminSection, string> = {
-  Dashboard: 'Dashboard Overview',
   Home: 'Home Management',
   Events: 'Event Management',
   Facilities: 'Facilities Management',
@@ -22,7 +20,6 @@ const sectionTitles: Record<AdminSection, string> = {
 };
 
 const mobileNavItems: Array<{ label: AdminSection; icon: string }> = [
-  { label: 'Dashboard', icon: 'HomeIcon' },
   { label: 'Home', icon: 'PencilSquareIcon' },
   { label: 'Events', icon: 'MegaphoneIcon' },
   { label: 'Facilities', icon: 'BuildingOffice2Icon' },
@@ -37,12 +34,6 @@ export default function AdminDashboardPage() {
 
   const renderSection = () => {
     switch (activeSection) {
-      case 'Dashboard':
-        return (
-          <div className="space-y-8">
-            <AdminStatsSection />
-          </div>
-        );
       case 'Home':
         return <HomeManagementSection />;
       case 'Events':

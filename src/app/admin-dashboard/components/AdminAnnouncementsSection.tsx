@@ -30,7 +30,7 @@ export default function AdminAnnouncementsSection() {
   const [announcements, setAnnouncements] = useState<Announcement[]>(initialAnnouncements);
   const [availability, setAvailability] = useState(facilityAvailability);
   const [showForm, setShowForm] = useState(false);
-  const [newAnnouncement, setNewAnnouncement] = useState({ title: '', category: '', status: 'Draft\' as \'Draft\' | \'Published' });
+  const [newAnnouncement, setNewAnnouncement] = useState<{ title: string; category: string; status: 'Draft' | 'Published' }>({ title: '', category: '', status: 'Draft' });
 
   const toggleAvailability = (idx: number) => {
     setAvailability((prev) =>

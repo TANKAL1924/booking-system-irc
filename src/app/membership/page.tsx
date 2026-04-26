@@ -10,7 +10,6 @@ export default function MembershipPage() {
       <div className="grain-overlay" />
       <div className="grid-bg" />
       <Header />
-      <MembershipHeroSection />
       <MembershipTiersSection />
       <MembershipCTASection />
       <Footer />

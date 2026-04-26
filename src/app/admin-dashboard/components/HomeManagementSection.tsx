@@ -132,18 +132,8 @@ export default function HomeManagementSection() {
       {/* About Us Tab */}
       {activeTab === 'about' && (
         <form onSubmit={handleSaveAbout} className="glass-card rounded-2xl p-6 space-y-5">
-          <h3 className="font-bold text-white text-sm border-b border-white/5 pb-4">Edit About Us Content</h3>
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Page Title</label>
-            <input
-              type="text"
-              value={about.title}
-              onChange={(e) => setAbout((p) => ({ ...p, title: e.target.value }))}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
-            />
-          </div>
-          <div>
-            <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Description</label>
+            <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">About Us</label>
             <textarea
               value={about.description}
               onChange={(e) => setAbout((p) => ({ ...p, description: e.target.value }))}

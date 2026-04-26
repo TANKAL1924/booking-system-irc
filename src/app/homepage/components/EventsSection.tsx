@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import AppImage from '@/components/ui/AppImage';
 
@@ -73,11 +72,6 @@ export default function EventsSection() {
                 sizes="(max-width: 768px) 100vw, 33vw" />
 
                 <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-transparent" />
-                <div className="absolute top-4 left-4">
-                  <span className={`px-3 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full ${ev?.badgeColor}`}>
-                    {ev?.badge}
-                  </span>
-                </div>
               </div>
               {/* Content */}
               <div className="p-6">

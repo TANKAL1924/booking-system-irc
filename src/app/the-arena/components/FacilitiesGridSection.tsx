@@ -76,7 +76,7 @@ const facilities = [
 
 export default function FacilitiesGridSection() {
   return (
-    <section id="facilities" className="py-16 px-4 sm:px-6">
+    <section id="facilities" className="pt-32 pb-12 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-12">
           <span className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-3 block">Our Venues</span>

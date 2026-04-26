@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
@@ -41,7 +41,7 @@ export default function AboutBentoSection() {
   }, []);
 
   return (
-    <section className="py-20 px-6" ref={sectionRef}>
+    <section className="pt-32 pb-12 px-4 sm:px-6" ref={sectionRef}>
       <div className="max-w-7xl mx-auto">
         <div className="mb-12 flex flex-col md:flex-row justify-between items-end gap-6">
           <div>

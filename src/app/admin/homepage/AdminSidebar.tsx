@@ -1,14 +1,13 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Icon from '@/components/ui/AppIcon';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/authStore';
 
 export type AdminSection =
-  | 'Home' |'Events' |'Facilities' |'Bookings' |'Payments' |'Members' |'Tiers';
+  | 'Home' |'Events' |'Facilities' |'Bookings' |'Payments' |'Tiers';
 
 interface AdminSidebarProps {
-  active: AdminSection;
-  onNavigate: (section: AdminSection) => void;
+  onMobileNavigate?: () => void;
 }
 
 const navItems: Array<{ label: AdminSection; icon: string; description: string }> = [
@@ -17,13 +16,14 @@ const navItems: Array<{ label: AdminSection; icon: string; description: string }
   { label: 'Facilities', icon: 'BuildingOffice2Icon', description: 'Facilities & pricing' },
   { label: 'Bookings', icon: 'CalendarDaysIcon', description: 'Customer bookings' },
   { label: 'Payments', icon: 'CreditCardIcon', description: 'Payment methods' },
-  { label: 'Members', icon: 'UsersIcon', description: 'Member management' },
   { label: 'Tiers', icon: 'StarIcon', description: 'Membership tiers' },
 ];
 
-export default function AdminSidebar({ active, onNavigate }: AdminSidebarProps) {
+export default function AdminSidebar({ onMobileNavigate }: AdminSidebarProps) {
   const clearAuth = useAuthStore((s) => s.clearAuth);
   const navigate = useNavigate();
+  const { section = 'home' } = useParams<{ section: string }>();
+  const active = (section.charAt(0).toUpperCase() + section.slice(1)) as AdminSection;
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -42,7 +42,7 @@ export default function AdminSidebar({ active, onNavigate }: AdminSidebarProps) 
         {navItems.map((item) => (
           <button
             key={item.label}
-            onClick={() => onNavigate(item.label)}
+            onClick={() => { navigate(`/admin-dashboard/${item.label.toLowerCase()}`); onMobileNavigate?.(); }}
             className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold transition-all ${
               active === item.label
                 ? 'bg-primary/15 text-primary border border-primary/20' :'text-white/40 hover:text-white hover:bg-white/5'

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import AdminSidebar from './homepage/AdminSidebar';
 import type { AdminSection } from './homepage/AdminSidebar';
 import HomeManagementSection from './home/components/HomeManagementSection';
@@ -7,10 +7,8 @@ import EventManagementSection from './events/components/EventManagementSection';
 import FacilitiesManagementSection from './facilities/components/FacilitiesManagementSection';
 import BookingManagementSection from './bookings/components/BookingManagementSection';
 import PaymentInfoSection from './payments/components/PaymentInfoSection';
-import MemberManagementSection from './members/components/MemberManagementSection';
 import AdminTiersSection from './tiers/components/AdminTiersSection';
 import Icon from '@/components/ui/AppIcon';
-import { useAuthStore } from '@/store/authStore';
 
 const sectionTitles: Record<AdminSection, string> = {
   Home: 'Home Management',
@@ -18,7 +16,6 @@ const sectionTitles: Record<AdminSection, string> = {
   Facilities: 'Facilities Management',
   Bookings: 'Booking Management',
   Payments: 'Payment Info',
-  Members: 'Member Management',
   Tiers: 'Membership Tiers',
 };
 
@@ -28,19 +25,14 @@ const mobileNavItems: Array<{ label: AdminSection; icon: string }> = [
   { label: 'Facilities', icon: 'BuildingOffice2Icon' },
   { label: 'Bookings', icon: 'CalendarDaysIcon' },
   { label: 'Payments', icon: 'CreditCardIcon' },
-  { label: 'Members', icon: 'UsersIcon' },
   { label: 'Tiers', icon: 'StarIcon' },
 ];
 
 export default function AdminDashboardPage() {
-  const [activeSection, setActiveSection] = useState<AdminSection>('Home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const user = useAuthStore((s) => s.user);
+  const { section = 'home' } = useParams<{ section: string }>();
+  const activeSection = (section.charAt(0).toUpperCase() + section.slice(1)) as AdminSection;
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!user) navigate('/homepage');
-  }, [user, navigate]);
 
   const renderSection = () => {
     switch (activeSection) {
@@ -54,8 +46,6 @@ export default function AdminDashboardPage() {
         return <BookingManagementSection />;
       case 'Payments':
         return <PaymentInfoSection />;
-      case 'Members':
-        return <MemberManagementSection />;
       case 'Tiers':
         return <AdminTiersSection />;
       default:
@@ -67,7 +57,7 @@ export default function AdminDashboardPage() {
     <main className="relative min-h-screen bg-background">
       <div className="grain-overlay" />
       <div className="flex">
-        <AdminSidebar active={activeSection} onNavigate={(s) => { setActiveSection(s); setMobileMenuOpen(false); }} />
+        <AdminSidebar onMobileNavigate={() => setMobileMenuOpen(false)} />
 
         <div className="flex-1 min-w-0">
           {/* Mobile Top Bar */}
@@ -102,7 +92,7 @@ export default function AdminDashboardPage() {
               {mobileNavItems.map((item) => (
                 <button
                   key={item.label}
-                  onClick={() => { setActiveSection(item.label); setMobileMenuOpen(false); }}
+                  onClick={() => { navigate(`/admin-dashboard/${item.label.toLowerCase()}`); setMobileMenuOpen(false); }}
                   className={`flex items-center gap-2.5 px-3 py-3 rounded-xl text-sm font-bold transition-all ${
                     activeSection === item.label
                       ? 'bg-primary/15 text-primary border border-primary/20' :'text-white/40 hover:text-white hover:bg-white/5 border border-transparent'

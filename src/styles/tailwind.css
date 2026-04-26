@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* Hide native browser password reveal button */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+
 :root {
   --background: #0A0A0A;
   --foreground: #FFFFFF;

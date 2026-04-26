@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/AppIcon';
+import { supabase } from '@/lib/supabase';
+import { useAuthStore } from '@/store/authStore';
 
 export type AdminSection =
-  | 'Home' |'Events' |'Facilities' |'Bookings' |'Payments' |'Members';
+  | 'Home' |'Events' |'Facilities' |'Bookings' |'Payments' |'Members' |'Tiers';
 
 interface AdminSidebarProps {
   active: AdminSection;
@@ -17,9 +19,18 @@ const navItems: Array<{ label: AdminSection; icon: string; description: string }
   { label: 'Bookings', icon: 'CalendarDaysIcon', description: 'Customer bookings' },
   { label: 'Payments', icon: 'CreditCardIcon', description: 'Payment methods' },
   { label: 'Members', icon: 'UsersIcon', description: 'Member management' },
+  { label: 'Tiers', icon: 'StarIcon', description: 'Membership tiers' },
 ];
 
 export default function AdminSidebar({ active, onNavigate }: AdminSidebarProps) {
+  const clearAuth = useAuthStore((s) => s.clearAuth);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    clearAuth();
+    navigate('/homepage');
+  };
   return (
     <aside className="hidden lg:flex flex-col w-60 shrink-0 border-r border-white/5 min-h-[calc(100vh-80px)] sticky top-20 bg-[#0A0A0A]">
       <div className="p-4 border-b border-white/5">
@@ -49,13 +60,13 @@ export default function AdminSidebar({ active, onNavigate }: AdminSidebarProps) 
         ))}
       </nav>
       <div className="p-4 border-t border-white/5">
-        <Link
-          to="/homepage"
-          className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-white/40 hover:text-white hover:bg-white/5 transition-all"
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-primary/60 hover:text-primary hover:bg-primary/5 transition-all"
         >
           <Icon name="ArrowLeftOnRectangleIcon" size={17} />
-          Back to Site
-        </Link>
+          Log Off
+        </button>
       </div>
     </aside>
   );

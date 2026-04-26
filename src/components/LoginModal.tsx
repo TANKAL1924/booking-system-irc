@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Icon from '@/components/ui/AppIcon';
+import { supabase } from '@/lib/supabase';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -25,20 +26,18 @@ export default function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-    setTimeout(() => {
-      if (email === 'admin@arenairc.com' && password === 'admin123') {
-        setLoading(false);
-        onLogin();
-        onClose();
-      } else {
-        setLoading(false);
-        setError('Invalid email or password. Try admin@arenairc.com / admin123');
-      }
-    }, 800);
+    const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password });
+    setLoading(false);
+    if (authError || !data.user) {
+      setError(authError?.message ?? 'Invalid email or password.');
+      return;
+    }
+    onLogin();
+    onClose();
   };
 
   return (

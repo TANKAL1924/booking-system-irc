@@ -1,10 +1,10 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import HomepagePage from '@/app/homepage/page';
-import TheArenaPage from '@/app/the-arena/page';
-import BookNowPage from '@/app/book-now/page';
-import MembershipPage from '@/app/membership/page';
-import ContactPage from '@/app/contact/page';
-import AdminDashboardPage from '@/app/admin-dashboard/page';
+import HomepagePage from '@/app/client/homepage/page';
+import TheArenaPage from '@/app/client/the-arena/page';
+import BookNowPage from '@/app/client/book-now/page';
+import MembershipPage from '@/app/client/membership/page';
+import ContactPage from '@/app/client/contact/page';
+import AdminDashboardPage from '@/app/admin/page';
 import NotFound from '@/app/not-found';
 
 export default function AppRoutes() {

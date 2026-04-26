@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
-import AdminSidebar from './components/AdminSidebar';
-import type { AdminSection } from './components/AdminSidebar';
-import HomeManagementSection from './components/HomeManagementSection';
-import EventManagementSection from './components/EventManagementSection';
-import FacilitiesManagementSection from './components/FacilitiesManagementSection';
-import BookingManagementSection from './components/BookingManagementSection';
-import PaymentInfoSection from './components/PaymentInfoSection';
-import MemberManagementSection from './components/MemberManagementSection';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import AdminSidebar from './homepage/AdminSidebar';
+import type { AdminSection } from './homepage/AdminSidebar';
+import HomeManagementSection from './home/components/HomeManagementSection';
+import EventManagementSection from './events/components/EventManagementSection';
+import FacilitiesManagementSection from './facilities/components/FacilitiesManagementSection';
+import BookingManagementSection from './bookings/components/BookingManagementSection';
+import PaymentInfoSection from './payments/components/PaymentInfoSection';
+import MemberManagementSection from './members/components/MemberManagementSection';
+import AdminTiersSection from './tiers/components/AdminTiersSection';
 import Icon from '@/components/ui/AppIcon';
-import { Link } from 'react-router-dom';
+import { useAuthStore } from '@/store/authStore';
 
 const sectionTitles: Record<AdminSection, string> = {
   Home: 'Home Management',
@@ -17,6 +19,7 @@ const sectionTitles: Record<AdminSection, string> = {
   Bookings: 'Booking Management',
   Payments: 'Payment Info',
   Members: 'Member Management',
+  Tiers: 'Membership Tiers',
 };
 
 const mobileNavItems: Array<{ label: AdminSection; icon: string }> = [
@@ -26,11 +29,18 @@ const mobileNavItems: Array<{ label: AdminSection; icon: string }> = [
   { label: 'Bookings', icon: 'CalendarDaysIcon' },
   { label: 'Payments', icon: 'CreditCardIcon' },
   { label: 'Members', icon: 'UsersIcon' },
+  { label: 'Tiers', icon: 'StarIcon' },
 ];
 
 export default function AdminDashboardPage() {
   const [activeSection, setActiveSection] = useState<AdminSection>('Home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const user = useAuthStore((s) => s.user);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) navigate('/homepage');
+  }, [user, navigate]);
 
   const renderSection = () => {
     switch (activeSection) {
@@ -46,6 +56,8 @@ export default function AdminDashboardPage() {
         return <PaymentInfoSection />;
       case 'Members':
         return <MemberManagementSection />;
+      case 'Tiers':
+        return <AdminTiersSection />;
       default:
         return null;
     }

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import Icon from '@/components/ui/AppIcon';
-import BookingFormSection from '@/app/book-now/components/BookingFormSection';
+import BookingFormSection from '@/app/client/book-now/components/BookingFormSection';
 
 interface BookingModalProps {
   isOpen: boolean;

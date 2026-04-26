@@ -4,6 +4,8 @@ import AppLogo from '@/components/ui/AppLogo';
 import Icon from '@/components/ui/AppIcon';
 import LoginModal from '@/components/LoginModal';
 import BookingModal from '@/components/BookingModal';
+import { useAuthStore } from '@/store/authStore';
+import { supabase } from '@/lib/supabase';
 
 const navLinks = [
   { href: '/homepage', label: 'Home' },
@@ -44,8 +46,16 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleMenuScroll);
   }, []);
 
+  const { user, clearAuth } = useAuthStore();
+
   const handleLogin = () => {
     navigate('/admin-dashboard');
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    clearAuth();
+    navigate('/homepage');
   };
 
   return (
@@ -89,13 +99,23 @@ export default function Header() {
 
           {/* CTA */}
           <div className="hidden md:flex items-center gap-3">
-            <button
-              onClick={() => setLoginOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 border border-white/10 bg-white/5 text-white/60 rounded-full font-bold text-[11px] uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all duration-300"
-            >
-              <Icon name="LockClosedIcon" size={13} />
-              Admin
-            </button>
+            {user ? (
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2.5 border border-white/10 bg-white/5 text-white/60 rounded-full font-bold text-[11px] uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all duration-300"
+              >
+                <Icon name="ArrowLeftOnRectangleIcon" size={13} />
+                Logout
+              </button>
+            ) : (
+              <button
+                onClick={() => setLoginOpen(true)}
+                className="flex items-center gap-2 px-4 py-2.5 border border-white/10 bg-white/5 text-white/60 rounded-full font-bold text-[11px] uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all duration-300"
+              >
+                <Icon name="LockClosedIcon" size={13} />
+                Admin
+              </button>
+            )}
             <button
               onClick={() => setBookingOpen(true)}
               className="magnetic-btn px-6 py-2.5 bg-primary text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-red-700 transition-all duration-300"
@@ -147,13 +167,23 @@ export default function Header() {
               </Link>
             ))}
             <div className="mt-6 space-y-3">
-              <button
-                onClick={() => { setMenuOpen(false); setLoginOpen(true); }}
-                className="flex items-center justify-center gap-2 w-full py-4 border border-white/10 bg-white/5 text-white/60 rounded-full font-bold text-sm uppercase tracking-widest hover:text-white transition-all"
-              >
-                <Icon name="LockClosedIcon" size={15} />
-                Admin Login
-              </button>
+              {user ? (
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center justify-center gap-2 w-full py-4 border border-white/10 bg-white/5 text-white/60 rounded-full font-bold text-sm uppercase tracking-widest hover:text-white transition-all"
+                >
+                  <Icon name="ArrowLeftOnRectangleIcon" size={15} />
+                  Logout
+                </button>
+              ) : (
+                <button
+                  onClick={() => { setMenuOpen(false); setLoginOpen(true); }}
+                  className="flex items-center justify-center gap-2 w-full py-4 border border-white/10 bg-white/5 text-white/60 rounded-full font-bold text-sm uppercase tracking-widest hover:text-white transition-all"
+                >
+                  <Icon name="LockClosedIcon" size={15} />
+                  Admin Login
+                </button>
+              )}
               <button
                 onClick={() => { setMenuOpen(false); setBookingOpen(true); }}
                 className="block w-full py-4 bg-primary text-white rounded-full font-bold text-sm uppercase tracking-widest text-center hover:bg-red-700 transition-all"

@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AppLogo from '@/components/ui/AppLogo';
 import Icon from '@/components/ui/AppIcon';
 import LoginModal from '@/components/LoginModal';
-import BookingModal from '@/components/BookingModal';
 import { useAuthStore } from '@/store/authStore';
 
 const navLinks = [
@@ -17,7 +16,6 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
-  const [bookingOpen, setBookingOpen] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
@@ -99,12 +97,12 @@ export default function Header() {
                 <Icon name="LockClosedIcon" size={13} />
                 Admin
               </button>
-            <button
-              onClick={() => setBookingOpen(true)}
+            <Link
+              to="/book-now"
               className="magnetic-btn px-6 py-2.5 bg-primary text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-red-700 transition-all duration-300"
             >
               Book Now
-            </button>
+            </Link>
           </div>
 
           {/* Mobile Hamburger */}
@@ -159,12 +157,13 @@ export default function Header() {
                   Admin Login
                 </button>
               ) }
-              <button
-                onClick={() => { setMenuOpen(false); setBookingOpen(true); }}
+              <Link
+                to="/book-now"
+                onClick={() => setMenuOpen(false)}
                 className="block w-full py-4 bg-primary text-white rounded-full font-bold text-sm uppercase tracking-widest text-center hover:bg-red-700 transition-all"
               >
                 Book Now
-              </button>
+              </Link>
             </div>
           </div>
           <div className="px-6 py-6 border-t border-white/5">
@@ -176,7 +175,6 @@ export default function Header() {
       )}
 
       <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} onLogin={handleLogin} />
-      <BookingModal isOpen={bookingOpen} onClose={() => setBookingOpen(false)} />
     </>
   );
 }

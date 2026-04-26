@@ -43,14 +43,6 @@ export default function Footer() {
               </a>
             ))}
           </div>
-          <div>
-            <Link
-              to="/contact"
-              className="inline-block px-8 py-3 border-2 border-primary text-primary font-black text-[11px] tracking-[0.2em] uppercase rounded hover:bg-primary hover:text-white transition-all duration-300"
-            >
-              Book Now
-            </Link>
-          </div>
         </div>
 
         {/* Center: Quick Links */}

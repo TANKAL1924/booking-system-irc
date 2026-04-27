@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 interface Tier {
   id: number;
   name: string;
+  description: string;
   price: number;
   list_details: string[];
   wa_number: string;
@@ -59,6 +60,9 @@ export default function MembershipTiersSection() {
                     <span className="text-4xl font-black text-accent">RM {tier.price}</span>
                     <span className="text-white/40 text-sm mb-1">/month</span>
                   </div>
+                  {tier.description && (
+                    <p className="text-white/50 text-sm mt-2">{tier.description}</p>
+                  )}
                 </div>
                 <div className="p-6 sm:p-8 flex-1 flex flex-col">
                   <ul className="space-y-3 flex-1 mb-8">

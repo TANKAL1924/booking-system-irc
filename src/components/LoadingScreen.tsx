@@ -45,7 +45,7 @@ export default function LoadingScreen({ onDone }: Props) {
         transition={{ duration: 0.5, ease: 'easeOut' }}
         className="mb-8"
       >
-        <AppLogo size={72} />
+        <AppLogo size={120} />
       </motion.div>
 
       {/* Percentage */}
@@ -68,7 +68,7 @@ export default function LoadingScreen({ onDone }: Props) {
         transition={{ duration: 0.5, delay: 0.3, ease: 'easeOut' }}
         className="text-[10px] font-black tracking-[0.4em] uppercase text-white/30"
       >
-        Where Energy Comes Alive
+        ARENA IRC
       </motion.p>
     </motion.div>
   );

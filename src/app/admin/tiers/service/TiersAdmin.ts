@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase';
 export interface Tier {
   id: number;
   name: string;
+  description: string;
   price: number;
   list_details: string[];
   wa_number: string;

@@ -28,7 +28,7 @@ export default function Footer() {
             <AppLogo size={48} />
           </Link>
           <p className="text-[11px] font-black tracking-[0.2em] uppercase text-white/40">
-            Where Energy Comes Alive
+            ARENA IRC
           </p>
           <div className="flex items-center gap-4">
             {socialLinks.map((s) => (

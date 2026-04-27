@@ -3,14 +3,14 @@ import Icon from '@/components/ui/AppIcon';
 import type { Tier } from '../service/TiersAdmin';
 import { fetchTiers, createTier, updateTier, deleteTier } from '../service/TiersAdmin';
 
-const emptyForm = { name: '', price: '', wa_number: '', list_details: '' };
+const emptyForm = { name: '', description: '', price: '', wa_number: '', list_details: '' };
 
 export default function AdminTiersSection() {
   const [tiers, setTiers] = useState<Tier[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [form, setForm] = useState(emptyForm);
+  const [form, setForm] = useState<typeof emptyForm>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -39,6 +39,7 @@ export default function AdminTiersSection() {
     setEditingId(tier.id);
     setForm({
       name: tier.name ?? '',
+      description: tier.description ?? '',
       price: String(tier.price ?? ''),
       wa_number: tier.wa_number ?? '',
       list_details: (tier.list_details ?? []).join('\n'),
@@ -54,6 +55,7 @@ export default function AdminTiersSection() {
 
     const payload = {
       name: form.name,
+      description: form.description,
       price: parseFloat(form.price),
       wa_number: form.wa_number,
       list_details: form.list_details
@@ -132,6 +134,17 @@ export default function AdminTiersSection() {
           </div>
 
           <div>
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-1.5">Description</label>
+            <input
+              type="text"
+              placeholder="e.g. Perfect for casual players"
+              value={form.description}
+              onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-primary transition-colors"
+            />
+          </div>
+
+          <div>
             <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-1.5">WhatsApp Number</label>
             <input
               type="text"
@@ -195,6 +208,9 @@ export default function AdminTiersSection() {
                 <div>
                   <p className="text-white font-black text-lg">{tier.name}</p>
                   <p className="text-accent font-black text-2xl">RM {tier.price}<span className="text-white/30 text-sm font-medium">/month</span></p>
+                  {tier.description && (
+                    <p className="text-white/50 text-xs mt-1">{tier.description}</p>
+                  )}
                 </div>
                 <div className="flex gap-2 shrink-0">
                   <button

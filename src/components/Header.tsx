@@ -64,7 +64,7 @@ export default function Header() {
             <AppLogo size={48} onClick={() => {}} />
             <div className="flex flex-col">
               <span className="font-bold text-sm tracking-tight text-white leading-tight">
-                Arena <span className="text-primary">IRC</span>
+                ARENA <span className="text-primary">IRC</span>
               </span>
               <span className="text-[9px] font-bold tracking-[0.15em] uppercase text-white/30 hidden sm:block">
                 Negeri Sembilan Club

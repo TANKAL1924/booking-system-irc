@@ -7,6 +7,11 @@ interface ProtectedRouteProps {
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const user = useAuthStore((s) => s.user);
+  const isInitialized = useAuthStore((s) => s.isInitialized);
+
+  if (!isInitialized) {
+    return null;
+  }
 
   if (!user) {
     return <Navigate to="/homepage" replace />;

@@ -14,9 +14,9 @@ const hours = [
 export default function ContactInfoSection() {
   const { base } = useBase();
   const socials = [
-    { label: 'Instagram', handle: '@arenairc', href: base?.insta ?? 'https://instagram.com', color: 'text-pink-400' },
-    { label: 'Facebook', handle: 'Arena IRC NS', href: base?.facebook ?? 'https://facebook.com', color: 'text-blue-400' },
-    { label: 'TikTok', handle: '@arenairc.ns', href: base?.tiktok ?? 'https://tiktok.com', color: 'text-white' },
+    { label: 'Instagram', handle: base?.insta ?? '@arenairc', href: base?.insta ?? 'https://instagram.com', color: 'text-pink-400' },
+    { label: 'Facebook', handle: base?.facebook ?? 'Arena IRC NS', href: base?.facebook ?? 'https://facebook.com', color: 'text-blue-400' },
+    { label: 'TikTok', handle: base?.tiktok ?? '@arenairc.ns', href: base?.tiktok ?? 'https://tiktok.com', color: 'text-white' },
   ];
   return (
     <section className="pt-32 pb-12 px-4 sm:px-6">
@@ -52,16 +52,6 @@ export default function ContactInfoSection() {
                 </div>
               </div>
 
-              {/* Waze Button */}
-              <a
-                href="https://waze.com/ul?q=Seremban+Negeri+Sembilan"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full py-3 bg-[#33CCFF]/10 border border-[#33CCFF]/20 text-[#33CCFF] rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-[#33CCFF]/20 transition-all"
-              >
-                <Icon name="MapIcon" size={16} />
-                Open in Waze
-              </a>
             </div>
           </div>
 

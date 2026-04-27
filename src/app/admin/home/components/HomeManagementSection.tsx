@@ -9,7 +9,6 @@ interface AboutForm {
 }
 
 interface CompanyForm {
-  location: string;
   address: string;
   whatsapp: string;
 }
@@ -21,17 +20,21 @@ interface SocialForm {
 }
 
 export default function HomeManagementSection() {
-  const [activeTab, setActiveTab] = useState<'about' | 'company' | 'social' | 'tnc'>('about');
+  const [activeTab, setActiveTab] = useState<'about' | 'social' | 'tnc' | 'layout'>('about');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState('');
 
   const [about, setAbout] = useState<AboutForm>({ description: '', vision: '', mission: '' });
-  const [company, setCompany] = useState<CompanyForm>({ location: '', address: '', whatsapp: '' });
+  const [company, setCompany] = useState<CompanyForm>({ address: '', whatsapp: '' });
   const [social, setSocial] = useState<SocialForm>({ facebook: '', insta: '', tiktok: '' });
   const [tnc, setTnc] = useState<string[]>([]);
   const [newTnc, setNewTnc] = useState('');
   const [editingTnc, setEditingTnc] = useState<number | null>(null);
+  const [layoutUrl, setLayoutUrl] = useState<string | null>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
 
   useEffect(() => {
     supabase
@@ -42,9 +45,11 @@ export default function HomeManagementSection() {
       .then(({ data }) => {
         if (data) {
           setAbout({ description: data.about_us ?? '', vision: data.vision ?? '', mission: data.mission ?? '' });
-          setCompany({ location: data.location ?? '', address: data.address ?? '', whatsapp: data.whatsapp ?? '' });
+          setCompany({ address: data.address ?? '', whatsapp: data.whatsapp ?? '' });
           setSocial({ facebook: data.facebook ?? '', insta: data.insta ?? '', tiktok: data.tiktok ?? '' });
           setTnc(Array.isArray(data.tnc) ? data.tnc : []);
+          setLayoutUrl(data.layout ?? null);
+          setVideoUrl(data.main_vid ?? null);
         }
         setLoading(false);
       });
@@ -64,12 +69,53 @@ export default function HomeManagementSection() {
 
   const handleSaveAbout = async (e: React.FormEvent) => {
     e.preventDefault();
-    await upsert({ about_us: about.description, vision: about.vision, mission: about.mission });
+    await upsert({
+      about_us: about.description,
+      vision: about.vision,
+      mission: about.mission,
+      address: company.address,
+      whatsapp: company.whatsapp,
+    });
   };
 
-  const handleSaveCompany = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await upsert({ location: company.location, address: company.address, whatsapp: company.whatsapp });
+  const handleLayoutUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const ext = file.name.split('.').pop();
+    const path = `layout-main.${ext}`;
+    const { error: uploadError } = await supabase.storage
+      .from('layout')
+      .upload(path, file, { upsert: true });
+    if (uploadError) {
+      setUploading(false);
+      return;
+    }
+    const { data: urlData } = supabase.storage.from('layout').getPublicUrl(path);
+    const publicUrl = urlData.publicUrl;
+    await upsert({ layout: publicUrl });
+    setLayoutUrl(publicUrl);
+    setUploading(false);
+  };
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingVideo(true);
+    const ext = file.name.split('.').pop();
+    const path = `layout-video.${ext}`;
+    const { error: uploadError } = await supabase.storage
+      .from('layout')
+      .upload(path, file, { upsert: true });
+    if (uploadError) {
+      setUploadingVideo(false);
+      return;
+    }
+    const { data: urlData } = supabase.storage.from('layout').getPublicUrl(path);
+    const publicUrl = urlData.publicUrl;
+    await upsert({ main_vid: publicUrl });
+    setVideoUrl(publicUrl);
+    setUploadingVideo(false);
   };
 
   const handleSaveSocial = async (e: React.FormEvent) => {
@@ -98,9 +144,9 @@ export default function HomeManagementSection() {
 
   const tabs = [
     { key: 'about', label: 'About Us', icon: 'InformationCircleIcon' },
-    { key: 'company', label: 'Company Info', icon: 'BuildingOfficeIcon' },
     { key: 'social', label: 'Social Media', icon: 'ShareIcon' },
     { key: 'tnc', label: 'Terms & Conditions', icon: 'DocumentTextIcon' },
+    { key: 'layout', label: 'Layout', icon: 'PhotoIcon' },
   ] as const;
 
   if (loading) {
@@ -174,31 +220,8 @@ export default function HomeManagementSection() {
               />
             </div>
           </div>
-          <button
-            type="submit"
-            disabled={saving}
-            className="px-6 py-2.5 bg-primary text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50"
-          >
-            {saving ? 'Saving...' : 'Save Changes'}
-          </button>
-        </form>
-      )}
-
-      {/* Company Info Tab */}
-      {activeTab === 'company' && (
-        <form onSubmit={handleSaveCompany} className="glass-card rounded-2xl p-6 space-y-5">
-          <h3 className="font-bold text-white text-sm border-b border-white/5 pb-4">Edit Company Information</h3>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Location</label>
-              <input
-                type="text"
-                value={company.location}
-                onChange={(e) => setCompany((p) => ({ ...p, location: e.target.value }))}
-                placeholder="e.g. Seremban, Negeri Sembilan"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
-              />
-            </div>
+          <div className="border-t border-white/5 pt-5 space-y-4">
+            <h3 className="font-bold text-white/50 text-[11px] uppercase tracking-widest">Company Information</h3>
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Address</label>
               <textarea
@@ -340,6 +363,59 @@ export default function HomeManagementSection() {
                 </div>
               ))
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Layout Tab */}
+      {activeTab === 'layout' && (
+        <div className="glass-card rounded-2xl p-6 space-y-5">
+          <h3 className="font-bold text-white text-sm border-b border-white/5 pb-4">Place Layout Image</h3>
+
+          {layoutUrl && (
+            <div className="rounded-xl overflow-hidden border border-white/10">
+              <img src={layoutUrl} alt="Layout" className="w-full object-contain max-h-72" />
+            </div>
+          )}
+
+          <label className={`flex flex-col items-center justify-center gap-3 w-full border-2 border-dashed border-white/10 rounded-xl py-10 cursor-pointer hover:border-primary/50 transition-colors ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
+            <Icon name="PhotoIcon" size={28} className="text-white/20" />
+            <span className="text-white/40 text-sm font-medium">
+              {uploading ? 'Uploading...' : layoutUrl ? 'Click to replace image' : 'Click to upload layout image'}
+            </span>
+            <span className="text-white/20 text-xs">PNG, JPG, WEBP supported</span>
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleLayoutUpload}
+              disabled={uploading}
+            />
+          </label>
+
+          <div className="border-t border-white/5 pt-5 space-y-4">
+            <h3 className="font-bold text-white/50 text-[11px] uppercase tracking-widest">Facility Tour Video</h3>
+
+            {videoUrl && (
+              <div className="rounded-xl overflow-hidden border border-white/10">
+                <video src={videoUrl} controls className="w-full max-h-64" />
+              </div>
+            )}
+
+            <label className={`flex flex-col items-center justify-center gap-3 w-full border-2 border-dashed border-white/10 rounded-xl py-10 cursor-pointer hover:border-primary/50 transition-colors ${uploadingVideo ? 'opacity-50 pointer-events-none' : ''}`}>
+              <Icon name="FilmIcon" size={28} className="text-white/20" />
+              <span className="text-white/40 text-sm font-medium">
+                {uploadingVideo ? 'Uploading...' : videoUrl ? 'Click to replace video' : 'Click to upload facility tour video'}
+              </span>
+              <span className="text-white/20 text-xs">MP4, MOV, WEBM supported</span>
+              <input
+                type="file"
+                accept="video/*"
+                className="hidden"
+                onChange={handleVideoUpload}
+                disabled={uploadingVideo}
+              />
+            </label>
           </div>
         </div>
       )}

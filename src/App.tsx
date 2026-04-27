@@ -7,10 +7,12 @@ import { useAuthStore } from './store/authStore';
 export default function App() {
   const setAuth = useAuthStore((s) => s.setAuth);
   const clearAuth = useAuthStore((s) => s.clearAuth);
+  const setInitialized = useAuthStore((s) => s.setInitialized);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setAuth(data.session?.user ?? null, data.session ?? null);
+      setInitialized();
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -19,7 +21,7 @@ export default function App() {
     });
 
     return () => subscription.unsubscribe();
-  }, [setAuth, clearAuth]);
+  }, [setAuth, clearAuth, setInitialized]);
 
   return (
     <BrowserRouter>

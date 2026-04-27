@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
@@ -21,6 +21,7 @@ const highlights = [
 export default function AboutBentoSection() {
   const { base } = useBase();
   const sectionRef = useRef<HTMLDivElement>(null);
+  const [videoOpen, setVideoOpen] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -43,6 +44,7 @@ export default function AboutBentoSection() {
   }, []);
 
   return (
+    <>
     <section className="pt-32 pb-12 px-4 sm:px-6" ref={sectionRef}>
       <div className="max-w-7xl mx-auto">
         <div className="mb-12 flex flex-col md:flex-row justify-between items-end gap-6">
@@ -139,7 +141,8 @@ export default function AboutBentoSection() {
 
           {/* Card 4: Video Teaser — col-span-1 row-span-1 */}
           <div
-            className="bento-item col-span-1 row-span-1 p-8 flex flex-col justify-between relative overflow-hidden group"
+            onClick={() => base?.main_vid && setVideoOpen(true)}
+            className={`bento-item col-span-1 row-span-1 p-8 flex flex-col justify-between relative overflow-hidden group ${base?.main_vid ? 'cursor-pointer' : 'cursor-default'}`}
             style={{ opacity: 0, transform: 'translateY(30px)', transition: 'opacity 0.7s ease, transform 0.7s ease' }}>
 
             <div className="absolute inset-0 rounded-[1.5rem] overflow-hidden">
@@ -162,6 +165,22 @@ export default function AboutBentoSection() {
             <div className="relative z-10">
               <h3 className="text-lg font-black text-white mb-1">Facility Tour</h3>
               <p className="text-[10px] font-bold text-accent uppercase tracking-widest">Watch Video</p>
+            </div>
+          </div>
+
+          <div
+            className="bento-item col-span-1 row-span-1 p-8 flex flex-col justify-between"
+            style={{ opacity: 0, transform: 'translateY(30px)', transition: 'opacity 0.7s ease, transform 0.7s ease' }}>
+
+            <div className="flex justify-between items-start">
+              <Icon name="RocketLaunchIcon" size={28} className="text-primary" />
+              <span className="text-[9px] font-bold uppercase tracking-widest text-white/20">Mission</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-black mb-2 text-white leading-tight">Our Mission</h3>
+              <p className="text-white/40 text-xs leading-relaxed">
+                {base?.mission ?? 'To provide world-class sports and event facilities that inspire excellence, unity, and growth in every individual and community we serve.'}
+              </p>
             </div>
           </div>
         </div>
@@ -198,6 +217,33 @@ export default function AboutBentoSection() {
           </a>
         </div>
       </div>
-    </section>);
+    </section>
 
+    {/* Video Modal */}
+    {videoOpen && base?.main_vid && (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+        onClick={() => setVideoOpen(false)}
+      >
+        <div
+          className="relative w-full max-w-3xl mx-4 rounded-2xl overflow-hidden bg-black border border-white/10"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            onClick={() => setVideoOpen(false)}
+            className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-white hover:bg-white/10 transition-all"
+          >
+            <Icon name="XMarkIcon" size={16} />
+          </button>
+          <video
+            src={base.main_vid}
+            controls
+            autoPlay
+            className="w-full max-h-[70vh]"
+          />
+        </div>
+      </div>
+    )}
+    </>
+  );
 }

@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import AdminSidebar from './homepage/AdminSidebar';
 import type { AdminSection } from './homepage/AdminSidebar';
 import HomeManagementSection from './home/components/HomeManagementSection';
+import AdminAnnouncementsSection from './homepage/AdminAnnouncementsSection';
 import EventManagementSection from './events/components/EventManagementSection';
 import FacilitiesManagementSection from './facilities/components/FacilitiesManagementSection';
 import BookingManagementSection from './bookings/components/BookingManagementSection';
@@ -39,7 +40,12 @@ export default function AdminDashboardPage() {
       case 'Home':
         return <HomeManagementSection />;
       case 'Events':
-        return <EventManagementSection />;
+        return (
+          <>
+            <AdminAnnouncementsSection />
+            <EventManagementSection />
+          </>
+        );
       case 'Facilities':
         return <FacilitiesManagementSection />;
       case 'Bookings':

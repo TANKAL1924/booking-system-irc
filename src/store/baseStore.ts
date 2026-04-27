@@ -9,6 +9,7 @@ export interface BaseData {
   insta: string | null;
   facebook: string | null;
   layout: string | null;
+  main_vid: string | null;
   location: string | null;
   address: string | null;
   whatsapp: string | null;

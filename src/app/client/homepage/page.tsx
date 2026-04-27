@@ -3,7 +3,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import AboutBentoSection from './components/AboutBentoSection';
 import EventsSection from './components/EventsSection';
-import AnnouncementsSection from './components/AnnouncementsSection';
 import { supabase } from '@/lib/supabase';
 
 const ANN_SEEN_KEY = 'ann_seen_url';

@@ -1,16 +1,6 @@
 import Icon from '@/components/ui/AppIcon';
 import { useBase } from '@/lib/useBase';
 
-const hours = [
-  { day: 'Monday', time: '8:00 AM – 5:30 PM', open: true },
-  { day: 'Tuesday', time: '8:00 AM – 5:30 PM', open: true },
-  { day: 'Wednesday', time: '8:00 AM – 5:30 PM', open: true },
-  { day: 'Thursday', time: '8:00 AM – 5:30 PM', open: true },
-  { day: 'Friday', time: '8:00 AM – 5:30 PM', open: true },
-  { day: 'Saturday', time: '8:00 AM – 5:30 PM', open: true },
-  { day: 'Sunday', time: 'Closed', open: false },
-];
-
 export default function ContactInfoSection() {
   const { base } = useBase();
   const socials = [

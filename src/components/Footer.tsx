@@ -19,11 +19,11 @@ export default function Footer() {
     { href: 'https://youtube.com', label: 'YouTube', icon: 'GlobeAltIcon' },
   ];
   return (
-    <footer className="bg-[#0A0A0A] border-t border-white/5 px-6 py-14">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+    <footer className="bg-[#0A0A0A] border-t border-white/5 px-6 py-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
 
         {/* Left: Logo + Tagline + Social + Book Now */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4">
           <Link to="/homepage" className="flex items-center gap-3">
             <AppLogo size={48} />
           </Link>
@@ -95,7 +95,7 @@ export default function Footer() {
 
       </div>
 
-      <div className="max-w-7xl mx-auto mt-10 pt-6 border-t border-white/5">
+      <div className="max-w-7xl mx-auto mt-6 pt-4 border-t border-white/5">
         <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest text-center">
           © 2026 Arena IRC · All Rights Reserved
         </p>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import AppImage from '@/components/ui/AppImage';
 import { supabase } from '@/lib/supabase';
-import { Scene, Reveal } from 'react-kino';
 
 interface Facility {
   id: number;
@@ -29,17 +29,14 @@ export default function FacilitiesGridSection() {
   }, []);
 
   return (
-    <Scene duration="240vh">
-    <section id="facilities" className="min-h-screen flex flex-col justify-center py-16 px-4 sm:px-6">
+    <section id="facilities" className="pt-32 pb-12 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto w-full">
-        <Reveal animation="fade-up" at={0.06}>
         <div className="mb-12">
           <span className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-3 block">Our Venues</span>
           <h2 className="font-black text-4xl md:text-6xl tracking-tighter leading-none text-white">
             ALL <span className="gradient-text-brand">ARENA</span>
           </h2>
         </div>
-        </Reveal>
 
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -52,8 +49,14 @@ export default function FacilitiesGridSection() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {facilities.map((f, idx) => (
-              <Reveal key={f.id} animation="scale" at={0.2 + idx * 0.07}>
-              <div className="glass-card rounded-2xl overflow-hidden group flex flex-col">
+              <motion.div
+                key={f.id}
+                className="glass-card rounded-2xl overflow-hidden group flex flex-col"
+                initial={{ opacity: 0, y: 32 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: 0.5, delay: idx * 0.08, ease: 'easeOut' }}
+              >
                 <div className="relative h-48 overflow-hidden">
                   {f.pic_link ? (
                     <AppImage
@@ -83,13 +86,11 @@ export default function FacilitiesGridSection() {
                     <p className="text-white/50 text-xs leading-relaxed flex-1">{f.description}</p>
                   )}
                 </div>
-              </div>
-              </Reveal>
+              </motion.div>
             ))}
           </div>
         )}
       </div>
     </section>
-    </Scene>
   );
 }

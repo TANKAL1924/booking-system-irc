@@ -61,13 +61,13 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           {/* Logo */}
           <Link to="/homepage" className="flex items-center gap-3 group">
-            <AppLogo size={36} onClick={() => {}} />
+            <AppLogo size={48} onClick={() => {}} />
             <div className="flex flex-col">
               <span className="font-bold text-sm tracking-tight text-white leading-tight">
                 Arena <span className="text-primary">IRC</span>
               </span>
               <span className="text-[9px] font-bold tracking-[0.15em] uppercase text-white/30 hidden sm:block">
-                NS Club
+                Negeri Sembilan Club
               </span>
             </div>
           </Link>
@@ -121,7 +121,7 @@ export default function Header() {
         <div className="fixed inset-0 z-[99] bg-[#0A0A0A]/98 backdrop-blur-2xl flex flex-col">
           <div className="flex items-center justify-between px-6 py-5 border-b border-white/5">
             <Link to="/homepage" className="flex items-center gap-3" onClick={() => setMenuOpen(false)}>
-              <AppLogo size={36} />
+              <AppLogo size={48} />
               <span className="font-bold text-sm text-white">Arena <span className="text-primary">IRC</span></span>
             </Link>
             <button

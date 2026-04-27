@@ -1,6 +1,6 @@
 import Icon from '@/components/ui/AppIcon';
+import { motion } from 'framer-motion';
 import { useBase } from '@/lib/useBase';
-import { Scene, Reveal } from 'react-kino';
 
 export default function ContactInfoSection() {
   const { base } = useBase();
@@ -10,12 +10,22 @@ export default function ContactInfoSection() {
     { label: 'TikTok', handle: base?.tiktok ?? '@arenairc.ns', href: base?.tiktok ?? 'https://tiktok.com', color: 'text-white' },
   ];
   return (
-    <Scene duration="220vh">
-    <section className="min-h-screen flex flex-col justify-center py-16 px-4 sm:px-6">
+    <section className="pt-32 pb-12 px-4 sm:px-6">
+      <div className="mb-12">
+          <span className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-3 block">Our Contact</span>
+          <h2 className="font-black text-4xl md:text-6xl tracking-tighter leading-none text-white">
+            CONTACT <span className="gradient-text-brand">US</span>
+          </h2>
+        </div>
       <div className="max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left: Map + Address */}
-          <Reveal animation="fade-up" at={0.1}>
+          <motion.div
+            initial={{ opacity: 0, y: 32 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+          >
           <div className="space-y-6">
             {/* Google Maps Embed */}
             <div className="rounded-2xl overflow-hidden border border-white/10 h-64 md:h-80">
@@ -47,10 +57,14 @@ export default function ContactInfoSection() {
 
             </div>
           </div>
-          </Reveal>
-
+          </motion.div>
           {/* Right: Hours + Social */}
-          <Reveal animation="fade-up" at={0.3}>
+          <motion.div
+            initial={{ opacity: 0, y: 32 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.5, delay: 0.15, ease: 'easeOut' }}
+          >
           <div className="space-y-6">
 
             {/* Social Media */}
@@ -92,10 +106,9 @@ export default function ContactInfoSection() {
               Chat on WhatsApp
             </a>
           </div>
-          </Reveal>
+          </motion.div>
         </div>
       </div>
     </section>
-    </Scene>
   );
 }

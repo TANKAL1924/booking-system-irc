@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Icon from '@/components/ui/AppIcon';
 import { useBase } from '@/lib/useBase';
-import { Scene, Reveal } from 'react-kino';
+import { motion } from 'framer-motion';
 
 const facilities = [
   'Upper Field',
@@ -102,17 +102,21 @@ export default function BookingFormSection() {
   }
 
   return (
-    <Scene duration="200vh" pin={false}>
     <section id="booking-form" className="pt-32 pb-12 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
-        <Reveal animation="fade-up" at={0.05}>
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
         <div className="mb-10">
           <span className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-3 block">Reserve</span>
           <h2 className="font-black text-3xl md:text-5xl tracking-tighter text-white">
             BOOKING <span className="gradient-text-brand">FORM</span>
           </h2>
         </div>
-        </Reveal>
+        </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Form */}
@@ -404,6 +408,5 @@ export default function BookingFormSection() {
         </div>
       </div>
     </section>
-    </Scene>
   );
 }

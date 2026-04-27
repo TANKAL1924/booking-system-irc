@@ -1,40 +1,29 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import AppImage from '@/components/ui/AppImage';
+import { supabase } from '@/lib/supabase';
 
-const events = [
-{
-  id: 1,
-  title: 'NS State Hockey Championship 2026',
-  date: 'June 1, 2026',
-  category: 'Tournament',
-  img: "https://images.unsplash.com/photo-1614500952905-1cbbeb14044f",
-  alt: 'Hockey players competing on green turf field, dark stadium environment, dramatic floodlights overhead',
-  badge: 'Upcoming',
-  badgeColor: 'bg-accent text-black'
-},
-{
-  id: 2,
-  title: 'Arena IRC Graduation Package 2026',
-  date: 'July 15–20, 2026',
-  category: 'Events',
-  img: "https://images.unsplash.com/photo-1650436795840-3a216e498894",
-  alt: 'Graduation ceremony in large banquet hall, dim atmospheric lighting, rows of seats with decorations',
-  badge: 'Open Booking',
-  badgeColor: 'bg-primary text-white'
-},
-{
-  id: 3,
-  title: 'Veteran Soccer League Season 4',
-  date: 'May 10, 2026',
-  category: 'Sports',
-  img: "https://images.unsplash.com/photo-1519932067260-478c655454f9",
-  alt: 'Soccer players on grass field at night, stadium floodlights illuminating the pitch, dark sky background',
-  badge: 'Registration Open',
-  badgeColor: 'bg-[#25D366] text-white'
-}];
-
+interface Event {
+  id: number;
+  name: string;
+  date: string;
+  pic_link: string | null;
+}
 
 export default function EventsSection() {
+  const [events, setEvents] = useState<Event[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from('events')
+      .select('*')
+      .order('date', { ascending: true })
+      .limit(3)
+      .then(({ data }) => { if (data) setEvents(data); });
+  }, []);
+
+  const formatDate = (d: string) =>
+    new Date(d).toLocaleDateString('en-MY', { day: 'numeric', month: 'long', year: 'numeric' });
+
   return (
     <section className="py-16 px-6">
       <div className="max-w-7xl mx-auto">
@@ -50,8 +39,8 @@ export default function EventsSection() {
           </div>
           <Link
             to="/the-arena"
-            className="flex items-center gap-2 text-accent text-[11px] font-bold uppercase tracking-widest hover:gap-4 transition-all shrink-0">
-
+            className="flex items-center gap-2 text-accent text-[11px] font-bold uppercase tracking-widest hover:gap-4 transition-all shrink-0"
+          >
             All Events
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M5 12h14M12 5l7 7-7 7" />
@@ -59,29 +48,35 @@ export default function EventsSection() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {events?.map((ev) =>
-          <div key={ev?.id} className="glass-card rounded-2xl overflow-hidden group cursor-pointer">
-              {/* Poster Image */}
-              <div className="relative h-52 overflow-hidden">
-                <AppImage
-                src={ev?.img}
-                alt={ev?.alt}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-                sizes="(max-width: 768px) 100vw, 33vw" />
-
-                <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-transparent" />
+        {events.length === 0 ? (
+          <p className="text-white/30 text-sm text-center py-12">No events at the moment. Check back soon.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {events.map((ev) => (
+              <div key={ev.id} className="glass-card rounded-2xl overflow-hidden group cursor-pointer">
+                <div className="relative h-52 overflow-hidden bg-white/5">
+                  {ev.pic_link ? (
+                    <img
+                      src={ev.pic_link}
+                      alt={ev.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-white/10 text-5xl font-black">
+                      IRC
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-transparent" />
+                </div>
+                <div className="p-6">
+                  <h3 className="text-lg font-black text-white mb-2 leading-tight">{ev.name}</h3>
+                  <p className="text-white/40 text-xs font-bold uppercase tracking-widest">{formatDate(ev.date)}</p>
+                </div>
               </div>
-              {/* Content */}
-              <div className="p-6">
-                <h3 className="text-lg font-black text-white mb-2 leading-tight">{ev?.title}</h3>
-                <p className="text-white/40 text-xs font-bold uppercase tracking-widest">{ev?.date}</p>
-              </div>
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
-    </section>);
-
+    </section>
+  );
 }

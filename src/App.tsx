@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom'
+import { Kino } from 'react-kino';
 import AppRoutes from './router/route'
 import { supabase } from './lib/supabase';
 import { useAuthStore } from './store/authStore';
@@ -24,9 +25,11 @@ export default function App() {
   }, [setAuth, clearAuth, setInitialized]);
 
   return (
-    <BrowserRouter>
-      <AppRoutes />
-    </BrowserRouter>
+    <Kino>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </Kino>
   )
 }
 

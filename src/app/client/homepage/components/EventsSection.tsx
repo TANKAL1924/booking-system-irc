@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { Scene, Reveal } from 'react-kino';
 
 interface Event {
   id: number;
@@ -25,8 +26,10 @@ export default function EventsSection() {
     new Date(d).toLocaleDateString('en-MY', { day: 'numeric', month: 'long', year: 'numeric' });
 
   return (
-    <section className="py-16 px-6">
-      <div className="max-w-7xl mx-auto">
+    <Scene duration="220vh">
+    <section className="min-h-screen flex flex-col justify-center py-16 px-6">
+      <div className="max-w-7xl mx-auto w-full">
+        <Reveal animation="fade-up" at={0.08}>
         <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div>
             <span className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-3 block">
@@ -47,13 +50,15 @@ export default function EventsSection() {
             </svg>
           </Link>
         </div>
+        </Reveal>
 
         {events.length === 0 ? (
           <p className="text-white/30 text-sm text-center py-12">No events at the moment. Check back soon.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {events.map((ev) => (
-              <div key={ev.id} className="glass-card rounded-2xl overflow-hidden group cursor-pointer">
+            {events.map((ev, idx) => (
+              <Reveal key={ev.id} animation="fade-up" at={0.25 + idx * 0.15}>
+              <div className="glass-card rounded-2xl overflow-hidden group cursor-pointer">
                 <div className="relative h-52 overflow-hidden bg-white/5">
                   {ev.pic_link ? (
                     <img
@@ -73,10 +78,12 @@ export default function EventsSection() {
                   <p className="text-white/40 text-xs font-bold uppercase tracking-widest">{formatDate(ev.date)}</p>
                 </div>
               </div>
+              </Reveal>
             ))}
           </div>
         )}
       </div>
     </section>
+    </Scene>
   );
 }

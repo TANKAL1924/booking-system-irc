@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
 import { useBase } from '@/lib/useBase';
+import { Scene, Reveal } from 'react-kino';
 
 // BENTO GRID AUDIT
 // Array has 5 cards: [About(cs-2 rs-2), Vision(cs-1 rs-1), Stats(cs-1 rs-1), Video(cs-1 rs-1), Quick(cs-1 rs-1)]
@@ -20,34 +21,15 @@ const highlights = [
 
 export default function AboutBentoSection() {
   const { base } = useBase();
-  const sectionRef = useRef<HTMLDivElement>(null);
   const [videoOpen, setVideoOpen] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.querySelectorAll('.bento-item').forEach((el, i) => {
-              setTimeout(() => {
-                (el as HTMLElement).style.opacity = '1';
-                (el as HTMLElement).style.transform = 'translateY(0)';
-              }, i * 120);
-            });
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, []);
 
   return (
     <>
-    <section className="pt-32 pb-12 px-4 sm:px-6" ref={sectionRef}>
+    <Scene duration="280vh">
+    <section className="min-h-screen flex flex-col justify-center pt-32 pb-12 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-12 flex flex-col md:flex-row justify-between items-end gap-6">
+          <Reveal animation="fade-up" at={0.05}>
+          <div className="mb-12 flex flex-col md:flex-row justify-between items-end gap-6">
           <div>
             <span className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-3 block">
               About Us
@@ -61,13 +43,12 @@ export default function AboutBentoSection() {
             Arena IRC is Negeri Sembilan's premier multipurpose sports and event venue — built for champions, designed for community.
           </p>
         </div>
+        </Reveal>
 
         {/* Bento Grid — desktop */}
         <div className="hidden md:grid grid-cols-4 grid-rows-2 gap-4" style={{ gridTemplateRows: 'repeat(2, 260px)' }}>
           {/* Card 1: About — col-span-2 row-span-2 */}
-          <div
-            className="bento-item col-span-2 row-span-2 p-10 flex flex-col justify-between group"
-            style={{ opacity: 0, transform: 'translateY(30px)', transition: 'opacity 0.7s ease, transform 0.7s ease' }}>
+          <Reveal animation="fade-up" at={0.1} className="bento-item col-span-2 row-span-2 p-10 flex flex-col justify-between group relative">
 
             <div className="absolute inset-0 rounded-[1.5rem] overflow-hidden">
               <AppImage
@@ -99,12 +80,10 @@ export default function AboutBentoSection() {
                 </svg>
               </Link>
             </div>
-          </div>
+          </Reveal>
 
           {/* Card 2: Vision — col-span-1 row-span-1 */}
-          <div
-            className="bento-item col-span-1 row-span-1 p-8 flex flex-col justify-between"
-            style={{ opacity: 0, transform: 'translateY(30px)', transition: 'opacity 0.7s ease, transform 0.7s ease' }}>
+          <Reveal animation="fade-up" at={0.22} className="bento-item col-span-1 row-span-1 p-8 flex flex-col justify-between">
 
             <div className="flex justify-between items-start">
               <Icon name="StarIcon" size={28} className="text-accent" />
@@ -116,12 +95,10 @@ export default function AboutBentoSection() {
                 {base?.vision ?? 'To be the leading sports and event hub in Negeri Sembilan, fostering athletic excellence and community spirit.'}
               </p>
             </div>
-          </div>
+          </Reveal>
 
           {/* Card 3: Stats — col-span-1 row-span-1 */}
-          <div
-            className="bento-item col-span-1 row-span-1 p-8 flex flex-col justify-between bg-primary/10"
-            style={{ opacity: 0, transform: 'translateY(30px)', transition: 'opacity 0.7s ease, transform 0.7s ease' }}>
+          <Reveal animation="fade-up" at={0.3} className="bento-item col-span-1 row-span-1 p-8 flex flex-col justify-between bg-primary/10">
 
             <div className="grid grid-cols-2 gap-4 h-full content-between">
               {highlights.slice(0, 2).map((h) =>
@@ -137,13 +114,14 @@ export default function AboutBentoSection() {
                 </div>
               )}
             </div>
-          </div>
+          </Reveal>
 
           {/* Card 4: Video Teaser — col-span-1 row-span-1 */}
           <div
+            className={`col-span-1 row-span-1 ${base?.main_vid ? 'cursor-pointer' : 'cursor-default'}`}
             onClick={() => base?.main_vid && setVideoOpen(true)}
-            className={`bento-item col-span-1 row-span-1 p-8 flex flex-col justify-between relative overflow-hidden group ${base?.main_vid ? 'cursor-pointer' : 'cursor-default'}`}
-            style={{ opacity: 0, transform: 'translateY(30px)', transition: 'opacity 0.7s ease, transform 0.7s ease' }}>
+          >
+          <Reveal animation="fade-up" at={0.36} className="bento-item h-full p-8 flex flex-col justify-between relative overflow-hidden group">
 
             <div className="absolute inset-0 rounded-[1.5rem] overflow-hidden">
               <AppImage
@@ -166,11 +144,10 @@ export default function AboutBentoSection() {
               <h3 className="text-lg font-black text-white mb-1">Facility Tour</h3>
               <p className="text-[10px] font-bold text-accent uppercase tracking-widest">Watch Video</p>
             </div>
+          </Reveal>
           </div>
 
-          <div
-            className="bento-item col-span-1 row-span-1 p-8 flex flex-col justify-between"
-            style={{ opacity: 0, transform: 'translateY(30px)', transition: 'opacity 0.7s ease, transform 0.7s ease' }}>
+          <Reveal animation="fade-up" at={0.44} className="bento-item col-span-1 row-span-1 p-8 flex flex-col justify-between">
 
             <div className="flex justify-between items-start">
               <Icon name="RocketLaunchIcon" size={28} className="text-primary" />
@@ -182,10 +159,11 @@ export default function AboutBentoSection() {
                 {base?.mission ?? 'To provide world-class sports and event facilities that inspire excellence, unity, and growth in every individual and community we serve.'}
               </p>
             </div>
-          </div>
+          </Reveal>
         </div>
 
         {/* Mobile: stacked cards */}
+        <Reveal animation="fade-up" at={0.1}>
         <div className="md:hidden space-y-4">
           <div className="bento-item p-8">
             <h3 className="text-2xl font-black mb-3 text-white">Arena IRC & IRC Negeri Sembilan Club</h3>
@@ -216,8 +194,10 @@ export default function AboutBentoSection() {
             WhatsApp Us
           </a>
         </div>
+        </Reveal>
       </div>
     </section>
+    </Scene>
 
     {/* Video Modal */}
     {videoOpen && base?.main_vid && (

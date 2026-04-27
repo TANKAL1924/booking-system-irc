@@ -1,5 +1,6 @@
 import Icon from '@/components/ui/AppIcon';
 import { useBase } from '@/lib/useBase';
+import { Scene, Reveal } from 'react-kino';
 
 export default function ContactInfoSection() {
   const { base } = useBase();
@@ -9,10 +10,12 @@ export default function ContactInfoSection() {
     { label: 'TikTok', handle: base?.tiktok ?? '@arenairc.ns', href: base?.tiktok ?? 'https://tiktok.com', color: 'text-white' },
   ];
   return (
-    <section className="pt-32 pb-12 px-4 sm:px-6">
-      <div className="max-w-7xl mx-auto">
+    <Scene duration="220vh">
+    <section className="min-h-screen flex flex-col justify-center py-16 px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left: Map + Address */}
+          <Reveal animation="fade-up" at={0.1}>
           <div className="space-y-6">
             {/* Google Maps Embed */}
             <div className="rounded-2xl overflow-hidden border border-white/10 h-64 md:h-80">
@@ -44,8 +47,10 @@ export default function ContactInfoSection() {
 
             </div>
           </div>
+          </Reveal>
 
           {/* Right: Hours + Social */}
+          <Reveal animation="fade-up" at={0.3}>
           <div className="space-y-6">
 
             {/* Social Media */}
@@ -87,8 +92,10 @@ export default function ContactInfoSection() {
               Chat on WhatsApp
             </a>
           </div>
+          </Reveal>
         </div>
       </div>
     </section>
+    </Scene>
   );
 }

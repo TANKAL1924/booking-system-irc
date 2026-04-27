@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Icon from '@/components/ui/AppIcon';
 import { supabase } from '@/lib/supabase';
 
+
 interface Tier {
   id: number;
   name: string;
@@ -22,8 +23,8 @@ export default function MembershipTiersSection() {
   }, []);
 
   return (
-    <section className="pt-32 pb-12 px-4 sm:px-6">
-      <div className="max-w-7xl mx-auto">
+    <section className="py-20 px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto w-full">
         <div className="mb-12 text-center">
           <span className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-3 block">
             Membership Plans
@@ -39,10 +40,10 @@ export default function MembershipTiersSection() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {tiers.map((tier) => (
+            {tiers.map((tier, idx) => (
+              <div key={tier.id} className="flex flex-col">
               <div
-                key={tier.id}
-                className="glass-card rounded-2xl overflow-hidden border border-white/10 flex flex-col"
+                className="glass-card rounded-2xl overflow-hidden border border-white/10 flex flex-col h-full"
               >
                 <div className="bg-white/5 p-6 sm:p-8 border-b border-white/5">
                   <h3 className="text-2xl font-black text-white mb-1">{tier.name}</h3>
@@ -75,6 +76,7 @@ export default function MembershipTiersSection() {
                     </a>
                   )}
                 </div>
+              </div>
               </div>
             ))}
           </div>

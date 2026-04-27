@@ -1,3 +1,5 @@
+import { Scene, Reveal } from 'react-kino';
+
 const announcement = {
   title: 'New Online Booking System Launched',
   date: 'April 20, 2026',
@@ -9,8 +11,10 @@ const announcement = {
 
 export default function AnnouncementsSection() {
   return (
-    <section className="py-16 px-6">
-      <div className="max-w-7xl mx-auto">
+    <Scene duration="160vh">
+    <section className="min-h-screen flex flex-col justify-center py-16 px-6">
+      <div className="max-w-7xl mx-auto w-full">
+        <Reveal animation="fade-up" at={0.1}>
         <div className="mb-12">
           <span className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-3 block">
             Updates
@@ -20,7 +24,9 @@ export default function AnnouncementsSection() {
             <span className="gradient-text-brand">ANNOUNCEMENT</span>
           </h2>
         </div>
+        </Reveal>
 
+        <Reveal animation="fade-up" at={0.35}>
         <div className="glass-card rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-3 mb-2">
@@ -38,8 +44,10 @@ export default function AnnouncementsSection() {
             <p className="text-white/30 text-[10px] font-bold uppercase tracking-widest whitespace-nowrap">{announcement.date}</p>
           </div>
         </div>
+        </Reveal>
       </div>
     </section>
+    </Scene>
   );
 }
 

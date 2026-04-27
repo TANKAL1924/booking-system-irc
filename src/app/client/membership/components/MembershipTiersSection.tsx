@@ -40,7 +40,7 @@ export default function MembershipTiersSection() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {tiers.map((tier, idx) => (
+            {tiers.map((tier) => (
               <div key={tier.id} className="flex flex-col">
               <div
                 className="glass-card rounded-2xl overflow-hidden border border-white/10 flex flex-col h-full"

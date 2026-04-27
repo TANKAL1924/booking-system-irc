@@ -5,8 +5,6 @@ import AboutBentoSection from './components/AboutBentoSection';
 import EventsSection from './components/EventsSection';
 import { supabase } from '@/lib/supabase';
 
-const ANN_SEEN_KEY = 'ann_seen_url';
-
 export default function HomepagePage() {
   const [annUrl, setAnnUrl] = useState<string | null>(null);
   const [annOpen, setAnnOpen] = useState(false);
@@ -19,15 +17,12 @@ export default function HomepagePage() {
       .maybeSingle()
       .then(({ data }) => {
         if (!data?.ann_link) return;
-        const seen = localStorage.getItem(ANN_SEEN_KEY);
-        if (seen === data.ann_link) return;
         setAnnUrl(data.ann_link);
         setAnnOpen(true);
       });
   }, []);
 
   const closeAnn = () => {
-    if (annUrl) localStorage.setItem(ANN_SEEN_KEY, annUrl);
     setAnnOpen(false);
   };
 

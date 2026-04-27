@@ -68,7 +68,7 @@ export default function LoadingScreen({ onDone }: Props) {
         transition={{ duration: 0.5, delay: 0.3, ease: 'easeOut' }}
         className="text-[10px] font-black tracking-[0.4em] uppercase text-white/30"
       >
-        ARENA IRC
+        ARENA IRC NEGERI SEMBILAN CLUB
       </motion.p>
     </motion.div>
   );

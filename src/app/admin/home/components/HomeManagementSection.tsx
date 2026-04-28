@@ -78,10 +78,19 @@ export default function HomeManagementSection() {
     });
   };
 
+  const deleteStorageFile = async (bucket: string, url: string) => {
+    try {
+      const parts = new URL(url).pathname.split(`/${bucket}/`);
+      if (parts.length > 1) await supabase.storage.from(bucket).remove([parts[1]]);
+    } catch { /* ignore */ }
+  };
+
   const handleLayoutUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
+    // Delete old file first (handles extension changes)
+    if (layoutUrl) await deleteStorageFile('layout', layoutUrl);
     const ext = file.name.split('.').pop();
     const path = `layout-main.${ext}`;
     const { error: uploadError } = await supabase.storage
@@ -102,6 +111,8 @@ export default function HomeManagementSection() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingVideo(true);
+    // Delete old file first (handles extension changes)
+    if (videoUrl) await deleteStorageFile('layout', videoUrl);
     const ext = file.name.split('.').pop();
     const path = `layout-video.${ext}`;
     const { error: uploadError } = await supabase.storage

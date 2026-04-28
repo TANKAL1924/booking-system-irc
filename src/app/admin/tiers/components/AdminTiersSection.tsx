@@ -207,7 +207,7 @@ export default function AdminTiersSection() {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-white font-black text-lg">{tier.name}</p>
-                  <p className="text-accent font-black text-2xl">RM {tier.price}<span className="text-white/30 text-sm font-medium">/month</span></p>
+                  <p className="text-accent font-black text-2xl">RM {tier.price}<span className="text-white/30 text-sm font-medium">/year</span></p>
                   {tier.description && (
                     <p className="text-white/50 text-xs mt-1">{tier.description}</p>
                   )}

@@ -17,6 +17,13 @@ export default function AdminAnnouncementsSection() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingAnn(true);
+    // Delete old file first (handles extension changes)
+    if (annImageUrl) {
+      try {
+        const parts = new URL(annImageUrl).pathname.split('/layout/');
+        if (parts.length > 1) await supabase.storage.from('layout').remove([parts[1]]);
+      } catch { /* ignore */ }
+    }
     const ext = file.name.split('.').pop();
     const path = `announcement-main.${ext}`;
     const { error: uploadError } = await supabase.storage

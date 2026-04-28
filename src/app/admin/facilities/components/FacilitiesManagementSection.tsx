@@ -1,6 +1,7 @@
 ﻿import React, { useEffect, useRef, useState } from 'react';
 import Icon from '@/components/ui/AppIcon';
 import AppImage from '@/components/ui/AppImage';
+import ConfirmModal from '@/components/ConfirmModal';
 import {
   fetchFacilities,
   createFacility,
@@ -9,14 +10,18 @@ import {
   uploadFacilityImage,
   type Facility,
   type FacilityPayload,
+  type FacilitySlot,
+  type FacilityAddOn,
 } from '../service/FacilitiesAdmin';
 
 const emptyForm: FacilityPayload = {
   name: '',
-  description: '',
-  price_per_hour: 0,
   status: true,
-  pic_link: null,
+  pic_link: [],
+  type: true,
+  slots: [],
+  add_on: [],
+  pic_contact: null,
 };
 
 export default function FacilitiesManagementSection() {
@@ -25,13 +30,15 @@ export default function FacilitiesManagementSection() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState<FacilityPayload>(emptyForm);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState('');
   const [error, setError] = useState('');
+  const [addOnUploading, setAddOnUploading] = useState<number | null>(null);
+  const [confirmId, setConfirmId] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const addOnFileRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const load = async () => {
     setLoading(true);
@@ -51,29 +58,61 @@ export default function FacilitiesManagementSection() {
     setTimeout(() => setToast(''), 3000);
   };
 
+  // Slot helpers
+  const addSlot = () => setForm((p) => ({ ...p, slots: [...(p.slots ?? []), { start: '07:00', end: '19:00', hour: 1, price: 0 }] }));
+  const removeSlot = (i: number) => setForm((p) => ({ ...p, slots: (p.slots ?? []).filter((_, idx) => idx !== i) }));
+  const updateSlot = (i: number, field: keyof FacilitySlot, value: string | number) =>
+    setForm((p) => ({ ...p, slots: (p.slots ?? []).map((s, idx) => idx === i ? { ...s, [field]: value } : s) }));
+
+  // Add-on helpers
+  const addAddOn = () => setForm((p) => ({ ...p, add_on: [...(p.add_on ?? []), { name: '', price: 0, hour_add_on: 1, pic_add_on: '' }] }));
+  const removeAddOn = (i: number) => setForm((p) => ({ ...p, add_on: (p.add_on ?? []).filter((_, idx) => idx !== i) }));
+  const updateAddOn = (i: number, field: keyof FacilityAddOn, value: string | number) =>
+    setForm((p) => ({ ...p, add_on: (p.add_on ?? []).map((a, idx) => idx === i ? { ...a, [field]: value } : a) }));
+
+  const handleAddOnImageChange = async (i: number, file: File) => {
+    setAddOnUploading(i);
+    try {
+      const url = await uploadFacilityImage(file);
+      updateAddOn(i, 'pic_add_on', url);
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setAddOnUploading(null);
+    }
+  };
+
   const openAdd = () => {
     setForm(emptyForm);
     setEditingId(null);
-    setImageFile(null);
-    setImagePreview(null);
+    setPendingFiles([]);
     setShowForm(true);
   };
 
   const openEdit = (f: Facility) => {
     const { id, ...rest } = f;
-    setForm(rest);
+    setForm({
+      ...rest,
+      pic_link: rest.pic_link ?? [],
+      type: rest.type ?? true,
+      slots: rest.slots ?? [],
+      add_on: rest.add_on ?? [],
+      pic_contact: rest.pic_contact ?? null,
+    });
     setEditingId(id);
-    setImageFile(null);
-    setImagePreview(f.pic_link);
+    setPendingFiles([]);
     setShowForm(true);
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
+  const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+    setPendingFiles((prev) => [...prev, ...files]);
+    e.target.value = '';
   };
+
+  const removePendingFile = (i: number) => setPendingFiles((prev) => prev.filter((_, idx) => idx !== i));
+  const removeUploadedImage = (i: number) => setForm((p) => ({ ...p, pic_link: (p.pic_link ?? []).filter((_, idx) => idx !== i) }));
 
   const handleToggle = async (f: Facility) => {
     try {
@@ -86,9 +125,10 @@ export default function FacilitiesManagementSection() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Delete this facility?')) return;
+    const facility = facilities.find((f) => f.id === id);
+    if (!facility) return;
     try {
-      await deleteFacility(id);
+      await deleteFacility(facility);
       setFacilities((prev) => prev.filter((f) => f.id !== id));
       showToast('Facility deleted.');
     } catch (e: any) {
@@ -101,11 +141,12 @@ export default function FacilitiesManagementSection() {
     setSaving(true);
     setError('');
     try {
-      let pic_link = form.pic_link;
+      let pic_link = form.pic_link ?? [];
 
-      if (imageFile) {
+      if (pendingFiles.length > 0) {
         setUploading(true);
-        pic_link = await uploadFacilityImage(imageFile);
+        const uploaded = await Promise.all(pendingFiles.map((f) => uploadFacilityImage(f)));
+        pic_link = [...pic_link, ...uploaded];
         setUploading(false);
       }
 
@@ -123,8 +164,7 @@ export default function FacilitiesManagementSection() {
       setShowForm(false);
       setEditingId(null);
       setForm(emptyForm);
-      setImageFile(null);
-      setImagePreview(null);
+      setPendingFiles([]);
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -135,6 +175,14 @@ export default function FacilitiesManagementSection() {
 
   return (
     <div>
+      <ConfirmModal
+        isOpen={confirmId !== null}
+        title="Delete Facility"
+        message="This will permanently delete the facility and all its data. This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => { if (confirmId !== null) { handleDelete(confirmId); setConfirmId(null); } }}
+        onCancel={() => setConfirmId(null)}
+      />
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
           <h2 className="text-xl font-black text-white">Facilities Management</h2>
@@ -171,6 +219,7 @@ export default function FacilitiesManagementSection() {
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Name */}
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Facility Name</label>
               <input
@@ -183,19 +232,28 @@ export default function FacilitiesManagementSection() {
               />
             </div>
 
+            {/* Type toggle */}
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Price Per Hour (RM)</label>
-              <input
-                type="number"
-                value={form.price_per_hour ?? 0}
-                onChange={(e) => setForm((p) => ({ ...p, price_per_hour: Number(e.target.value) }))}
-                required
-                min={0}
-                placeholder="e.g. 150"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
-              />
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Type</label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setForm((p) => ({ ...p, type: true }))}
+                  className={`px-5 py-2 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all ${form.type ? 'bg-primary text-white' : 'bg-white/5 border border-white/10 text-white/40 hover:text-white'}`}
+                >
+                  Facility
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setForm((p) => ({ ...p, type: false }))}
+                  className={`px-5 py-2 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all ${!form.type ? 'bg-primary text-white' : 'bg-white/5 border border-white/10 text-white/40 hover:text-white'}`}
+                >
+                  Hall
+                </button>
+              </div>
             </div>
 
+            {/* Status toggle */}
             <div className="flex items-center gap-3 pt-1">
               <button
                 type="button"
@@ -208,47 +266,240 @@ export default function FacilitiesManagementSection() {
               <span className="text-white/60 text-sm font-medium">{form.status ? 'Enabled' : 'Disabled'}</span>
             </div>
 
+            {/* Main images */}
             <div className="md:col-span-2">
-              <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Description</label>
-              <textarea
-                value={form.description ?? ''}
-                onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-                rows={3}
-                placeholder="Facility description..."
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors resize-none"
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Facility Image</label>
-              <div className="flex items-start gap-4">
-                {imagePreview && (
-                  <div className="relative w-28 h-20 rounded-xl overflow-hidden shrink-0 border border-white/10">
-                    <AppImage src={imagePreview} alt="Preview" fill className="object-cover" />
-                  </div>
-                )}
-                <div className="flex-1">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="flex items-center gap-2 px-4 py-2.5 border border-white/10 bg-white/5 text-white/60 rounded-xl font-bold text-[11px] uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all"
-                  >
-                    <Icon name="PhotoIcon" size={14} />
-                    {imagePreview ? 'Change Image' : 'Upload Image'}
-                  </button>
-                  {imageFile && (
-                    <p className="text-white/30 text-xs mt-2 truncate">{imageFile.name}</p>
-                  )}
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Facility Images</label>
+              {/* Uploaded images */}
+              {(form.pic_link ?? []).length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {(form.pic_link ?? []).map((url, i) => (
+                    <div key={i} className="relative w-24 h-16 rounded-xl overflow-hidden border border-white/10 group">
+                      <AppImage src={url} alt={`Image ${i + 1}`} fill className="object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => removeUploadedImage(i)}
+                        className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-label="Remove image"
+                      >
+                        <Icon name="XMarkIcon" size={10} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
+              )}
+              {/* Pending files */}
+              {pendingFiles.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {pendingFiles.map((file, i) => (
+                    <div key={i} className="relative w-24 h-16 rounded-xl overflow-hidden border border-white/10 border-dashed group">
+                      <AppImage src={URL.createObjectURL(file)} alt={file.name} fill className="object-cover opacity-60" />
+                      <button
+                        type="button"
+                        onClick={() => removePendingFile(i)}
+                        className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-label="Remove pending"
+                      >
+                        <Icon name="XMarkIcon" size={10} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImagesChange}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex items-center gap-2 px-4 py-2.5 border border-white/10 bg-white/5 text-white/60 rounded-xl font-bold text-[11px] uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all"
+                >
+                  <Icon name="PhotoIcon" size={14} />
+                  Add Images
+                </button>
               </div>
             </div>
+
+            {/* Contact Number (Hall only) */}
+            {!form.type && (
+              <div className="md:col-span-2">
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Contact Number</label>
+                <input
+                  type="tel"
+                  value={form.pic_contact ?? ''}
+                  onChange={(e) => setForm((p) => ({ ...p, pic_contact: e.target.value }))}
+                  placeholder="e.g. 0123456789"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
+                />
+              </div>
+            )}
+
+            {/* Slots (Facility only) */}
+            {form.type && <div className="md:col-span-2">
+              <div className="flex items-center justify-between mb-3">
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30">Time Slots</label>
+                <button
+                  type="button"
+                  onClick={addSlot}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 text-white/60 rounded-lg font-bold text-[10px] uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all"
+                >
+                  <Icon name="PlusIcon" size={12} />
+                  Add Slot
+                </button>
+              </div>
+              {(form.slots ?? []).length === 0 && (
+                <p className="text-white/20 text-xs">No slots added yet.</p>
+              )}
+              <div className="space-y-2">
+                {(form.slots ?? []).map((slot, i) => (
+                  <div key={i} className="grid grid-cols-[1fr_1fr_1fr_1fr_auto] gap-2 items-center bg-white/5 border border-white/10 rounded-xl px-4 py-3">
+                    <div>
+                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-1">Start</label>
+                      <input
+                        type="time"
+                        value={slot.start}
+                        onChange={(e) => updateSlot(i, 'start', e.target.value)}
+                        className="w-full bg-transparent text-white text-sm focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-1">End</label>
+                      <input
+                        type="time"
+                        value={slot.end}
+                        onChange={(e) => updateSlot(i, 'end', e.target.value)}
+                        className="w-full bg-transparent text-white text-sm focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-1">Hour</label>
+                      <input
+                        type="number"
+                        value={slot.hour}
+                        min={1}
+                        step={1}
+                        onChange={(e) => updateSlot(i, 'hour', Number(e.target.value))}
+                        className="w-full bg-transparent text-white text-sm focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-1">Price (RM)</label>
+                      <input
+                        type="number"
+                        value={slot.price}
+                        min={0}
+                        onChange={(e) => updateSlot(i, 'price', Number(e.target.value))}
+                        className="w-full bg-transparent text-white text-sm focus:outline-none"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeSlot(i)}
+                      className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-all mt-3"
+                      aria-label="Remove slot"
+                    >
+                      <Icon name="XMarkIcon" size={12} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>}
+
+            {/* Add-ons (Facility only) */}
+            {form.type && <div className="md:col-span-2">
+              <div className="flex items-center justify-between mb-3">
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30">Add-ons</label>
+                <button
+                  type="button"
+                  onClick={addAddOn}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 text-white/60 rounded-lg font-bold text-[10px] uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all"
+                >
+                  <Icon name="PlusIcon" size={12} />
+                  Add Add-on
+                </button>
+              </div>
+              {(form.add_on ?? []).length === 0 && (
+                <p className="text-white/20 text-xs">No add-ons added yet.</p>
+              )}
+              <div className="space-y-2">
+                {(form.add_on ?? []).map((addon, i) => (
+                  <div key={i} className="grid grid-cols-[1fr_1fr_1fr_auto_auto] gap-2 items-center bg-white/5 border border-white/10 rounded-xl px-4 py-3">
+                    <div>
+                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-1">Name</label>
+                      <input
+                        type="text"
+                        value={addon.name}
+                        placeholder="e.g. Equipment"
+                        onChange={(e) => updateAddOn(i, 'name', e.target.value)}
+                        className="w-full bg-transparent text-white text-sm focus:outline-none placeholder:text-white/20"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-1">Hour</label>
+                      <input
+                        type="number"
+                        value={addon.hour_add_on}
+                        min={1}
+                        step={1}
+                        onChange={(e) => updateAddOn(i, 'hour_add_on', Number(e.target.value))}
+                        className="w-full bg-transparent text-white text-sm focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-1">Price (RM)</label>
+                      <input
+                        type="number"
+                        value={addon.price}
+                        min={0}
+                        step={0.01}
+                        onChange={(e) => updateAddOn(i, 'price', parseFloat(e.target.value) || 0)}
+                        className="w-full bg-transparent text-white text-sm focus:outline-none"
+                      />
+                    </div>
+                    <div className="flex flex-col items-center gap-1 mt-3">
+                      {addon.pic_add_on && (
+                        <div className="relative w-10 h-8 rounded-lg overflow-hidden border border-white/10">
+                          <AppImage src={addon.pic_add_on} alt={addon.name} fill className="object-cover" />
+                        </div>
+                      )}
+                      <input
+                        ref={(el) => { addOnFileRefs.current[i] = el; }}
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => { const f = e.target.files?.[0]; if (f) handleAddOnImageChange(i, f); }}
+                        className="hidden"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => addOnFileRefs.current[i]?.click()}
+                        disabled={addOnUploading === i}
+                        className="flex items-center gap-1 px-2 py-1 border border-white/10 bg-white/5 text-white/50 rounded-lg font-bold text-[9px] uppercase tracking-widest hover:text-white transition-all disabled:opacity-50"
+                      >
+                        {addOnUploading === i ? (
+                          <span className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" />
+                        ) : (
+                          <Icon name="PhotoIcon" size={11} />
+                        )}
+                        {addon.pic_add_on ? 'Change' : 'Image'}
+                      </button>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeAddOn(i)}
+                      className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-all mt-3"
+                      aria-label="Remove add-on"
+                    >
+                      <Icon name="XMarkIcon" size={12} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>}
           </div>
 
           <div className="flex gap-3 pt-2">
@@ -284,9 +535,9 @@ export default function FacilitiesManagementSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {facilities.map((f) => (
             <div key={f.id} className={`glass-card rounded-2xl overflow-hidden flex flex-col ${!f.status ? 'opacity-60' : ''}`}>
-              {f.pic_link ? (
+              {f.pic_link?.[0] ? (
                 <div className="relative h-36 overflow-hidden">
-                  <AppImage src={f.pic_link} alt={f.name ?? 'Facility'} fill className="object-cover" />
+                  <AppImage src={f.pic_link[0]} alt={f.name ?? 'Facility'} fill className="object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#141414]/80 to-transparent" />
                 </div>
               ) : (
@@ -298,12 +549,28 @@ export default function FacilitiesManagementSection() {
               <div className="p-5 flex flex-col gap-3 flex-1">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${f.status ? 'bg-[#25D366]/10 text-[#25D366]' : 'bg-white/10 text-white/30'}`}>
                         {f.status ? 'Active' : 'Disabled'}
                       </span>
+                      <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                        {f.type ? 'Facility' : 'Hall'}
+                      </span>
                     </div>
                     <p className="text-white font-black text-base truncate">{f.name}</p>
+                    {f.type && ((f.slots?.length ?? 0) > 0 || (f.add_on?.length ?? 0) > 0) && (
+                      <p className="text-white/30 text-[10px] mt-0.5">
+                        {f.slots?.length ?? 0} slot{(f.slots?.length ?? 0) !== 1 ? 's' : ''}
+                        {' · '}
+                        {f.add_on?.length ?? 0} add-on{(f.add_on?.length ?? 0) !== 1 ? 's' : ''}
+                      </p>
+                    )}
+                    {!f.type && f.pic_contact && (
+                      <p className="text-white/30 text-[10px] mt-0.5 flex items-center gap-1">
+                        <Icon name="PhoneIcon" size={10} />
+                        {f.pic_contact}
+                      </p>
+                    )}
                   </div>
                   <button
                     onClick={() => handleToggle(f)}
@@ -314,15 +581,7 @@ export default function FacilitiesManagementSection() {
                   </button>
                 </div>
 
-                {f.description && (
-                  <p className="text-white/40 text-xs leading-relaxed line-clamp-2">{f.description}</p>
-                )}
-
                 <div className="flex items-center justify-between pt-2 border-t border-white/5 mt-auto">
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/20 mb-0.5">Per Hour</p>
-                    <p className="text-accent font-black text-lg">RM {f.price_per_hour ?? 'â€”'}</p>
-                  </div>
                   <div className="flex gap-2">
                     <button
                       onClick={() => openEdit(f)}
@@ -332,8 +591,8 @@ export default function FacilitiesManagementSection() {
                       <Icon name="PencilSquareIcon" size={13} />
                     </button>
                     <button
-                      onClick={() => handleDelete(f.id)}
-                      className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-all"
+                      onClick={() => setConfirmId(f.id)}
+                      className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-all"
                       aria-label="Delete"
                     >
                       <Icon name="TrashIcon" size={13} />

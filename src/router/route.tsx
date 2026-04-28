@@ -8,6 +8,7 @@ import AdminDashboardPage from '@/app/admin/page';
 import NotFound from '@/app/not-found';
 import ProtectedRoute from './ProtectedRoute';
 import AnimatedBackground from '@/components/AnimatedBackground';
+import AnnouncementPopup from '@/components/AnnouncementPopup';
 
 export default function AppRoutes() {
   const location = useLocation();
@@ -16,6 +17,7 @@ export default function AppRoutes() {
   return (
     <>
       {!isAdmin && <AnimatedBackground />}
+      {!isAdmin && <AnnouncementPopup />}
       <Routes>
       {/* Redirect root */}
       <Route path="/" element={<Navigate to="/homepage" replace />} />

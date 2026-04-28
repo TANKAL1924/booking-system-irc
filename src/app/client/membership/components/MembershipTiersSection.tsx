@@ -58,7 +58,7 @@ export default function MembershipTiersSection() {
                   <h3 className="text-2xl font-black text-white mb-1">{tier.name}</h3>
                   <div className="flex items-end gap-1">
                     <span className="text-4xl font-black text-accent">RM {tier.price}</span>
-                    <span className="text-white/40 text-sm mb-1">/month</span>
+                    <span className="text-white/40 text-sm mb-1">/year</span>
                   </div>
                   {tier.description && (
                     <p className="text-white/50 text-sm mt-2">{tier.description}</p>

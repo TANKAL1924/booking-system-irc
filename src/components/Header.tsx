@@ -8,6 +8,7 @@ import { useAuthStore } from '@/store/authStore';
 const navLinks = [
   { href: '/homepage', label: 'Home' },
   { href: '/the-arena', label: 'The Arena' },
+  { href: '/book-now', label: 'Book Now' },
   { href: '/membership', label: 'Membership' },
   { href: '/contact', label: 'Contact' },
 ];
@@ -97,12 +98,6 @@ export default function Header() {
                 <Icon name="LockClosedIcon" size={13} />
                 Admin
               </button>
-            <Link
-              to="/book-now"
-              className="magnetic-btn px-6 py-2.5 bg-primary text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-red-700 transition-all duration-300"
-            >
-              Book Now
-            </Link>
           </div>
 
           {/* Mobile Hamburger */}

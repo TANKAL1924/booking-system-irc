@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
 import { supabase } from '@/lib/supabase';
+import { useBaseStore } from '@/store/baseStore';
 
 interface FacilitySlot {
   start: string;
@@ -249,6 +250,9 @@ function Carousel({ items }: { items: Facility[] }) {
 export default function FacilitiesGridSection() {
   const [facilities, setFacilities] = useState<Facility[]>([]);
   const [loading, setLoading] = useState(true);
+  const { base, fetch: fetchBase } = useBaseStore();
+
+  useEffect(() => { fetchBase(); }, [fetchBase]);
 
   useEffect(() => {
     supabase
@@ -285,6 +289,28 @@ export default function FacilitiesGridSection() {
           <p className="text-white/30 text-sm">No venues available at the moment.</p>
         ) : (
           <div className="space-y-16">
+            {/* Arena Layout */}
+            {base?.layout && (
+              <div>
+                <h3 className="text-white font-black text-xl mb-5">Arena Layout</h3>
+                <motion.div
+                  className="relative w-full rounded-2xl overflow-hidden border border-white/10"
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.45, ease: 'easeOut' }}
+                >
+                  <AppImage
+                    src={base.layout}
+                    alt="Arena Layout"
+                    width={1200}
+                    height={800}
+                    className="w-full h-auto object-contain"
+                  />
+                </motion.div>
+              </div>
+            )}
+
             {/* Facilities */}
             {facilityItems.length > 0 && (
               <div>

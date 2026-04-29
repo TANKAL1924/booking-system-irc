@@ -40,19 +40,10 @@ export default function EventsSection() {
               Latest
             </span>
             <h2 className="font-black text-4xl md:text-6xl tracking-tighter leading-none text-white">
-              UPCOMING<br />
+              LATEST<br />
               <span className="gradient-text-brand">EVENTS</span>
             </h2>
           </div>
-          <Link
-            to="/the-arena"
-            className="flex items-center gap-2 text-accent text-[11px] font-bold uppercase tracking-widest hover:gap-4 transition-all shrink-0"
-          >
-            All Events
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </Link>
         </div>
         </motion.div>
 

@@ -23,6 +23,7 @@ export interface Facility {
   slots: FacilitySlot[] | null;
   add_on: FacilityAddOn[] | null;
   pic_contact: string | null;
+  description: string[] | null;
 }
 
 export type FacilityPayload = Omit<Facility, 'id'>;

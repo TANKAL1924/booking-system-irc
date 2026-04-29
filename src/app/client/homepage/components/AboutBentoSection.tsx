@@ -73,9 +73,12 @@ export default function AboutBentoSection() {
               <h3 className="text-3xl font-black mb-4 text-white leading-tight">
                 Arena IRC &<br />IRC Negeri Sembilan Club
               </h3>
-              <p className="text-white/50 text-sm leading-relaxed mb-6 max-w-sm">
-                {base?.about_us ?? 'A state-of-the-art multipurpose facility serving athletes, schools, corporations, and families across Negeri Sembilan since 2010.'}
-              </p>
+              <div className="text-white/50 text-sm leading-relaxed mb-6 space-y-3">
+                {(base?.about_us ?? 'A state-of-the-art multipurpose facility serving athletes, schools, corporations, and families across Negeri Sembilan since 2010.')
+                  .split('\n')
+                  .filter((p) => p.trim() !== '')
+                  .map((p, i) => <p key={i}>{p}</p>)}
+              </div>
               <Link
                 to="/the-arena"
                 className="inline-flex items-center gap-2 text-accent text-[11px] font-bold uppercase tracking-widest hover:gap-4 transition-all">
@@ -214,9 +217,12 @@ export default function AboutBentoSection() {
             </div>
             <div className="relative z-10">
               <h3 className="text-2xl font-black mb-3 text-white leading-tight">Arena IRC &<br />IRC Negeri Sembilan Club</h3>
-              <p className="text-white/50 text-sm leading-relaxed mb-4">
-                {base?.about_us ?? 'A state-of-the-art multipurpose facility serving athletes, schools, corporations, and families across Negeri Sembilan since 2010.'}
-              </p>
+              <div className="text-white/50 text-sm leading-relaxed mb-4 space-y-3">
+                {(base?.about_us ?? 'A state-of-the-art multipurpose facility serving athletes, schools, corporations, and families across Negeri Sembilan since 2010.')
+                  .split('\n')
+                  .filter((p) => p.trim() !== '')
+                  .map((p, i) => <p key={i}>{p}</p>)}
+              </div>
               <div className="grid grid-cols-2 gap-4 mb-5">
                 {highlights.map((h) =>
                 <div key={h.label}>

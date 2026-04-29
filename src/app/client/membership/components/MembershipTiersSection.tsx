@@ -18,7 +18,7 @@ export default function MembershipTiersSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.from('tier').select('*').order('price').then(({ data }) => {
+    supabase.from('tier').select('*').order('id').then(({ data }) => {
       if (data) setTiers(data as Tier[]);
       setLoading(false);
     });

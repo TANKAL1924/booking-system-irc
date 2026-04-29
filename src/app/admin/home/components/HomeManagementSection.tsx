@@ -207,7 +207,7 @@ export default function HomeManagementSection() {
             <textarea
               value={about.description}
               onChange={(e) => setAbout((p) => ({ ...p, description: e.target.value }))}
-              rows={4}
+              rows={8}
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors resize-none"
             />
           </div>

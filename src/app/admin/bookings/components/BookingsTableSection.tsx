@@ -1,80 +1,134 @@
-import { useState } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import Icon from '@/components/ui/AppIcon';
+import {
+  fetchBookings,
+  deleteBooking,
+} from '../service/BookingAdmin';
+import type { Booking } from '../service/BookingAdmin';
 
-type BookingStatus = 'Confirmed' | 'Pending' | 'Cancelled' | 'Completed';
-
-interface Booking {
-  id: string;
-  name: string;
-  facility: string;
-  date: string;
-  time: string;
-  payment: string;
-  amount: string;
-  status: BookingStatus;
+function fmtAmount(n: number) {
+  return `RM ${n.toLocaleString('en-MY', { minimumFractionDigits: 2 })}`;
 }
 
-const mockBookings: Booking[] = [
-  { id: 'BK-001', name: 'Mohd Faizal bin Ismail', facility: 'Upper Field', date: '24 Apr 2026', time: '8:00 AM – 10:00 AM', payment: 'Full', amount: 'RM 300', status: 'Confirmed' },
-  { id: 'BK-002', name: 'Siti Nurhaliza bte Rashid', facility: 'Banquet Hall', date: '25 Apr 2026', time: '10:00 AM – 6:00 PM', payment: '50% Deposit', amount: 'RM 1,500', status: 'Pending' },
-  { id: 'BK-003', name: 'Rajesh Kumar Pillai', facility: 'Hockey Turf', date: '25 Apr 2026', time: '3:00 PM – 5:00 PM', payment: 'Full', amount: 'RM 360', status: 'Confirmed' },
-  { id: 'BK-004', name: 'Lim Wei Xian', facility: '100m Track', date: '26 Apr 2026', time: '7:00 AM – 9:00 AM', payment: '50% Deposit', amount: 'RM 80', status: 'Pending' },
-  { id: 'BK-005', name: 'Azlan bin Hamzah', facility: 'Lower Field', date: '26 Apr 2026', time: '4:00 PM – 6:00 PM', payment: 'Full', amount: 'RM 240', status: 'Confirmed' },
-  { id: 'BK-006', name: 'Priya Devi Subramaniam', facility: 'Glasshouse Hall', date: '27 Apr 2026', time: '2:00 PM – 8:00 PM', payment: '50% Deposit', amount: 'RM 900', status: 'Pending' },
-  { id: 'BK-007', name: 'Hafiz bin Othman', facility: 'Upper Field', date: '22 Apr 2026', time: '9:00 AM – 11:00 AM', payment: 'Full', amount: 'RM 300', status: 'Completed' },
-  { id: 'BK-008', name: 'Tan Mei Ling', facility: 'Hockey Turf', date: '21 Apr 2026', time: '5:00 PM – 7:00 PM', payment: '50% Deposit', amount: 'RM 180', status: 'Cancelled' },
-];
-
-const statusStyles: Record<BookingStatus, string> = {
-  Confirmed: 'bg-[#25D366]/10 text-[#25D366]',
-  Pending: 'bg-orange-400/10 text-orange-400',
-  Cancelled: 'bg-primary/10 text-primary',
-  Completed: 'bg-white/10 text-white/50',
-};
-
-const filters: Array<BookingStatus | 'All'> = ['All', 'Confirmed', 'Pending', 'Completed', 'Cancelled'];
+function fmtDate(d: string) {
+  return new Date(d + 'T00:00:00').toLocaleDateString('en-MY', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
 
 export default function BookingsTableSection() {
-  const [filter, setFilter] = useState<BookingStatus | 'All'>('All');
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState('');
   const [search, setSearch] = useState('');
+  const [payFilter, setPayFilter] = useState<'all' | 'full' | 'deposit'>('all');
+  const [expanded, setExpanded] = useState<number | null>(null);
+  const [updating, setUpdating] = useState<number | null>(null);
 
-  const filtered = mockBookings.filter((b) => {
-    const matchStatus = filter === 'All' || b.status === filter;
+  const load = async () => {
+    setLoading(true);
+    setFetchError('');
+    try {
+      setBookings(await fetchBookings());
+    } catch (e: unknown) {
+      setFetchError(e instanceof Error ? e.message : 'Failed to load bookings.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('Delete this booking permanently?')) return;
+    setUpdating(id);
+    try {
+      await deleteBooking(id);
+      setBookings((prev) => prev.filter((b) => b.id !== id));
+      if (expanded === id) setExpanded(null);
+    } catch { /* silent */ }
+    setUpdating(null);
+  };
+
+  const filtered = bookings.filter((b) => {
+    const q = search.toLowerCase();
     const matchSearch =
-      b.name.toLowerCase().includes(search.toLowerCase()) ||
-      b.facility.toLowerCase().includes(search.toLowerCase()) ||
-      b.id.toLowerCase().includes(search.toLowerCase());
-    return matchStatus && matchSearch;
+      !q ||
+      b.customer_name.toLowerCase().includes(q) ||
+      b.phone.includes(q) ||
+      String(b.id).includes(q) ||
+      b.booking_item.some((i) => i.facility_name.toLowerCase().includes(q));
+    const matchPay =
+      payFilter === 'all' ||
+      (payFilter === 'full' && b.payment_type) ||
+      (payFilter === 'deposit' && !b.payment_type);
+    return matchSearch && matchPay;
   });
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20 text-white/30 gap-3">
+        <Icon name="ArrowPathIcon" size={18} className="animate-spin" />
+        <span className="text-sm">Loading bookings…</span>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 gap-4">
+        <p className="text-white/30 text-sm">{fetchError}</p>
+        <button
+          onClick={load}
+          className="px-4 py-2 rounded-xl bg-primary/10 text-primary text-sm font-bold hover:bg-primary/20 transition-all"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div>
+      {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-5">
         <h2 className="text-xl font-black text-white">Bookings Management</h2>
-        <div className="relative w-full sm:w-64">
-          <Icon name="MagnifyingGlassIcon" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
-          <input
-            type="text"
-            placeholder="Search bookings..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-primary transition-colors"
-          />
+        <div className="flex items-center gap-3">
+          <button
+            onClick={load}
+            className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all"
+            aria-label="Refresh"
+          >
+            <Icon name="ArrowPathIcon" size={15} />
+          </button>
+          <div className="relative w-full sm:w-64">
+            <Icon name="MagnifyingGlassIcon" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+            <input
+              type="text"
+              placeholder="Search bookings..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-primary transition-colors"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Filter Tabs */}
+      {/* Payment Filter Tabs */}
       <div className="flex gap-2 flex-wrap mb-5">
-        {filters.map((f) => (
+        {([['all', 'All'], ['full', 'Full Payment'], ['deposit', '50% Deposit']] as const).map(([val, label]) => (
           <button
-            key={f}
-            onClick={() => setFilter(f)}
+            key={val}
+            onClick={() => setPayFilter(val)}
             className={`px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all ${
-              filter === f
-                ? 'bg-primary text-white' :'bg-white/5 border border-white/10 text-white/40 hover:text-white'
+              payFilter === val
+                ? 'bg-primary text-white'
+                : 'bg-white/5 border border-white/10 text-white/40 hover:text-white'
             }`}
           >
-            {f}
+            {label}
           </button>
         ))}
       </div>
@@ -85,62 +139,118 @@ export default function BookingsTableSection() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-white/5">
-                <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-white/30">Booking ID</th>
+                <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-white/30">ID</th>
                 <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-white/30">Client</th>
-                <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-white/30 hidden md:table-cell">Facility</th>
-                <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-white/30 hidden lg:table-cell">Date & Time</th>
+                <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-white/30 hidden md:table-cell">Items</th>
+                <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-white/30 hidden sm:table-cell">Payment</th>
                 <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-white/30 hidden sm:table-cell">Amount</th>
-                <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-white/30">Status</th>
                 <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-white/30">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map((b) => (
-                <tr key={b.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                  <td className="px-5 py-4">
-                    <span className="text-accent font-bold text-xs">{b.id}</span>
-                  </td>
-                  <td className="px-5 py-4">
-                    <p className="font-bold text-white text-sm">{b.name}</p>
-                    <p className="text-white/30 text-xs">{b.payment}</p>
-                  </td>
-                  <td className="px-5 py-4 hidden md:table-cell">
-                    <span className="text-white/70 text-sm">{b.facility}</span>
-                  </td>
-                  <td className="px-5 py-4 hidden lg:table-cell">
-                    <p className="text-white/70 text-xs">{b.date}</p>
-                    <p className="text-white/30 text-xs">{b.time}</p>
-                  </td>
-                  <td className="px-5 py-4 hidden sm:table-cell">
-                    <span className="font-black text-white text-sm">{b.amount}</span>
-                  </td>
-                  <td className="px-5 py-4">
-                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${statusStyles[b.status]}`}>
-                      {b.status}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4">
-                    <div className="flex gap-2">
-                      <button className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all" aria-label="View booking">
-                        <Icon name="EyeIcon" size={14} />
-                      </button>
-                      {b.status === 'Pending' && (
-                        <button className="w-8 h-8 rounded-lg bg-[#25D366]/10 flex items-center justify-center text-[#25D366] hover:bg-[#25D366]/20 transition-all" aria-label="Confirm booking">
-                          <Icon name="CheckIcon" size={14} />
-                        </button>
-                      )}
-                      {(b.status === 'Pending' || b.status === 'Confirmed') && (
-                        <button className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-all" aria-label="Cancel booking">
-                          <Icon name="XMarkIcon" size={14} />
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {filtered.map((b) => {
+                const isExpanded = expanded === b.id;
+                return (
+                  <Fragment key={b.id}>
+                    <tr
+                      className={`border-b border-white/5 hover:bg-white/[0.02] transition-colors cursor-pointer ${isExpanded ? 'bg-white/[0.03]' : ''}`}
+                      onClick={() => setExpanded(isExpanded ? null : b.id)}
+                    >
+                      <td className="px-5 py-4">
+                        <span className="text-accent font-bold text-xs">#{b.id}</span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <p className="font-bold text-white text-sm">{b.customer_name}</p>
+                        <p className="text-white/30 text-xs">{b.phone}</p>
+                      </td>
+                      <td className="px-5 py-4 hidden md:table-cell">
+                        {b.booking_item.length === 0 ? (
+                          <span className="text-white/20 text-xs">—</span>
+                        ) : (
+                          <div className="space-y-1.5">
+                            {b.booking_item.map((item) => (
+                              <div key={item.id}>
+                                <p className="text-white/70 text-sm">{item.facility_name}</p>
+                                <p className="text-white/30 text-xs">{fmtDate(item.date)} · {item.time_start}–{item.time_end}</p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-5 py-4 hidden sm:table-cell">
+                        <span className={`text-xs font-bold ${b.payment_type ? 'text-[#25D366]' : 'text-orange-400'}`}>
+                          {b.payment_type ? 'Full' : '50% Deposit'}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 hidden sm:table-cell">
+                        <span className="font-black text-white text-sm">{fmtAmount(b.total_amount)}</span>
+                      </td>
+                      <td className="px-5 py-4" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setExpanded(isExpanded ? null : b.id)}
+                            className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${isExpanded ? 'bg-primary/20 text-primary' : 'bg-white/5 text-white/40 hover:text-white hover:bg-white/10'}`}
+                            aria-label="View booking"
+                          >
+                            <Icon name="EyeIcon" size={14} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(b.id)}
+                            disabled={updating === b.id}
+                            className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/30 hover:text-primary hover:bg-primary/10 transition-all disabled:opacity-50"
+                            aria-label="Delete booking"
+                          >
+                            <Icon name="TrashIcon" size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    {isExpanded && (
+                      <tr className="bg-white/[0.02] border-b border-white/5">
+                        <td colSpan={6} className="px-5 py-4">
+                          <div className="space-y-3">
+                            <div className="flex flex-wrap gap-6 text-xs text-white/40 mb-1">
+                              <span>
+                                <span className="text-white/20 uppercase tracking-widest text-[10px] mr-1">Email:</span>
+                                {b.email}
+                              </span>
+                              <span>
+                                <span className="text-white/20 uppercase tracking-widest text-[10px] mr-1">Booked:</span>
+                                {new Date(b.created_at).toLocaleString('en-MY')}
+                              </span>
+                            </div>
+                            <div className="grid gap-2">
+                              {b.booking_item.map((item) => (
+                                <div key={item.id} className="bg-white/5 rounded-xl px-4 py-3 flex items-start justify-between flex-wrap gap-2">
+                                  <div>
+                                    <p className="text-white font-bold text-sm">{item.facility_name}</p>
+                                    <p className="text-white/40 text-xs mt-0.5">
+                                      {fmtDate(item.date)} · {item.time_start}–{item.time_end}
+                                    </p>
+                                    {item.add_ons.length > 0 && (
+                                      <div className="mt-1.5 space-y-0.5">
+                                        {item.add_ons.map((a, j) => (
+                                          <p key={j} className="text-white/30 text-xs">
+                                            + {a.name} × {a.hours}h = RM {a.subtotal.toFixed(2)}
+                                          </p>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <span className="text-white font-black text-sm">{fmtAmount(item.item_amount)}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
+                );
+              })}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-5 py-12 text-center text-white/30 text-sm">
+                  <td colSpan={6} className="px-5 py-12 text-center text-white/30 text-sm">
                     No bookings found.
                   </td>
                 </tr>
@@ -148,18 +258,15 @@ export default function BookingsTableSection() {
             </tbody>
           </table>
         </div>
-        <div className="px-5 py-4 border-t border-white/5 flex items-center justify-between">
-          <p className="text-xs text-white/30">Showing {filtered.length} of {mockBookings.length} bookings</p>
-          <div className="flex gap-2">
-            <button className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:text-white transition-all" aria-label="Previous page">
-              <Icon name="ChevronLeftIcon" size={14} />
-            </button>
-            <button className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:text-white transition-all" aria-label="Next page">
-              <Icon name="ChevronRightIcon" size={14} />
-            </button>
-          </div>
+        <div className="px-5 py-4 border-t border-white/5">
+          <p className="text-xs text-white/30">Showing {filtered.length} of {bookings.length} bookings</p>
         </div>
       </div>
     </div>
   );
 }
+
+
+
+
+

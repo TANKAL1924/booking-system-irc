@@ -76,16 +76,30 @@ export default function Header() {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks?.map((link) => (
-              <Link
-                key={link?.href}
-                to={link?.href}
-                className={`text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-200 ${
-                  pathname === link?.href
-                    ? 'text-primary' : 'text-white/50 hover:text-white'
-                }`}
-              >
-                {link?.label}
-              </Link>
+              link?.href === '/book-now' ? (
+                <Link
+                  key={link?.href}
+                  to={link?.href}
+                  className={`text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-200 px-4 py-2 rounded-full border ${
+                    pathname === link?.href
+                      ? 'border-primary text-primary bg-primary/10'
+                      : 'border-primary/50 text-primary/80 hover:border-primary hover:text-primary hover:bg-primary/10'
+                  }`}
+                >
+                  {link?.label}
+                </Link>
+              ) : (
+                <Link
+                  key={link?.href}
+                  to={link?.href}
+                  className={`text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-200 ${
+                    pathname === link?.href
+                      ? 'text-primary' : 'text-white/50 hover:text-white'
+                  }`}
+                >
+                  {link?.label}
+                </Link>
+              )
             ))}
           </div>
 
@@ -134,7 +148,9 @@ export default function Header() {
                 to={link?.href}
                 onClick={() => setMenuOpen(false)}
                 className={`flex items-center justify-between py-4 border-b border-white/5 text-lg font-bold tracking-tight transition-colors ${
-                  pathname === link?.href ? 'text-primary' : 'text-white/70 hover:text-white'
+                  link?.href === '/book-now'
+                    ? 'text-primary'
+                    : pathname === link?.href ? 'text-primary' : 'text-white/70 hover:text-white'
                 }`}
                 style={{ animationDelay: `${i * 60}ms` }}
               >

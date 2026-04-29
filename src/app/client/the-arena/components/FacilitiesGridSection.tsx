@@ -28,6 +28,7 @@ interface Facility {
   slots: FacilitySlot[] | null;
   add_on: FacilityAddOn[] | null;
   pic_contact: string | null;
+  description: string[] | null;
 }
 
 /* ── Image Gallery Modal ── */
@@ -206,6 +207,18 @@ function Carousel({ items }: { items: Facility[] }) {
                       </div>
                     )}
                   </>
+                )}
+
+                {/* Hall: description bullets */}
+                {!f.type && (f.description ?? []).length > 0 && (
+                  <div className="space-y-1 mb-2">
+                    {(f.description ?? []).map((item, i) => (
+                      <div key={i} className="flex items-start gap-2">
+                        <span className="text-primary font-black text-xs shrink-0 mt-0.5">•</span>
+                        <span className="text-white/60 text-xs leading-relaxed">{item}</span>
+                      </div>
+                    ))}
+                  </div>
                 )}
 
                 {/* Hall: contact number + WhatsApp */}

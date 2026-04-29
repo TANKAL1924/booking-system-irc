@@ -6,7 +6,7 @@ import HomeManagementSection from './home/components/HomeManagementSection';
 import AdminAnnouncementsSection from './homepage/AdminAnnouncementsSection';
 import EventManagementSection from './events/components/EventManagementSection';
 import FacilitiesManagementSection from './facilities/components/FacilitiesManagementSection';
-import BookingManagementSection from './bookings/components/BookingManagementSection';
+import BookingsTableSection from './bookings/components/BookingsTableSection';
 import PaymentInfoSection from './payments/components/PaymentInfoSection';
 import AdminTiersSection from './tiers/components/AdminTiersSection';
 import Icon from '@/components/ui/AppIcon';
@@ -49,7 +49,7 @@ export default function AdminDashboardPage() {
       case 'Facilities':
         return <FacilitiesManagementSection />;
       case 'Bookings':
-        return <BookingManagementSection />;
+        return <BookingsTableSection />;
       case 'Payments':
         return <PaymentInfoSection />;
       case 'Tiers':

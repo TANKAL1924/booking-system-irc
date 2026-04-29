@@ -22,6 +22,7 @@ const emptyForm: FacilityPayload = {
   slots: [],
   add_on: [],
   pic_contact: null,
+  description: [],
 };
 
 export default function FacilitiesManagementSection() {
@@ -70,6 +71,15 @@ export default function FacilitiesManagementSection() {
   const updateAddOn = (i: number, field: keyof FacilityAddOn, value: string | number) =>
     setForm((p) => ({ ...p, add_on: (p.add_on ?? []).map((a, idx) => idx === i ? { ...a, [field]: value } : a) }));
 
+  // Description helpers (halls only)
+  const [descInput, setDescInput] = useState('');
+  const addDescItem = () => {
+    if (!descInput.trim()) return;
+    setForm((p) => ({ ...p, description: [...(p.description ?? []), descInput.trim()] }));
+    setDescInput('');
+  };
+  const removeDescItem = (i: number) => setForm((p) => ({ ...p, description: (p.description ?? []).filter((_, idx) => idx !== i) }));
+
   const handleAddOnImageChange = async (i: number, file: File) => {
     setAddOnUploading(i);
     try {
@@ -98,6 +108,7 @@ export default function FacilitiesManagementSection() {
       slots: rest.slots ?? [],
       add_on: rest.add_on ?? [],
       pic_contact: rest.pic_contact ?? null,
+      description: rest.description ?? [],
     });
     setEditingId(id);
     setPendingFiles([]);
@@ -252,6 +263,48 @@ export default function FacilitiesManagementSection() {
                 </button>
               </div>
             </div>
+
+            {/* Description (halls only) */}
+            {!form.type && (
+              <div className="md:col-span-2">
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Hall Description (Bullet Points)</label>
+                <div className="flex gap-2 mb-2">
+                  <input
+                    type="text"
+                    value={descInput}
+                    onChange={(e) => setDescInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addDescItem(); } }}
+                    placeholder="e.g. Seats up to 500 pax"
+                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-primary transition-colors"
+                  />
+                  <button
+                    type="button"
+                    onClick={addDescItem}
+                    disabled={!descInput.trim()}
+                    className="px-4 py-2.5 rounded-xl bg-primary/10 border border-primary/30 text-primary font-bold text-xs uppercase tracking-widest hover:bg-primary/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    Add
+                  </button>
+                </div>
+                {(form.description ?? []).length > 0 && (
+                  <div className="space-y-1.5">
+                    {(form.description ?? []).map((item, i) => (
+                      <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/5">
+                        <span className="text-primary font-black text-xs shrink-0">•</span>
+                        <span className="text-white/70 text-sm flex-1">{item}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeDescItem(i)}
+                          className="text-white/20 hover:text-red-400 transition-colors shrink-0"
+                        >
+                          <Icon name="XMarkIcon" size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Status toggle */}
             <div className="flex items-center gap-3 pt-1">

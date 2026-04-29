@@ -1,34 +1,53 @@
 import { supabase } from '@/lib/supabase';
 
-export type PaymentType = '50% Deposit' | 'Full Payment';
-export type BookingStatus = 'Confirmed' | 'Pending' | 'Cancelled' | 'Completed';
+export type BookingStatus = 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed';
 
-export interface Booking {
-  id: string;
-  customerName: string;
-  phone: string;
-  arena: string;
-  date: string;
-  timeStart: string;
-  timeEnd: string;
-  paymentType: PaymentType;
-  amount: string;
-  status: BookingStatus;
+export interface BookingAddOn {
+  name: string;
+  price_per_hour: number;
+  hours: number;
+  subtotal: number;
 }
 
-// TODO: replace table/column names to match your Supabase schema
+export interface BookingItem {
+  id: number;
+  facility_id: number;
+  facility_name: string;
+  date: string;
+  time_start: string;
+  time_end: string;
+  slot_price: number;
+  add_ons: BookingAddOn[];
+  item_amount: number;
+}
+
+export interface Booking {
+  id: number;
+  customer_name: string;
+  phone: string;
+  email: string;
+  payment_type: boolean;
+  total_amount: number;
+  status: BookingStatus;
+  created_at: string;
+  booking_item: BookingItem[];
+}
+
 export async function fetchBookings(): Promise<Booking[]> {
-  const { data, error } = await supabase.from('booking').select('*').order('date', { ascending: false });
+  const { data, error } = await supabase
+    .from('booking')
+    .select('*, booking_item(*)')
+    .order('created_at', { ascending: false });
   if (error) throw new Error(error.message);
   return data as Booking[];
 }
 
-export async function updateBookingStatus(id: string, status: BookingStatus): Promise<void> {
+export async function updateBookingStatus(id: number, status: BookingStatus): Promise<void> {
   const { error } = await supabase.from('booking').update({ status }).eq('id', id);
   if (error) throw new Error(error.message);
 }
 
-export async function deleteBooking(id: string): Promise<void> {
+export async function deleteBooking(id: number): Promise<void> {
   const { error } = await supabase.from('booking').delete().eq('id', id);
   if (error) throw new Error(error.message);
 }

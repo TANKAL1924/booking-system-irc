@@ -283,8 +283,38 @@ export default function BookingFormSection() {
       return;
     }
 
-    setSubmitting(false);
-    setSubmitted(true);
+    /* call Edge Function to create Toyyib bill */
+    const facilitySummary = cart.map((i) => `${i.facilityName} ${i.date}`).join(', ');
+    const billDescription = `Arena IRC Booking #${bookingRow.id} - ${facilitySummary}`.slice(0, 100).replace(/[^a-zA-Z0-9 _]/g, '_');
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_FUNCTIONS_URL}/create-toyyib-bill`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            bookingId: bookingRow.id,
+            customerName: contact.name,
+            customerEmail: contact.email,
+            customerPhone: contact.phone,
+            amountCents: payAmount * 100,
+            description: billDescription,
+          }),
+        }
+      );
+      const data = await res.json();
+      if (!res.ok || !data.paymentUrl) {
+        setSubmitError('Booking saved but payment link failed. Please contact us with booking #' + bookingRow.id);
+        setSubmitting(false);
+        return;
+      }
+      /* redirect to Toyyib payment page */
+      window.location.href = data.paymentUrl;
+    } catch {
+      setSubmitError('Booking saved but payment redirect failed. Please contact us with booking #' + bookingRow.id);
+      setSubmitting(false);
+    }
   };
 
   const reset = () => {

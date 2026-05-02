@@ -3,6 +3,7 @@ import Icon from '@/components/ui/AppIcon';
 import {
   fetchBookings,
   deleteBooking,
+  updateBookingStatus,
 } from '../service/BookingAdmin';
 import type { Booking } from '../service/BookingAdmin';
 
@@ -24,6 +25,7 @@ export default function BookingsTableSection() {
   const [fetchError, setFetchError] = useState('');
   const [search, setSearch] = useState('');
   const [payFilter, setPayFilter] = useState<'all' | 'full' | 'deposit'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'cancelled'>('all');
   const [expanded, setExpanded] = useState<number | null>(null);
   const [updating, setUpdating] = useState<number | null>(null);
 
@@ -40,6 +42,16 @@ export default function BookingsTableSection() {
   };
 
   useEffect(() => { load(); }, []);
+
+  const handleStatusToggle = async (b: Booking) => {
+    setUpdating(b.id);
+    try {
+      const next = !b.status;
+      await updateBookingStatus(b.id, next);
+      setBookings((prev) => prev.map((x) => x.id === b.id ? { ...x, status: next } : x));
+    } catch { /* silent */ }
+    setUpdating(null);
+  };
 
   const handleDelete = async (id: number) => {
     if (!window.confirm('Delete this booking permanently?')) return;
@@ -64,7 +76,11 @@ export default function BookingsTableSection() {
       payFilter === 'all' ||
       (payFilter === 'full' && b.payment_type) ||
       (payFilter === 'deposit' && !b.payment_type);
-    return matchSearch && matchPay;
+    const matchStatus =
+      statusFilter === 'all' ||
+      (statusFilter === 'paid' && !b.status) ||
+      (statusFilter === 'cancelled' && b.status);
+    return matchSearch && matchPay && matchStatus;
   });
 
   if (loading) {
@@ -117,7 +133,7 @@ export default function BookingsTableSection() {
       </div>
 
       {/* Payment Filter Tabs */}
-      <div className="flex gap-2 flex-wrap mb-5">
+      <div className="flex gap-2 flex-wrap mb-3">
         {([['all', 'All'], ['full', 'Full Payment'], ['deposit', '50% Deposit']] as const).map(([val, label]) => (
           <button
             key={val}
@@ -125,6 +141,23 @@ export default function BookingsTableSection() {
             className={`px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all ${
               payFilter === val
                 ? 'bg-primary text-white'
+                : 'bg-white/5 border border-white/10 text-white/40 hover:text-white'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Status Filter Tabs */}
+      <div className="flex gap-2 flex-wrap mb-5">
+        {([['all', 'All Status'], ['paid', 'Paid'], ['cancelled', 'Cancelled']] as const).map(([val, label]) => (
+          <button
+            key={val}
+            onClick={() => setStatusFilter(val)}
+            className={`px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all ${
+              statusFilter === val
+                ? val === 'cancelled' ? 'bg-red-600 text-white' : 'bg-[#25D366] text-white'
                 : 'bg-white/5 border border-white/10 text-white/40 hover:text-white'
             }`}
           >
@@ -144,6 +177,7 @@ export default function BookingsTableSection() {
                 <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-white/30 hidden md:table-cell">Items</th>
                 <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-white/30 hidden sm:table-cell">Payment</th>
                 <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-white/30 hidden sm:table-cell">Amount</th>
+                <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-white/30 hidden sm:table-cell">Status</th>
                 <th className="text-left px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-white/30">Actions</th>
               </tr>
             </thead>
@@ -185,6 +219,15 @@ export default function BookingsTableSection() {
                       <td className="px-5 py-4 hidden sm:table-cell">
                         <span className="font-black text-white text-sm">{fmtAmount(b.total_amount)}</span>
                       </td>
+                      <td className="px-5 py-4 hidden sm:table-cell">
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
+                          b.status
+                            ? 'bg-red-500/10 text-red-400 border border-red-500/20'
+                            : 'bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/20'
+                        }`}>
+                          {b.status ? 'Cancelled' : 'Paid'}
+                        </span>
+                      </td>
                       <td className="px-5 py-4" onClick={(e) => e.stopPropagation()}>
                         <div className="flex gap-2">
                           <button
@@ -193,6 +236,19 @@ export default function BookingsTableSection() {
                             aria-label="View booking"
                           >
                             <Icon name="EyeIcon" size={14} />
+                          </button>
+                          <button
+                            onClick={() => handleStatusToggle(b)}
+                            disabled={updating === b.id}
+                            title={b.status ? 'Mark as Paid' : 'Mark as Cancelled'}
+                            className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all disabled:opacity-50 ${
+                              b.status
+                                ? 'bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20'
+                                : 'bg-red-500/10 text-red-400 hover:bg-red-500/20'
+                            }`}
+                            aria-label="Toggle status"
+                          >
+                            <Icon name={b.status ? 'CheckCircleIcon' : 'XCircleIcon'} size={14} />
                           </button>
                           <button
                             onClick={() => handleDelete(b.id)}
@@ -250,7 +306,7 @@ export default function BookingsTableSection() {
               })}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-5 py-12 text-center text-white/30 text-sm">
+                  <td colSpan={7} className="px-5 py-12 text-center text-white/30 text-sm">
                     No bookings found.
                   </td>
                 </tr>

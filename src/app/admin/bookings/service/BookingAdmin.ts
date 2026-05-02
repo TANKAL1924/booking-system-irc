@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase';
 
-export type BookingStatus = 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed';
+// status: false (0) = Paid, true (1) = Cancelled
 
 export interface BookingAddOn {
   name: string;
@@ -28,7 +28,7 @@ export interface Booking {
   email: string;
   payment_type: boolean;
   total_amount: number;
-  status: BookingStatus;
+  status: boolean;
   created_at: string;
   booking_item: BookingItem[];
 }
@@ -42,7 +42,7 @@ export async function fetchBookings(): Promise<Booking[]> {
   return data as Booking[];
 }
 
-export async function updateBookingStatus(id: number, status: BookingStatus): Promise<void> {
+export async function updateBookingStatus(id: number, status: boolean): Promise<void> {
   const { error } = await supabase.from('booking').update({ status }).eq('id', id);
   if (error) throw new Error(error.message);
 }

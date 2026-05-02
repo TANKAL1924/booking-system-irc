@@ -7,8 +7,8 @@ import AdminAnnouncementsSection from './homepage/AdminAnnouncementsSection';
 import EventManagementSection from './events/components/EventManagementSection';
 import FacilitiesManagementSection from './facilities/components/FacilitiesManagementSection';
 import BookingsTableSection from './bookings/components/BookingsTableSection';
-import PaymentInfoSection from './payments/components/PaymentInfoSection';
 import AdminTiersSection from './tiers/components/AdminTiersSection';
+import SportManagementSection from './sport/components/SportManagementSection';
 import Icon from '@/components/ui/AppIcon';
 
 const sectionTitles: Record<AdminSection, string> = {
@@ -16,8 +16,8 @@ const sectionTitles: Record<AdminSection, string> = {
   Events: 'Event Management',
   Facilities: 'Facilities Management',
   Bookings: 'Booking Management',
-  Payments: 'Payment Info',
   Tiers: 'Membership Tiers',
+  Sport: 'Sport Management',
 };
 
 const mobileNavItems: Array<{ label: AdminSection; icon: string }> = [
@@ -25,8 +25,8 @@ const mobileNavItems: Array<{ label: AdminSection; icon: string }> = [
   { label: 'Events', icon: 'MegaphoneIcon' },
   { label: 'Facilities', icon: 'BuildingOffice2Icon' },
   { label: 'Bookings', icon: 'CalendarDaysIcon' },
-  { label: 'Payments', icon: 'CreditCardIcon' },
   { label: 'Tiers', icon: 'StarIcon' },
+  { label: 'Sport', icon: 'TrophyIcon' },
 ];
 
 export default function AdminDashboardPage() {
@@ -50,10 +50,10 @@ export default function AdminDashboardPage() {
         return <FacilitiesManagementSection />;
       case 'Bookings':
         return <BookingsTableSection />;
-      case 'Payments':
-        return <PaymentInfoSection />;
       case 'Tiers':
         return <AdminTiersSection />;
+      case 'Sport':
+        return <SportManagementSection />;
       default:
         return null;
     }

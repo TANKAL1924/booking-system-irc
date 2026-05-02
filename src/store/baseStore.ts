@@ -14,6 +14,8 @@ export interface BaseData {
   address: string | null;
   whatsapp: string | null;
   tnc: string[] | null;
+  lat: number | null;
+  long: number | null;
 }
 
 interface BaseState {

@@ -11,6 +11,8 @@ interface AboutForm {
 interface CompanyForm {
   address: string;
   whatsapp: string;
+  lat: string;
+  long: string;
 }
 
 interface SocialForm {
@@ -26,7 +28,7 @@ export default function HomeManagementSection() {
   const [savedMsg, setSavedMsg] = useState('');
 
   const [about, setAbout] = useState<AboutForm>({ description: '', vision: '', mission: '' });
-  const [company, setCompany] = useState<CompanyForm>({ address: '', whatsapp: '' });
+  const [company, setCompany] = useState<CompanyForm>({ address: '', whatsapp: '', lat: '', long: '' });
   const [social, setSocial] = useState<SocialForm>({ facebook: '', insta: '', tiktok: '' });
   const [tnc, setTnc] = useState<string[]>([]);
   const [newTnc, setNewTnc] = useState('');
@@ -45,7 +47,7 @@ export default function HomeManagementSection() {
       .then(({ data }) => {
         if (data) {
           setAbout({ description: data.about_us ?? '', vision: data.vision ?? '', mission: data.mission ?? '' });
-          setCompany({ address: data.address ?? '', whatsapp: data.whatsapp ?? '' });
+          setCompany({ address: data.address ?? '', whatsapp: data.whatsapp ?? '', lat: data.lat != null ? String(data.lat) : '', long: data.long != null ? String(data.long) : '' });
           setSocial({ facebook: data.facebook ?? '', insta: data.insta ?? '', tiktok: data.tiktok ?? '' });
           setTnc(Array.isArray(data.tnc) ? data.tnc : []);
           setLayoutUrl(data.layout ?? null);
@@ -75,6 +77,8 @@ export default function HomeManagementSection() {
       mission: about.mission,
       address: company.address,
       whatsapp: company.whatsapp,
+      lat: company.lat !== '' ? parseFloat(company.lat) : null,
+      long: company.long !== '' ? parseFloat(company.long) : null,
     });
   };
 
@@ -252,6 +256,30 @@ export default function HomeManagementSection() {
                 placeholder="e.g. +60123456789"
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
               />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Latitude (Waze)</label>
+                <input
+                  type="number"
+                  step="any"
+                  value={company.lat}
+                  onChange={(e) => setCompany((p) => ({ ...p, lat: e.target.value }))}
+                  placeholder="e.g. 2.7257"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Longitude (Waze)</label>
+                <input
+                  type="number"
+                  step="any"
+                  value={company.long}
+                  onChange={(e) => setCompany((p) => ({ ...p, long: e.target.value }))}
+                  placeholder="e.g. 101.9329"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
+                />
+              </div>
             </div>
           </div>
           <button

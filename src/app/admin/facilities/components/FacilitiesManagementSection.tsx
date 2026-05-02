@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+ï»¿import React, { useEffect, useRef, useState } from 'react';
 import Icon from '@/components/ui/AppIcon';
 import AppImage from '@/components/ui/AppImage';
 import ConfirmModal from '@/components/ConfirmModal';
@@ -290,7 +290,7 @@ export default function FacilitiesManagementSection() {
                   <div className="space-y-1.5">
                     {(form.description ?? []).map((item, i) => (
                       <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/5">
-                        <span className="text-primary font-black text-xs shrink-0">•</span>
+                        <span className="text-primary font-black text-xs shrink-0">â€¢</span>
                         <span className="text-white text-sm flex-1">{item}</span>
                         <button
                           type="button"
@@ -614,7 +614,7 @@ export default function FacilitiesManagementSection() {
                     {f.type && ((f.slots?.length ?? 0) > 0 || (f.add_on?.length ?? 0) > 0) && (
                       <p className="text-white text-[10px] mt-0.5">
                         {f.slots?.length ?? 0} slot{(f.slots?.length ?? 0) !== 1 ? 's' : ''}
-                        {' · '}
+                        {' Â· '}
                         {f.add_on?.length ?? 0} add-on{(f.add_on?.length ?? 0) !== 1 ? 's' : ''}
                       </p>
                     )}

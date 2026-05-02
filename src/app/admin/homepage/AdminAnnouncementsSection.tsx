@@ -53,14 +53,14 @@ export default function AdminAnnouncementsSection() {
           <img src={annImageUrl} alt="Announcement" className="w-20 h-14 object-cover rounded-xl border border-white/10 shrink-0" />
         ) : (
           <div className="w-20 h-14 rounded-xl border border-dashed border-white/10 flex items-center justify-center shrink-0">
-            <Icon name="PhotoIcon" size={18} className="text-white/20" />
+            <Icon name="PhotoIcon" size={18} className="text-white" />
           </div>
         )}
         <div className="flex-1 min-w-0">
           <p className="text-white text-sm font-bold truncate">
             {annImageUrl ? 'Announcement poster uploaded' : 'No announcement poster yet'}
           </p>
-          <p className="text-white/30 text-xs mt-0.5">Shown as popup on client homepage</p>
+          <p className="text-white text-xs mt-0.5">Shown as popup on client homepage</p>
         </div>
         <label className={`flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-red-700 transition-all cursor-pointer shrink-0 ${uploadingAnn ? 'opacity-50 pointer-events-none' : ''}`}>
           <Icon name="ArrowUpTrayIcon" size={13} />

@@ -1,4 +1,4 @@
-ï»¿import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Icon from '@/components/ui/AppIcon';
 import AppImage from '@/components/ui/AppImage';
 import ConfirmModal from '@/components/ConfirmModal';
@@ -197,7 +197,7 @@ export default function FacilitiesManagementSection() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
           <h2 className="text-xl font-black text-white">Facilities Management</h2>
-          <p className="text-white/40 text-sm mt-1">Add, edit, delete or disable facilities and set per-hour pricing</p>
+          <p className="text-white text-sm mt-1">Add, edit, delete or disable facilities and set per-hour pricing</p>
         </div>
         <button
           onClick={openAdd}
@@ -232,7 +232,7 @@ export default function FacilitiesManagementSection() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Name */}
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Facility Name</label>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Facility Name</label>
               <input
                 type="text"
                 value={form.name ?? ''}
@@ -245,19 +245,19 @@ export default function FacilitiesManagementSection() {
 
             {/* Type toggle */}
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Type</label>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Type</label>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setForm((p) => ({ ...p, type: true }))}
-                  className={`px-5 py-2 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all ${form.type ? 'bg-primary text-white' : 'bg-white/5 border border-white/10 text-white/40 hover:text-white'}`}
+                  className={`px-5 py-2 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all ${form.type ? 'bg-primary text-white' : 'bg-white/5 border border-white/10 text-white hover:text-white'}`}
                 >
                   Facility
                 </button>
                 <button
                   type="button"
                   onClick={() => setForm((p) => ({ ...p, type: false }))}
-                  className={`px-5 py-2 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all ${!form.type ? 'bg-primary text-white' : 'bg-white/5 border border-white/10 text-white/40 hover:text-white'}`}
+                  className={`px-5 py-2 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all ${!form.type ? 'bg-primary text-white' : 'bg-white/5 border border-white/10 text-white hover:text-white'}`}
                 >
                   Hall
                 </button>
@@ -267,7 +267,7 @@ export default function FacilitiesManagementSection() {
             {/* Description (halls only) */}
             {!form.type && (
               <div className="md:col-span-2">
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Hall Description (Bullet Points)</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Hall Description (Bullet Points)</label>
                 <div className="flex gap-2 mb-2">
                   <input
                     type="text"
@@ -290,12 +290,12 @@ export default function FacilitiesManagementSection() {
                   <div className="space-y-1.5">
                     {(form.description ?? []).map((item, i) => (
                       <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/5">
-                        <span className="text-primary font-black text-xs shrink-0">â€¢</span>
-                        <span className="text-white/70 text-sm flex-1">{item}</span>
+                        <span className="text-primary font-black text-xs shrink-0">•</span>
+                        <span className="text-white text-sm flex-1">{item}</span>
                         <button
                           type="button"
                           onClick={() => removeDescItem(i)}
-                          className="text-white/20 hover:text-red-400 transition-colors shrink-0"
+                          className="text-white hover:text-red-400 transition-colors shrink-0"
                         >
                           <Icon name="XMarkIcon" size={14} />
                         </button>
@@ -316,12 +316,12 @@ export default function FacilitiesManagementSection() {
               >
                 <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all duration-300 ${form.status ? 'left-7' : 'left-1'}`} />
               </button>
-              <span className="text-white/60 text-sm font-medium">{form.status ? 'Enabled' : 'Disabled'}</span>
+              <span className="text-white text-sm font-medium">{form.status ? 'Enabled' : 'Disabled'}</span>
             </div>
 
             {/* Main images */}
             <div className="md:col-span-2">
-              <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Facility Images</label>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Facility Images</label>
               {/* Uploaded images */}
               {(form.pic_link ?? []).length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-3">
@@ -370,7 +370,7 @@ export default function FacilitiesManagementSection() {
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2 px-4 py-2.5 border border-white/10 bg-white/5 text-white/60 rounded-xl font-bold text-[11px] uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all"
+                  className="flex items-center gap-2 px-4 py-2.5 border border-white/10 bg-white/5 text-white rounded-xl font-bold text-[11px] uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all"
                 >
                   <Icon name="PhotoIcon" size={14} />
                   Add Images
@@ -381,7 +381,7 @@ export default function FacilitiesManagementSection() {
             {/* Contact Number (Hall only) */}
             {!form.type && (
               <div className="md:col-span-2">
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Contact Number</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Contact Number</label>
                 <input
                   type="tel"
                   value={form.pic_contact ?? ''}
@@ -395,24 +395,24 @@ export default function FacilitiesManagementSection() {
             {/* Slots (Facility only) */}
             {form.type && <div className="md:col-span-2">
               <div className="flex items-center justify-between mb-3">
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30">Time Slots</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-white">Time Slots</label>
                 <button
                   type="button"
                   onClick={addSlot}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 text-white/60 rounded-lg font-bold text-[10px] uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 text-white rounded-lg font-bold text-[10px] uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all"
                 >
                   <Icon name="PlusIcon" size={12} />
                   Add Slot
                 </button>
               </div>
               {(form.slots ?? []).length === 0 && (
-                <p className="text-white/20 text-xs">No slots added yet.</p>
+                <p className="text-white text-xs">No slots added yet.</p>
               )}
               <div className="space-y-2">
                 {(form.slots ?? []).map((slot, i) => (
                   <div key={i} className="grid grid-cols-[1fr_1fr_1fr_1fr_auto] gap-2 items-center bg-white/5 border border-white/10 rounded-xl px-4 py-3">
                     <div>
-                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-1">Start</label>
+                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white mb-1">Start</label>
                       <input
                         type="time"
                         value={slot.start}
@@ -421,7 +421,7 @@ export default function FacilitiesManagementSection() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-1">End</label>
+                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white mb-1">End</label>
                       <input
                         type="time"
                         value={slot.end}
@@ -430,7 +430,7 @@ export default function FacilitiesManagementSection() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-1">Hour</label>
+                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white mb-1">Hour</label>
                       <input
                         type="number"
                         value={slot.hour}
@@ -441,7 +441,7 @@ export default function FacilitiesManagementSection() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-1">Price (RM)</label>
+                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white mb-1">Price (RM)</label>
                       <input
                         type="number"
                         value={slot.price}
@@ -466,34 +466,34 @@ export default function FacilitiesManagementSection() {
             {/* Add-ons (Facility only) */}
             {form.type && <div className="md:col-span-2">
               <div className="flex items-center justify-between mb-3">
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30">Add-ons</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-white">Add-ons</label>
                 <button
                   type="button"
                   onClick={addAddOn}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 text-white/60 rounded-lg font-bold text-[10px] uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 text-white rounded-lg font-bold text-[10px] uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all"
                 >
                   <Icon name="PlusIcon" size={12} />
                   Add Add-on
                 </button>
               </div>
               {(form.add_on ?? []).length === 0 && (
-                <p className="text-white/20 text-xs">No add-ons added yet.</p>
+                <p className="text-white text-xs">No add-ons added yet.</p>
               )}
               <div className="space-y-2">
                 {(form.add_on ?? []).map((addon, i) => (
                   <div key={i} className="grid grid-cols-[1fr_1fr_1fr_auto_auto] gap-2 items-center bg-white/5 border border-white/10 rounded-xl px-4 py-3">
                     <div>
-                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-1">Name</label>
+                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white mb-1">Name</label>
                       <input
                         type="text"
                         value={addon.name}
                         placeholder="e.g. Equipment"
                         onChange={(e) => updateAddOn(i, 'name', e.target.value)}
-                        className="w-full bg-transparent text-white text-sm focus:outline-none placeholder:text-white/20"
+                        className="w-full bg-transparent text-white text-sm focus:outline-none placeholder:text-white"
                       />
                     </div>
                     <div>
-                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-1">Hour</label>
+                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white mb-1">Hour</label>
                       <input
                         type="number"
                         value={addon.hour_add_on}
@@ -504,7 +504,7 @@ export default function FacilitiesManagementSection() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white/20 mb-1">Price (RM)</label>
+                      <label className="block text-[9px] font-bold uppercase tracking-widest text-white mb-1">Price (RM)</label>
                       <input
                         type="number"
                         value={addon.price}
@@ -531,7 +531,7 @@ export default function FacilitiesManagementSection() {
                         type="button"
                         onClick={() => addOnFileRefs.current[i]?.click()}
                         disabled={addOnUploading === i}
-                        className="flex items-center gap-1 px-2 py-1 border border-white/10 bg-white/5 text-white/50 rounded-lg font-bold text-[9px] uppercase tracking-widest hover:text-white transition-all disabled:opacity-50"
+                        className="flex items-center gap-1 px-2 py-1 border border-white/10 bg-white/5 text-white rounded-lg font-bold text-[9px] uppercase tracking-widest hover:text-white transition-all disabled:opacity-50"
                       >
                         {addOnUploading === i ? (
                           <span className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" />
@@ -567,7 +567,7 @@ export default function FacilitiesManagementSection() {
             <button
               type="button"
               onClick={() => { setShowForm(false); setEditingId(null); setError(''); }}
-              className="px-6 py-2.5 bg-white/5 border border-white/10 text-white/40 rounded-full font-bold text-[11px] uppercase tracking-widest hover:text-white transition-all"
+              className="px-6 py-2.5 bg-white/5 border border-white/10 text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:text-white transition-all"
             >
               Cancel
             </button>
@@ -583,7 +583,7 @@ export default function FacilitiesManagementSection() {
           ))}
         </div>
       ) : facilities.length === 0 ? (
-        <p className="text-white/30 text-sm">No facilities yet. Add one above.</p>
+        <p className="text-white text-sm">No facilities yet. Add one above.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {facilities.map((f) => (
@@ -595,7 +595,7 @@ export default function FacilitiesManagementSection() {
                 </div>
               ) : (
                 <div className="h-20 bg-white/5 flex items-center justify-center">
-                  <Icon name="PhotoIcon" size={22} className="text-white/10" />
+                  <Icon name="PhotoIcon" size={22} className="text-white" />
                 </div>
               )}
 
@@ -603,7 +603,7 @@ export default function FacilitiesManagementSection() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${f.status ? 'bg-[#25D366]/10 text-[#25D366]' : 'bg-white/10 text-white/30'}`}>
+                      <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${f.status ? 'bg-[#25D366]/10 text-[#25D366]' : 'bg-white/10 text-white'}`}>
                         {f.status ? 'Active' : 'Disabled'}
                       </span>
                       <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-primary/10 text-primary">
@@ -612,14 +612,14 @@ export default function FacilitiesManagementSection() {
                     </div>
                     <p className="text-white font-black text-base truncate">{f.name}</p>
                     {f.type && ((f.slots?.length ?? 0) > 0 || (f.add_on?.length ?? 0) > 0) && (
-                      <p className="text-white/30 text-[10px] mt-0.5">
+                      <p className="text-white text-[10px] mt-0.5">
                         {f.slots?.length ?? 0} slot{(f.slots?.length ?? 0) !== 1 ? 's' : ''}
-                        {' Â· '}
+                        {' · '}
                         {f.add_on?.length ?? 0} add-on{(f.add_on?.length ?? 0) !== 1 ? 's' : ''}
                       </p>
                     )}
                     {!f.type && f.pic_contact && (
-                      <p className="text-white/30 text-[10px] mt-0.5 flex items-center gap-1">
+                      <p className="text-white text-[10px] mt-0.5 flex items-center gap-1">
                         <Icon name="PhoneIcon" size={10} />
                         {f.pic_contact}
                       </p>
@@ -638,7 +638,7 @@ export default function FacilitiesManagementSection() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => openEdit(f)}
-                      className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all"
+                      className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white hover:text-white hover:bg-white/10 transition-all"
                       aria-label="Edit"
                     >
                       <Icon name="PencilSquareIcon" size={13} />

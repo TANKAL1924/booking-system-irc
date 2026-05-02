@@ -93,7 +93,7 @@ function GalleryModal({ images, name, onClose }: { images: string[]; name: strin
         )}
 
         {/* Counter */}
-        <p className="text-white/30 text-xs text-center pb-4 shrink-0">{active + 1} / {images.length}</p>
+        <p className="text-white text-xs text-center pb-4 shrink-0">{active + 1} / {images.length}</p>
       </div>
   );
 }
@@ -131,7 +131,7 @@ function Carousel({ items }: { items: Facility[] }) {
         {items.length > 1 && (
           <button
             onClick={() => scroll('left')}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-9 h-9 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/20 transition-all opacity-100 sm:opacity-0 sm:group-hover/carousel:opacity-100"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-9 h-9 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white hover:text-white hover:bg-white/20 transition-all opacity-100 sm:opacity-0 sm:group-hover/carousel:opacity-100"
             aria-label="Previous"
           >
             <Icon name="ChevronLeftIcon" size={16} />
@@ -166,7 +166,7 @@ function Carousel({ items }: { items: Facility[] }) {
                   />
                 ) : (
                   <div className="w-full h-full bg-white/5 flex items-center justify-center">
-                    <span className="text-white/20 text-xs font-bold uppercase tracking-widest">No Image</span>
+                    <span className="text-white text-xs font-bold uppercase tracking-widest">No Image</span>
                   </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#141414] to-transparent" />
@@ -175,7 +175,7 @@ function Carousel({ items }: { items: Facility[] }) {
                 </span>
                 {/* Photo count badge */}
                 {(f.pic_link ?? []).length > 1 && (
-                  <span className="absolute bottom-3 right-3 flex items-center gap-1 text-[9px] font-bold text-white/70 bg-black/50 rounded-full px-2 py-0.5">
+                  <span className="absolute bottom-3 right-3 flex items-center gap-1 text-[9px] font-bold text-white bg-black/50 rounded-full px-2 py-0.5">
                     <Icon name="PhotoIcon" size={10} />
                     {f.pic_link!.length}
                   </span>
@@ -190,7 +190,7 @@ function Carousel({ items }: { items: Facility[] }) {
                   <>
                     {(f.add_on ?? []).length > 0 && (
                       <div>
-                        <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 mb-1.5">Add-ons</p>
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-white mb-1.5">Add-ons</p>
                         <div className="space-y-1.5">
                           {(f.add_on ?? []).map((a, i) => (
                             <div key={i} className="flex items-center gap-2">
@@ -199,7 +199,7 @@ function Carousel({ items }: { items: Facility[] }) {
                                   <AppImage src={a.pic_add_on} alt={a.name} fill className="object-cover" />
                                 </div>
                               )}
-                              <span className="text-white/70 text-xs flex-1 truncate">{a.name} · {a.hour_add_on}hr</span>
+                              <span className="text-white text-xs flex-1 truncate">{a.name} · {a.hour_add_on}hr</span>
                               <span className="text-accent font-bold text-xs shrink-0">RM {a.price}</span>
                             </div>
                           ))}
@@ -215,7 +215,7 @@ function Carousel({ items }: { items: Facility[] }) {
                     {(f.description ?? []).map((item, i) => (
                       <div key={i} className="flex items-start gap-2">
                         <span className="text-primary font-black text-xs shrink-0 mt-0.5">•</span>
-                        <span className="text-white/60 text-xs leading-relaxed">{item}</span>
+                        <span className="text-white text-xs leading-relaxed">{item}</span>
                       </div>
                     ))}
                   </div>
@@ -225,8 +225,8 @@ function Carousel({ items }: { items: Facility[] }) {
                 {!f.type && f.pic_contact && (
                   <div className="flex flex-col gap-2 mt-auto">
                     <div className="flex items-center gap-2">
-                      <Icon name="PhoneIcon" size={13} className="text-white/40 shrink-0" />
-                      <span className="text-white/70 text-sm">{f.pic_contact}</span>
+                      <Icon name="PhoneIcon" size={13} className="text-white shrink-0" />
+                      <span className="text-white text-sm">{f.pic_contact}</span>
                     </div>
                     <a
                       href={`https://wa.me/${f.pic_contact.replace(/\D/g, '')}`}
@@ -249,7 +249,7 @@ function Carousel({ items }: { items: Facility[] }) {
         {items.length > 1 && (
           <button
             onClick={() => scroll('right')}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-9 h-9 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/20 transition-all opacity-100 sm:opacity-0 sm:group-hover/carousel:opacity-100"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-9 h-9 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-white hover:text-white hover:bg-white/20 transition-all opacity-100 sm:opacity-0 sm:group-hover/carousel:opacity-100"
             aria-label="Next"
           >
             <Icon name="ChevronRightIcon" size={16} />
@@ -299,7 +299,7 @@ export default function FacilitiesGridSection() {
             ))}
           </div>
         ) : facilities.length === 0 ? (
-          <p className="text-white/30 text-sm">No venues available at the moment.</p>
+          <p className="text-white text-sm">No venues available at the moment.</p>
         ) : (
           <div className="space-y-16">
             {/* Arena Layout */}
@@ -329,7 +329,7 @@ export default function FacilitiesGridSection() {
               <div>
                 <h3 className="text-white font-black text-xl mb-5 flex items-center gap-3">
                   Facilities
-                  <span className="text-white/20 font-normal text-sm">{facilityItems.length}</span>
+                  <span className="text-white font-normal text-sm">{facilityItems.length}</span>
                 </h3>
                 <Carousel items={facilityItems} />
               </div>
@@ -340,7 +340,7 @@ export default function FacilitiesGridSection() {
               <div>
                 <h3 className="text-white font-black text-xl mb-5 flex items-center gap-3">
                   Halls
-                  <span className="text-white/20 font-normal text-sm">{hallItems.length}</span>
+                  <span className="text-white font-normal text-sm">{hallItems.length}</span>
                 </h3>
                 <Carousel items={hallItems} />
               </div>

@@ -78,7 +78,7 @@ export default function SportManagementSection() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-black text-white">Sport Management</h2>
-          <p className="text-white/40 text-sm mt-1">Add and manage sports offered at the arena</p>
+          <p className="text-white text-sm mt-1">Add and manage sports offered at the arena</p>
         </div>
         <button
           onClick={openAdd}
@@ -99,7 +99,7 @@ export default function SportManagementSection() {
             <p className="text-red-400 text-xs font-bold">{error}</p>
           )}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Sport Name</label>
+            <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Sport Name</label>
             <input
               type="text"
               required
@@ -110,7 +110,7 @@ export default function SportManagementSection() {
             />
           </div>
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">
+            <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">
               Description (one bullet per line)
             </label>
             <textarea
@@ -132,7 +132,7 @@ export default function SportManagementSection() {
             <button
               type="button"
               onClick={() => setShowForm(false)}
-              className="px-6 py-2.5 bg-white/5 border border-white/10 text-white/50 rounded-full font-bold text-[11px] uppercase tracking-widest hover:text-white transition-all"
+              className="px-6 py-2.5 bg-white/5 border border-white/10 text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:text-white transition-all"
             >
               Cancel
             </button>
@@ -147,8 +147,8 @@ export default function SportManagementSection() {
         </div>
       ) : sports.length === 0 ? (
         <div className="glass-card rounded-2xl p-12 text-center">
-          <Icon name="TrophyIcon" size={32} className="text-white/10 mx-auto mb-3" />
-          <p className="text-white/30 text-sm font-bold">No sports added yet.</p>
+          <Icon name="TrophyIcon" size={32} className="text-white mx-auto mb-3" />
+          <p className="text-white text-sm font-bold">No sports added yet.</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -158,7 +158,7 @@ export default function SportManagementSection() {
                 <p className="font-bold text-white text-sm mb-2">{s.sport}</p>
                 <ul className="space-y-1">
                   {(s.description ?? []).map((bullet, i) => (
-                    <li key={i} className="flex items-start gap-2 text-xs text-white/50">
+                    <li key={i} className="flex items-start gap-2 text-xs text-white">
                       <span className="text-primary mt-0.5">•</span>
                       {bullet}
                     </li>
@@ -168,14 +168,14 @@ export default function SportManagementSection() {
               <div className="flex gap-2 shrink-0">
                 <button
                   onClick={() => openEdit(s)}
-                  className="p-2 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white transition-colors"
+                  className="p-2 rounded-xl bg-white/5 border border-white/10 text-white hover:text-white transition-colors"
                 >
                   <Icon name="PencilSquareIcon" size={14} />
                 </button>
                 <button
                   onClick={() => handleDelete(s.id)}
                   disabled={deletingId === s.id}
-                  className="p-2 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-red-400 transition-colors disabled:opacity-50"
+                  className="p-2 rounded-xl bg-white/5 border border-white/10 text-white hover:text-red-400 transition-colors disabled:opacity-50"
                 >
                   <Icon name="TrashIcon" size={14} />
                 </button>

@@ -3,6 +3,7 @@ import Footer from '@/components/Footer';
 import AboutBentoSection from './components/AboutBentoSection';
 import EventsSection from './components/EventsSection';
 import AnnouncementsSection from './components/AnnouncementsSection';
+import SportSection from '@/app/client/membership/components/SportSection';
 
 export default function HomepagePage() {
   return (
@@ -13,6 +14,7 @@ export default function HomepagePage() {
       <AboutBentoSection />
       <AnnouncementsSection />
       <EventsSection />
+      <SportSection />
       <Footer />
     </main>
   );

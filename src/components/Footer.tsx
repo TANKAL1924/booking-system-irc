@@ -27,7 +27,7 @@ export default function Footer() {
           <Link to="/homepage" className="flex items-center gap-3">
             <AppLogo size={48} />
           </Link>
-          <p className="text-[11px] font-black tracking-[0.2em] uppercase text-white/40">
+          <p className="text-[11px] font-black tracking-[0.2em] uppercase text-white">
             ARENA IRC
           </p>
           <div className="flex items-center gap-4">
@@ -38,7 +38,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={s.label}
-                className="w-9 h-9 flex items-center justify-center rounded-full border border-white/10 text-white/40 hover:text-white hover:border-white/30 transition-all duration-200"
+                className="w-9 h-9 flex items-center justify-center rounded-full border border-white/10 text-white hover:text-white hover:border-white/30 transition-all duration-200"
               >
                 <Icon name={s.icon as 'GlobeAltIcon'} size={15} />
               </a>
@@ -56,7 +56,7 @@ export default function Footer() {
               <Link
                 key={link.label}
                 to={link.href}
-                className="text-[11px] font-bold tracking-[0.12em] uppercase text-white/40 hover:text-white transition-colors duration-200"
+                className="text-[11px] font-bold tracking-[0.12em] uppercase text-white hover:text-white transition-colors duration-200"
               >
                 {link.label}
               </Link>
@@ -72,12 +72,12 @@ export default function Footer() {
           <div className="flex flex-col gap-4">
             <a
               href="mailto:info@arenairc.com"
-              className="flex items-center gap-3 text-[11px] font-bold tracking-[0.1em] uppercase text-white/40 hover:text-white transition-colors"
+              className="flex items-center gap-3 text-[11px] font-bold tracking-[0.1em] uppercase text-white hover:text-white transition-colors"
             >
               <Icon name="EnvelopeIcon" size={15} className="text-primary shrink-0" />
               info@arenairc.com
             </a>
-            <div className="flex items-start gap-3 text-[11px] font-bold tracking-[0.1em] uppercase text-white/40">
+            <div className="flex items-start gap-3 text-[11px] font-bold tracking-[0.1em] uppercase text-white">
               <Icon name="MapPinIcon" size={15} className="text-primary shrink-0 mt-0.5" />
               <span>{base?.address ?? 'Arena IRC, Negeri Sembilan Darul Khusus'}</span>
             </div>
@@ -85,7 +85,7 @@ export default function Footer() {
               href={base?.whatsapp ?? 'https://wa.me/601112345678'}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 text-[11px] font-bold tracking-[0.1em] uppercase text-white/40 hover:text-white transition-colors"
+              className="flex items-center gap-3 text-[11px] font-bold tracking-[0.1em] uppercase text-white hover:text-white transition-colors"
             >
               <Icon name="PhoneIcon" size={15} className="text-primary shrink-0" />
               {base?.whatsapp ?? '+601112345678'}
@@ -96,7 +96,7 @@ export default function Footer() {
       </div>
 
       <div className="max-w-7xl mx-auto mt-6 pt-4 border-t border-white/5">
-        <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest text-center">
+        <p className="text-[10px] text-white font-bold uppercase tracking-widest text-center">
           © 2026 Arena IRC · All Rights Reserved
         </p>
       </div>

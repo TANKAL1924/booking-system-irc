@@ -12,8 +12,12 @@ interface Sport {
 export default function SportSection() {
   const [sports, setSports] = useState<Sport[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sectionDesc, setSectionDesc] = useState<string>('');
 
   useEffect(() => {
+    supabase.from('base').select('sport_description').eq('id', 1).single().then(({ data }) => {
+      if (data) setSectionDesc(data.sport_description ?? '');
+    });
     supabase.from('sport').select('*').order('id').then(({ data }) => {
       if (data) setSports(data as Sport[]);
       setLoading(false);
@@ -25,13 +29,17 @@ export default function SportSection() {
   return (
     <section className="py-20 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto w-full">
-        <div className="mb-12 text-center">
+        <div className="mb-12">
           <span className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-3 block">
             What We Offer
           </span>
           <h2 className="font-black text-4xl md:text-6xl tracking-tighter leading-none text-white">
-            SPORTS <span className="gradient-text-brand">SECTION</span>
+            IRC NEGERI SEMBILAN<br />
+            <span className="gradient-text-brand">SPORTS SECTION</span>
           </h2>
+          {sectionDesc && (
+            <p className="mt-4 text-white text-sm md:text-base max-w-2xl leading-relaxed">{sectionDesc}</p>
+          )}
         </div>
 
         {loading ? (
@@ -57,7 +65,7 @@ export default function SportSection() {
                 </div>
                 <ul className="space-y-2">
                   {(s.description ?? []).map((bullet, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-sm text-white/60">
+                    <li key={i} className="flex items-start gap-2.5 text-sm text-white">
                       <Icon name="CheckCircleIcon" size={14} className="text-accent shrink-0 mt-0.5" variant="solid" />
                       {bullet}
                     </li>

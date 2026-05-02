@@ -46,7 +46,7 @@ export default function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps
       <div className="relative w-full max-w-md glass-card rounded-3xl p-8 border border-white/10 shadow-2xl">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all"
+          className="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:text-white hover:bg-white/10 transition-all"
           aria-label="Close"
         >
           <Icon name="XMarkIcon" size={16} />
@@ -57,23 +57,23 @@ export default function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps
             <Icon name="LockClosedIcon" size={22} className="text-primary" />
           </div>
           <h2 className="text-2xl font-black text-white">Admin Login</h2>
-          <p className="text-white/40 text-sm mt-1">Sign in to access the Arena IRC admin panel</p>
+          <p className="text-white text-sm mt-1">Sign in to access the Arena IRC admin panel</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Email</label>
+            <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@arenairc.com"
               required
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-primary transition-colors"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
             />
           </div>
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Password</label>
+            <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Password</label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -81,12 +81,12 @@ export default function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pr-12 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-primary transition-colors"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pr-12 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white hover:text-white transition-colors"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 <Icon name={showPassword ? 'EyeSlashIcon' : 'EyeIcon'} size={16} />
@@ -120,7 +120,7 @@ export default function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps
           </button>
         </form>
 
-        <p className="text-center text-white/20 text-xs mt-6">
+        <p className="text-center text-white text-xs mt-6">
           Arena IRC Admin Panel · Restricted Access
         </p>
       </div>

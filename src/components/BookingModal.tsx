@@ -36,7 +36,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
           </div>
           <button
             onClick={onClose}
-            className="flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-white/5 text-white/60 hover:text-white hover:bg-white/10 transition-all"
+            className="flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-white/5 text-white hover:text-white hover:bg-white/10 transition-all"
             aria-label="Close booking form"
           >
             <Icon name="XMarkIcon" size={20} />

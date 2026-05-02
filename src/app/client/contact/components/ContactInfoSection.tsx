@@ -48,7 +48,7 @@ export default function ContactInfoSection() {
                   <Icon name="MapPinIcon" size={18} className="text-primary" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-1">Address</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-white mb-1">Address</p>
                   <p className="text-white text-sm leading-relaxed font-medium">
                     {base?.address ?? 'Arena IRC, Jalan Stadium, 70200 Seremban, Negeri Sembilan, Malaysia'}
                   </p>
@@ -83,10 +83,10 @@ export default function ContactInfoSection() {
                     className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-white/15 transition-all group"
                   >
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-0.5">{s?.label}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-white mb-0.5">{s?.label}</p>
                       <p className={`text-sm font-bold ${s?.color}`}>{s?.handle}</p>
                     </div>
-                    <Icon name="ArrowTopRightOnSquareIcon" size={16} className="text-white/20 group-hover:text-white/50 transition-colors" />
+                    <Icon name="ArrowTopRightOnSquareIcon" size={16} className="text-white group-hover:text-white transition-colors" />
                   </a>
                 ))}
               </div>

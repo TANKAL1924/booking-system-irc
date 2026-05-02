@@ -108,18 +108,18 @@ export default function AdminTiersSection() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-1.5">Tier Name</label>
+              <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-1.5">Tier Name</label>
               <input
                 type="text"
                 placeholder="e.g. Pro"
                 value={form.name}
                 onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
                 required
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-primary transition-colors"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
               />
             </div>
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-1.5">Price (RM)</label>
+              <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-1.5">Price (RM)</label>
               <input
                 type="number"
                 placeholder="e.g. 120"
@@ -128,43 +128,43 @@ export default function AdminTiersSection() {
                 required
                 min="0"
                 step="0.01"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-primary transition-colors"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-1.5">Description</label>
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-1.5">Description</label>
             <input
               type="text"
               placeholder="e.g. Perfect for casual players"
               value={form.description}
               onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-primary transition-colors"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
             />
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-1.5">WhatsApp Number</label>
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-1.5">WhatsApp Number</label>
             <input
               type="text"
               placeholder="e.g. 60123456789"
               value={form.wa_number}
               onChange={(e) => setForm((p) => ({ ...p, wa_number: e.target.value }))}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-primary transition-colors"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
             />
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-widest text-white/30 mb-1.5">
-              Benefits <span className="normal-case text-white/20 font-medium">(one per line)</span>
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-1.5">
+              Benefits <span className="normal-case text-white font-medium">(one per line)</span>
             </label>
             <textarea
               rows={5}
               placeholder={"10% discount on bookings\nPriority booking (3 days)\nFree parking"}
               value={form.list_details}
               onChange={(e) => setForm((p) => ({ ...p, list_details: e.target.value }))}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-primary transition-colors resize-none"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors resize-none"
             />
           </div>
 
@@ -183,7 +183,7 @@ export default function AdminTiersSection() {
             <button
               type="button"
               onClick={() => setShowForm(false)}
-              className="px-6 py-2.5 bg-white/5 border border-white/10 text-white/60 rounded-full font-bold text-[11px] uppercase tracking-widest hover:text-white transition-all"
+              className="px-6 py-2.5 bg-white/5 border border-white/10 text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:text-white transition-all"
             >
               Cancel
             </button>
@@ -197,7 +197,7 @@ export default function AdminTiersSection() {
           <span className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
         </div>
       ) : tiers.length === 0 ? (
-        <div className="glass-card rounded-2xl p-10 text-center text-white/30 text-sm font-medium">
+        <div className="glass-card rounded-2xl p-10 text-center text-white text-sm font-medium">
           No tiers yet. Add one above.
         </div>
       ) : (
@@ -207,15 +207,15 @@ export default function AdminTiersSection() {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-white font-black text-lg">{tier.name}</p>
-                  <p className="text-accent font-black text-2xl">RM {tier.price}<span className="text-white/30 text-sm font-medium">/year</span></p>
+                  <p className="text-accent font-black text-2xl">RM {tier.price}<span className="text-white text-sm font-medium">/year</span></p>
                   {tier.description && (
-                    <p className="text-white/50 text-xs mt-1">{tier.description}</p>
+                    <p className="text-white text-xs mt-1">{tier.description}</p>
                   )}
                 </div>
                 <div className="flex gap-2 shrink-0">
                   <button
                     onClick={() => openEdit(tier)}
-                    className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all"
+                    className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white hover:text-white hover:bg-white/10 transition-all"
                     aria-label="Edit tier"
                   >
                     <Icon name="PencilSquareIcon" size={14} />
@@ -231,14 +231,14 @@ export default function AdminTiersSection() {
               </div>
 
               {tier.wa_number && (
-                <p className="text-[10px] font-bold uppercase tracking-widest text-white/30">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-white">
                   WA: <span className="text-[#25D366] normal-case tracking-normal font-medium">{tier.wa_number}</span>
                 </p>
               )}
 
               <ul className="space-y-2 flex-1">
                 {(tier.list_details ?? []).map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 text-xs text-white/60">
+                  <li key={i} className="flex items-start gap-2 text-xs text-white">
                     <Icon name="CheckCircleIcon" size={13} className="text-accent shrink-0 mt-0.5" variant="solid" />
                     {item}
                   </li>

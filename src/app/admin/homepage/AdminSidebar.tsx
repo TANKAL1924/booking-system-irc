@@ -34,7 +34,7 @@ export default function AdminSidebar({ onMobileNavigate }: AdminSidebarProps) {
     <aside className="hidden lg:flex flex-col w-60 shrink-0 border-r border-white/5 min-h-[calc(100vh-80px)] sticky top-20 bg-[#0A0A0A]">
       <div className="p-4 border-b border-white/5">
         <div className="px-3 py-2">
-          <p className="text-[9px] font-bold uppercase tracking-widest text-white/20 mb-1">Admin Panel</p>
+          <p className="text-[9px] font-bold uppercase tracking-widest text-white mb-1">Admin Panel</p>
           <p className="text-sm font-bold text-white">Arena IRC</p>
         </div>
       </div>
@@ -45,13 +45,13 @@ export default function AdminSidebar({ onMobileNavigate }: AdminSidebarProps) {
             onClick={() => { navigate(`/admin-dashboard/${item.label.toLowerCase()}`); onMobileNavigate?.(); }}
             className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold transition-all ${
               active === item.label
-                ? 'bg-primary/15 text-primary border border-primary/20' :'text-white/40 hover:text-white hover:bg-white/5'
+                ? 'bg-primary/15 text-primary border border-primary/20' :'text-white hover:text-white hover:bg-white/5'
             }`}
           >
             <Icon name={item.icon as 'HomeIcon'} size={17} />
             <div className="text-left">
               <p className="leading-tight">{item.label}</p>
-              <p className={`text-[9px] font-medium leading-tight mt-0.5 ${active === item.label ? 'text-primary/60' : 'text-white/20'}`}>
+              <p className={`text-[9px] font-medium leading-tight mt-0.5 ${active === item.label ? 'text-primary/60' : 'text-white'}`}>
                 {item.description}
               </p>
             </div>

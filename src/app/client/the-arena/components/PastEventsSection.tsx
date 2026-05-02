@@ -53,8 +53,9 @@ function EventModal({ event, onClose }: { event: Event; onClose: () => void }) {
   );
 }
 
-export default function EventsSection() {
+export default function PastEventsSection() {
   const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Event | null>(null);
 
   useEffect(() => {
@@ -62,10 +63,12 @@ export default function EventsSection() {
     supabase
       .from('events')
       .select('*')
-      .gte('start_date', today)
-      .order('start_date', { ascending: true })
-      .limit(3)
-      .then(({ data }) => { if (data) setEvents(data); });
+      .lt('start_date', today)
+      .order('start_date', { ascending: false })
+      .then(({ data }) => {
+        if (data) setEvents(data);
+        setLoading(false);
+      });
   }, []);
 
   const formatDate = (d: string) =>
@@ -75,6 +78,8 @@ export default function EventsSection() {
     if (!end || end === start) return formatDate(start);
     return `${formatDate(start)} – ${formatDate(end)}`;
   };
+
+  if (!loading && events.length === 0) return null;
 
   return (
     <section className="py-20 px-6">
@@ -86,21 +91,21 @@ export default function EventsSection() {
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
         >
-        <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-          <div>
+          <div className="mb-12">
             <span className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-3 block">
-              What's Next
+              History
             </span>
             <h2 className="font-black text-4xl md:text-6xl tracking-tighter leading-none text-white">
-              UPCOMING<br />
+              PAST<br />
               <span className="gradient-text-brand">EVENTS</span>
             </h2>
           </div>
-        </div>
         </motion.div>
 
-        {events.length === 0 ? (
-          <p className="text-white text-sm text-center py-12">No upcoming events at the moment. Check back soon.</p>
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <span className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {events.map((ev, idx) => (
@@ -111,17 +116,17 @@ export default function EventsSection() {
                 initial={{ opacity: 0, y: 32 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-60px' }}
-                transition={{ duration: 0.5, delay: idx * 0.1, ease: 'easeOut' }}
+                transition={{ duration: 0.5, delay: (idx % 3) * 0.1, ease: 'easeOut' }}
               >
-              <div className="relative h-52 overflow-hidden bg-white/5">
+                <div className="relative h-52 overflow-hidden bg-white/5">
                   {ev.pic_link ? (
                     <img
                       src={ev.pic_link}
                       alt={ev.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 grayscale"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-white text-5xl font-black">
+                    <div className="w-full h-full flex items-center justify-center text-white text-5xl font-black opacity-30">
                       IRC
                     </div>
                   )}

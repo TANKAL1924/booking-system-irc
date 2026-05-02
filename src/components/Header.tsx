@@ -67,8 +67,8 @@ export default function Header() {
               <span className="font-bold text-sm tracking-tight text-white leading-tight">
                 ARENA <span className="text-primary">IRC</span>
               </span>
-              <span className="text-[9px] font-bold tracking-[0.15em] uppercase text-white/30 hidden sm:block">
-                Negeri Sembilan Club
+              <span className="text-[9px] font-bold tracking-[0.15em] uppercase text-white hidden sm:block">
+                Negeri Sembilan
               </span>
             </div>
           </Link>
@@ -94,7 +94,7 @@ export default function Header() {
                   to={link?.href}
                   className={`text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-200 ${
                     pathname === link?.href
-                      ? 'text-primary' : 'text-white/50 hover:text-white'
+                      ? 'text-primary' : 'text-white hover:text-white'
                   }`}
                 >
                   {link?.label}
@@ -107,7 +107,7 @@ export default function Header() {
           <div className="hidden md:flex items-center gap-3">
               <button
                 onClick={() => setLoginOpen(true)}
-                className="flex items-center gap-2 px-4 py-2.5 border border-white/10 bg-white/5 text-white/60 rounded-full font-bold text-[11px] uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all duration-300"
+                className="flex items-center gap-2 px-4 py-2.5 border border-white/10 bg-white/5 text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all duration-300"
               >
                 <Icon name="LockClosedIcon" size={13} />
                 Admin
@@ -150,19 +150,19 @@ export default function Header() {
                 className={`flex items-center justify-between py-4 border-b border-white/5 text-lg font-bold tracking-tight transition-colors ${
                   link?.href === '/book-now'
                     ? 'text-primary'
-                    : pathname === link?.href ? 'text-primary' : 'text-white/70 hover:text-white'
+                    : pathname === link?.href ? 'text-primary' : 'text-white hover:text-white'
                 }`}
                 style={{ animationDelay: `${i * 60}ms` }}
               >
                 {link?.label}
-                <Icon name="ChevronRightIcon" size={18} className="text-white/20" />
+                <Icon name="ChevronRightIcon" size={18} className="text-white" />
               </Link>
             ))}
             <div className="mt-6 space-y-3">
               {!user && (
                 <button
                   onClick={() => { setMenuOpen(false); setLoginOpen(true); }}
-                  className="flex items-center justify-center gap-2 w-full py-4 border border-white/10 bg-white/5 text-white/60 rounded-full font-bold text-sm uppercase tracking-widest hover:text-white transition-all"
+                  className="flex items-center justify-center gap-2 w-full py-4 border border-white/10 bg-white/5 text-white rounded-full font-bold text-sm uppercase tracking-widest hover:text-white transition-all"
                 >
                   <Icon name="LockClosedIcon" size={15} />
                   Admin Login
@@ -178,7 +178,7 @@ export default function Header() {
             </div>
           </div>
           <div className="px-6 py-6 border-t border-white/5">
-            <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest text-center">
+            <p className="text-[10px] text-white font-bold uppercase tracking-widest text-center">
               Mon–Sat · 8:00 AM – 5:30 PM
             </p>
           </div>

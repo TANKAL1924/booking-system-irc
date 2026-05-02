@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Icon from '@/components/ui/AppIcon';
 import { supabase } from '@/lib/supabase';
 
@@ -6,6 +6,7 @@ interface AboutForm {
   description: string;
   vision: string;
   mission: string;
+  sport_description: string;
 }
 
 interface CompanyForm {
@@ -27,7 +28,7 @@ export default function HomeManagementSection() {
   const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState('');
 
-  const [about, setAbout] = useState<AboutForm>({ description: '', vision: '', mission: '' });
+  const [about, setAbout] = useState<AboutForm>({ description: '', vision: '', mission: '', sport_description: '' });
   const [company, setCompany] = useState<CompanyForm>({ address: '', whatsapp: '', lat: '', long: '' });
   const [social, setSocial] = useState<SocialForm>({ facebook: '', insta: '', tiktok: '' });
   const [tnc, setTnc] = useState<string[]>([]);
@@ -46,7 +47,7 @@ export default function HomeManagementSection() {
       .single()
       .then(({ data }) => {
         if (data) {
-          setAbout({ description: data.about_us ?? '', vision: data.vision ?? '', mission: data.mission ?? '' });
+          setAbout({ description: data.about_us ?? '', vision: data.vision ?? '', mission: data.mission ?? '', sport_description: data.sport_description ?? '' });
           setCompany({ address: data.address ?? '', whatsapp: data.whatsapp ?? '', lat: data.lat != null ? String(data.lat) : '', long: data.long != null ? String(data.long) : '' });
           setSocial({ facebook: data.facebook ?? '', insta: data.insta ?? '', tiktok: data.tiktok ?? '' });
           setTnc(Array.isArray(data.tnc) ? data.tnc : []);
@@ -75,6 +76,7 @@ export default function HomeManagementSection() {
       about_us: about.description,
       vision: about.vision,
       mission: about.mission,
+      sport_description: about.sport_description,
       address: company.address,
       whatsapp: company.whatsapp,
       lat: company.lat !== '' ? parseFloat(company.lat) : null,
@@ -176,7 +178,7 @@ export default function HomeManagementSection() {
     <div>
       <div className="mb-6">
         <h2 className="text-xl font-black text-white">Home Management</h2>
-        <p className="text-white/40 text-sm mt-1">Edit homepage content, company information and social media links</p>
+        <p className="text-white text-sm mt-1">Edit homepage content, company information and social media links</p>
       </div>
 
       {savedMsg && (
@@ -194,7 +196,7 @@ export default function HomeManagementSection() {
             onClick={() => setActiveTab(t.key)}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-[11px] font-bold uppercase tracking-widest transition-all whitespace-nowrap ${
               activeTab === t.key
-                ? 'bg-primary text-white' : 'bg-white/5 border border-white/10 text-white/40 hover:text-white'
+                ? 'bg-primary text-white' : 'bg-white/5 border border-white/10 text-white hover:text-white'
             }`}
           >
             <Icon name={t.icon as 'InformationCircleIcon'} size={13} />
@@ -207,7 +209,7 @@ export default function HomeManagementSection() {
       {activeTab === 'about' && (
         <form onSubmit={handleSaveAbout} className="glass-card rounded-2xl p-6 space-y-5">
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">About Us</label>
+            <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">About Us</label>
             <textarea
               value={about.description}
               onChange={(e) => setAbout((p) => ({ ...p, description: e.target.value }))}
@@ -215,9 +217,19 @@ export default function HomeManagementSection() {
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors resize-none"
             />
           </div>
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Sport Section Description</label>
+            <textarea
+              value={about.sport_description}
+              onChange={(e) => setAbout((p) => ({ ...p, sport_description: e.target.value }))}
+              rows={4}
+              placeholder="A short description shown above the sports grid on the homepage..."
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors resize-none"
+            />
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Vision</label>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Vision</label>
               <textarea
                 value={about.vision}
                 onChange={(e) => setAbout((p) => ({ ...p, vision: e.target.value }))}
@@ -226,7 +238,7 @@ export default function HomeManagementSection() {
               />
             </div>
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Mission</label>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Mission</label>
               <textarea
                 value={about.mission}
                 onChange={(e) => setAbout((p) => ({ ...p, mission: e.target.value }))}
@@ -236,9 +248,9 @@ export default function HomeManagementSection() {
             </div>
           </div>
           <div className="border-t border-white/5 pt-5 space-y-4">
-            <h3 className="font-bold text-white/50 text-[11px] uppercase tracking-widest">Company Information</h3>
+            <h3 className="font-bold text-white text-[11px] uppercase tracking-widest">Company Information</h3>
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Address</label>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Address</label>
               <textarea
                 value={company.address}
                 onChange={(e) => setCompany((p) => ({ ...p, address: e.target.value }))}
@@ -248,7 +260,7 @@ export default function HomeManagementSection() {
               />
             </div>
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">WhatsApp</label>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">WhatsApp</label>
               <input
                 type="text"
                 value={company.whatsapp}
@@ -259,7 +271,7 @@ export default function HomeManagementSection() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Latitude (Waze)</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Latitude (Waze)</label>
                 <input
                   type="number"
                   step="any"
@@ -270,7 +282,7 @@ export default function HomeManagementSection() {
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Longitude (Waze)</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Longitude (Waze)</label>
                 <input
                   type="number"
                   step="any"
@@ -305,7 +317,7 @@ export default function HomeManagementSection() {
               ] as const
             ).map((s) => (
               <div key={s.key}>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">{s.label}</label>
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">{s.label}</label>
                 <input
                   type="url"
                   value={social[s.key]}
@@ -347,7 +359,7 @@ export default function HomeManagementSection() {
               value={newTnc}
               onChange={(e) => setNewTnc(e.target.value)}
               placeholder="Add a new T&C item..."
-              className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-primary transition-colors"
+              className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
             />
             <button
               type="submit"
@@ -360,7 +372,7 @@ export default function HomeManagementSection() {
 
           <div className="glass-card rounded-2xl overflow-hidden">
             {tnc.length === 0 ? (
-              <p className="px-5 py-8 text-center text-white/20 text-sm">No T&C items yet. Add one above.</p>
+              <p className="px-5 py-8 text-center text-white text-sm">No T&C items yet. Add one above.</p>
             ) : (
               tnc.map((item, i) => (
                 <div
@@ -381,12 +393,12 @@ export default function HomeManagementSection() {
                       className="flex-1 bg-white/5 border border-primary/40 rounded-lg px-3 py-1.5 text-white text-sm focus:outline-none"
                     />
                   ) : (
-                    <p className="flex-1 text-white/70 text-sm leading-relaxed pt-1">{item}</p>
+                    <p className="flex-1 text-white text-sm leading-relaxed pt-1">{item}</p>
                   )}
                   <div className="flex gap-2 shrink-0">
                     <button
                       onClick={() => setEditingTnc(editingTnc === i ? null : i)}
-                      className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all"
+                      className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white hover:text-white hover:bg-white/10 transition-all"
                       aria-label="Edit"
                     >
                       <Icon name="PencilSquareIcon" size={13} />
@@ -418,11 +430,11 @@ export default function HomeManagementSection() {
           )}
 
           <label className={`flex flex-col items-center justify-center gap-3 w-full border-2 border-dashed border-white/10 rounded-xl py-10 cursor-pointer hover:border-primary/50 transition-colors ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
-            <Icon name="PhotoIcon" size={28} className="text-white/20" />
-            <span className="text-white/40 text-sm font-medium">
+            <Icon name="PhotoIcon" size={28} className="text-white" />
+            <span className="text-white text-sm font-medium">
               {uploading ? 'Uploading...' : layoutUrl ? 'Click to replace image' : 'Click to upload layout image'}
             </span>
-            <span className="text-white/20 text-xs">PNG, JPG, WEBP supported</span>
+            <span className="text-white text-xs">PNG, JPG, WEBP supported</span>
             <input
               type="file"
               accept="image/*"
@@ -433,7 +445,7 @@ export default function HomeManagementSection() {
           </label>
 
           <div className="border-t border-white/5 pt-5 space-y-4">
-            <h3 className="font-bold text-white/50 text-[11px] uppercase tracking-widest">Facility Tour Video</h3>
+            <h3 className="font-bold text-white text-[11px] uppercase tracking-widest">Facility Tour Video</h3>
 
             {videoUrl && (
               <div className="rounded-xl overflow-hidden border border-white/10">
@@ -442,11 +454,11 @@ export default function HomeManagementSection() {
             )}
 
             <label className={`flex flex-col items-center justify-center gap-3 w-full border-2 border-dashed border-white/10 rounded-xl py-10 cursor-pointer hover:border-primary/50 transition-colors ${uploadingVideo ? 'opacity-50 pointer-events-none' : ''}`}>
-              <Icon name="FilmIcon" size={28} className="text-white/20" />
-              <span className="text-white/40 text-sm font-medium">
+              <Icon name="FilmIcon" size={28} className="text-white" />
+              <span className="text-white text-sm font-medium">
                 {uploadingVideo ? 'Uploading...' : videoUrl ? 'Click to replace video' : 'Click to upload facility tour video'}
               </span>
-              <span className="text-white/20 text-xs">MP4, MOV, WEBM supported</span>
+              <span className="text-white text-xs">MP4, MOV, WEBM supported</span>
               <input
                 type="file"
                 accept="video/*"

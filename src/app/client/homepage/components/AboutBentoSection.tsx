@@ -13,10 +13,10 @@ import { useBase } from '@/lib/useBase';
 // Placed 5/5 ✓
 
 const highlights = [
-{ icon: 'TrophyIcon', label: 'Sports Events', value: '200+' },
-{ icon: 'UsersIcon', label: 'Max Capacity', value: '900 Pax' },
-{ icon: 'BuildingOffice2Icon', label: 'Facilities', value: '6 Venues' },
-{ icon: 'CalendarDaysIcon', label: 'Years Active', value: '15+ Yrs' }];
+{ icon: 'TrophyIcon', label: 'Sports Events', value: '70+' },
+{ icon: 'UsersIcon', label: 'Max Capacity', value: '2000 Pax' },
+{ icon: 'BuildingOffice2Icon', label: 'Facilities', value: '18 Venues' },
+{ icon: 'CalendarDaysIcon', label: 'Years Active', value: '9+ Yrs' }];
 
 
 export default function AboutBentoSection() {
@@ -67,13 +67,10 @@ export default function AboutBentoSection() {
               <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/70 to-transparent" />
             </div>
             <div className="relative z-10">
-              <span className="text-primary/40 text-6xl font-black italic">01</span>
-            </div>
-            <div className="relative z-10">
               <h3 className="text-3xl font-black mb-4 text-white leading-tight">
-                Arena IRC &<br />IRC Negeri Sembilan Club
+                Arena IRC &<br />IRC Negeri Sembilan
               </h3>
-              <div className="text-white/50 text-sm leading-relaxed mb-6 space-y-3">
+              <div className="text-white text-sm leading-relaxed mb-6 space-y-3">
                 {(base?.about_us ?? 'A state-of-the-art multipurpose facility serving athletes, schools, corporations, and families across Negeri Sembilan since 2010.')
                   .split('\n')
                   .filter((p) => p.trim() !== '')
@@ -101,11 +98,11 @@ export default function AboutBentoSection() {
           >
             <div className="flex justify-between items-start">
               <Icon name="StarIcon" size={28} className="text-accent" />
-              <span className="text-[9px] font-bold uppercase tracking-widest text-white/20">Vision</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-white">Vision</span>
             </div>
             <div>
-              <h3 className="text-xl font-black mb-2 text-white leading-tight">Our Vision</h3>
-              <p className="text-white/40 text-xs leading-relaxed">
+              <h3 className="text-2xl font-black mb-2 text-white leading-tight">Our Vision</h3>
+              <p className="text-white text-sm leading-relaxed">
                 {base?.vision ?? 'To be the leading sports and event hub in Negeri Sembilan, fostering athletic excellence and community spirit.'}
               </p>
             </div>
@@ -123,13 +120,13 @@ export default function AboutBentoSection() {
               {highlights.slice(0, 2).map((h) =>
               <div key={h.label}>
                   <span className="block text-2xl font-black text-accent">{h.value}</span>
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">{h.label}</span>
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-white">{h.label}</span>
                 </div>
               )}
               {highlights.slice(2, 4).map((h) =>
               <div key={h.label}>
                   <span className="block text-2xl font-black text-white">{h.value}</span>
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">{h.label}</span>
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-white">{h.label}</span>
                 </div>
               )}
             </div>
@@ -180,11 +177,11 @@ export default function AboutBentoSection() {
           >
             <div className="flex justify-between items-start">
               <Icon name="RocketLaunchIcon" size={28} className="text-primary" />
-              <span className="text-[9px] font-bold uppercase tracking-widest text-white/20">Mission</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-white">Mission</span>
             </div>
             <div>
-              <h3 className="text-xl font-black mb-2 text-white leading-tight">Our Mission</h3>
-              <p className="text-white/40 text-xs leading-relaxed">
+              <h3 className="text-2xl font-black mb-2 text-white leading-tight">Our Mission</h3>
+              <p className="text-white text-sm leading-relaxed">
                 {base?.mission ?? 'To provide world-class sports and event facilities that inspire excellence, unity, and growth in every individual and community we serve.'}
               </p>
             </div>
@@ -213,11 +210,8 @@ export default function AboutBentoSection() {
               <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/70 to-transparent" />
             </div>
             <div className="relative z-10">
-              <span className="text-primary/40 text-4xl font-black italic">01</span>
-            </div>
-            <div className="relative z-10">
-              <h3 className="text-2xl font-black mb-3 text-white leading-tight">Arena IRC &<br />IRC Negeri Sembilan Club</h3>
-              <div className="text-white/50 text-sm leading-relaxed mb-4 space-y-3">
+              <h3 className="text-2xl font-black mb-3 text-white leading-tight">Arena IRC &<br />IRC Negeri Sembilan</h3>
+              <div className="text-white text-sm leading-relaxed mb-4 space-y-3">
                 {(base?.about_us ?? 'A state-of-the-art multipurpose facility serving athletes, schools, corporations, and families across Negeri Sembilan since 2010.')
                   .split('\n')
                   .filter((p) => p.trim() !== '')
@@ -227,7 +221,7 @@ export default function AboutBentoSection() {
                 {highlights.map((h) =>
                 <div key={h.label}>
                   <span className="block text-xl font-black text-accent">{h.value}</span>
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">{h.label}</span>
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-white">{h.label}</span>
                 </div>
                 )}
               </div>
@@ -245,10 +239,10 @@ export default function AboutBentoSection() {
           <div className="bento-item p-8">
             <div className="flex justify-between items-start mb-4">
               <Icon name="StarIcon" size={24} className="text-accent" />
-              <span className="text-[9px] font-bold uppercase tracking-widest text-white/20">Vision</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-white">Vision</span>
             </div>
-            <h3 className="text-xl font-black mb-2 text-white">Our Vision</h3>
-            <p className="text-white/40 text-sm leading-relaxed">
+            <h3 className="text-2xl font-black mb-2 text-white">Our Vision</h3>
+            <p className="text-white text-sm leading-relaxed">
               {base?.vision ?? 'To be the leading sports and event hub in Negeri Sembilan, fostering athletic excellence and community spirit.'}
             </p>
           </div>
@@ -256,10 +250,10 @@ export default function AboutBentoSection() {
           <div className="bento-item p-8">
             <div className="flex justify-between items-start mb-4">
               <Icon name="RocketLaunchIcon" size={24} className="text-primary" />
-              <span className="text-[9px] font-bold uppercase tracking-widest text-white/20">Mission</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-white">Mission</span>
             </div>
-            <h3 className="text-xl font-black mb-2 text-white">Our Mission</h3>
-            <p className="text-white/40 text-sm leading-relaxed">
+            <h3 className="text-2xl font-black mb-2 text-white">Our Mission</h3>
+            <p className="text-white text-sm leading-relaxed">
               {base?.mission ?? 'To provide world-class sports and event facilities that inspire excellence, unity, and growth in every individual and community we serve.'}
             </p>
           </div>

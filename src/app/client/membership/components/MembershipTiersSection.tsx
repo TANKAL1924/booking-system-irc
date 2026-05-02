@@ -58,16 +58,16 @@ export default function MembershipTiersSection() {
                   <h3 className="text-2xl font-black text-white mb-1">{tier.name}</h3>
                   <div className="flex items-end gap-1">
                     <span className="text-4xl font-black text-accent">RM {tier.price}</span>
-                    <span className="text-white/40 text-sm mb-1">/year</span>
+                    <span className="text-white text-sm mb-1">/year</span>
                   </div>
                   {tier.description && (
-                    <p className="text-white/50 text-sm mt-2">{tier.description}</p>
+                    <p className="text-white text-sm mt-2">{tier.description}</p>
                   )}
                 </div>
                 <div className="p-6 sm:p-8 flex-1 flex flex-col">
                   <ul className="space-y-3 flex-1 mb-8">
                     {(tier.list_details ?? []).map((benefit, i) => (
-                      <li key={i} className="flex items-start gap-3 text-sm text-white/70">
+                      <li key={i} className="flex items-start gap-3 text-sm text-white">
                         <Icon name="CheckCircleIcon" size={16} className="text-accent shrink-0 mt-0.5" variant="solid" />
                         {benefit}
                       </li>

@@ -40,7 +40,7 @@ export default function AnnouncementPopup() {
       >
         <button
           onClick={close}
-          className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-black/50 border border-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-black/70 transition-all"
+          className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-black/50 border border-white/10 flex items-center justify-center text-white hover:text-white hover:bg-black/70 transition-all"
           aria-label="Close"
         >
           <Icon name="XMarkIcon" size={16} />

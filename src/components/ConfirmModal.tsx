@@ -48,13 +48,13 @@ export default function ConfirmModal({
 
         {/* Text */}
         <h2 className="text-xl font-black text-white mb-2">{title}</h2>
-        <p className="text-white/40 text-sm">{message}</p>
+        <p className="text-white text-sm">{message}</p>
 
         {/* Actions */}
         <div className="flex gap-3 mt-7">
           <button
             onClick={onCancel}
-            className="flex-1 py-2.5 rounded-xl border border-white/10 text-white/50 text-sm font-bold hover:bg-white/5 hover:text-white/80 transition-all"
+            className="flex-1 py-2.5 rounded-xl border border-white/10 text-white text-sm font-bold hover:bg-white/5 hover:text-white transition-all"
           >
             Cancel
           </button>

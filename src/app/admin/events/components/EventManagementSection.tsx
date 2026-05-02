@@ -5,11 +5,12 @@ import { supabase } from '@/lib/supabase';
 interface Event {
   id: number;
   name: string;
-  date: string;
+  start_date: string;
+  end_date: string | null;
   pic_link: string | null;
 }
 
-const emptyForm = { name: '', date: '', imageFile: null as File | null, imagePreview: '' };
+const emptyForm = { name: '', start_date: '', end_date: '', imageFile: null as File | null, imagePreview: '' };
 
 export default function EventManagementSection() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -25,7 +26,7 @@ export default function EventManagementSection() {
   };
 
   const fetchEvents = async () => {
-    const { data } = await supabase.from('events').select('*').order('date', { ascending: true });
+    const { data } = await supabase.from('events').select('*').order('start_date', { ascending: true });
     if (data) setEvents(data);
   };
 
@@ -39,7 +40,7 @@ export default function EventManagementSection() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.date) return;
+    if (!form.name || !form.start_date) return;
     setSubmitting(true);
 
     let pic_link: string | null = null;
@@ -56,7 +57,12 @@ export default function EventManagementSection() {
       }
     }
 
-    await supabase.from('events').insert({ name: form.name, date: form.date, pic_link });
+    await supabase.from('events').insert({
+      name: form.name,
+      start_date: form.start_date,
+      end_date: form.end_date || null,
+      pic_link,
+    });
     await fetchEvents();
     setForm(emptyForm);
     setShowForm(false);
@@ -73,12 +79,17 @@ export default function EventManagementSection() {
   const formatDate = (d: string) =>
     new Date(d).toLocaleDateString('en-MY', { day: 'numeric', month: 'long', year: 'numeric' });
 
+  const formatDateRange = (start: string, end: string | null) => {
+    if (!end || end === start) return formatDate(start);
+    return `${formatDate(start)} – ${formatDate(end)}`;
+  };
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
           <h2 className="text-xl font-black text-white">Event Management</h2>
-          <p className="text-white/40 text-sm mt-1">Add or delete events and upload event posters</p>
+          <p className="text-white text-sm mt-1">Add or delete events and upload event posters</p>
         </div>
         <button
           onClick={() => { setForm(emptyForm); setShowForm(true); }}
@@ -102,7 +113,7 @@ export default function EventManagementSection() {
           <h3 className="font-bold text-white text-sm border-b border-white/5 pb-4">Add New Event</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="md:col-span-2">
-              <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Event Name</label>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Event Name</label>
               <input
                 type="text"
                 value={form.name}
@@ -113,17 +124,26 @@ export default function EventManagementSection() {
               />
             </div>
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Date</label>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Start Date</label>
               <input
                 type="date"
-                value={form.date}
-                onChange={(e) => setForm((p) => ({ ...p, date: e.target.value }))}
+                value={form.start_date}
+                onChange={(e) => setForm((p) => ({ ...p, start_date: e.target.value }))}
                 required
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
               />
             </div>
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">End Date <span className="normal-case font-medium text-white/60">(optional)</span></label>
+              <input
+                type="date"
+                value={form.end_date}
+                onChange={(e) => setForm((p) => ({ ...p, end_date: e.target.value }))}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
+              />
+            </div>
             <div className="md:col-span-2">
-              <label className="block text-[11px] font-bold uppercase tracking-widest text-white/30 mb-2">Event Poster / Image</label>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Event Poster / Image</label>
               <div
                 onClick={() => fileRef.current?.click()}
                 className="border-2 border-dashed border-white/10 rounded-xl p-6 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-primary/40 transition-colors"
@@ -133,10 +153,10 @@ export default function EventManagementSection() {
                 ) : (
                   <>
                     <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center">
-                      <Icon name="PhotoIcon" size={22} className="text-white/30" />
+                      <Icon name="PhotoIcon" size={22} className="text-white" />
                     </div>
-                    <p className="text-white/30 text-sm">Click to upload event poster</p>
-                    <p className="text-white/20 text-xs">PNG, JPG, WEBP up to 5MB</p>
+                    <p className="text-white text-sm">Click to upload event poster</p>
+                    <p className="text-white text-xs">PNG, JPG, WEBP up to 5MB</p>
                   </>
                 )}
               </div>
@@ -163,7 +183,7 @@ export default function EventManagementSection() {
             <button
               type="button"
               onClick={() => setShowForm(false)}
-              className="px-6 py-2.5 bg-white/5 border border-white/10 text-white/40 rounded-full font-bold text-[11px] uppercase tracking-widest hover:text-white transition-all"
+              className="px-6 py-2.5 bg-white/5 border border-white/10 text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:text-white transition-all"
             >
               Cancel
             </button>
@@ -174,7 +194,7 @@ export default function EventManagementSection() {
       {/* Events List */}
       <div className="glass-card rounded-2xl overflow-hidden">
         {events.length === 0 && (
-          <div className="px-5 py-12 text-center text-white/30 text-sm">No events yet. Add your first event.</div>
+          <div className="px-5 py-12 text-center text-white text-sm">No events yet. Add your first event.</div>
         )}
         {events.map((ev, i) => (
           <div
@@ -185,19 +205,19 @@ export default function EventManagementSection() {
               {ev.pic_link ? (
                 <img src={ev.pic_link} alt={ev.name} className="w-full h-full object-cover" />
               ) : (
-                <Icon name="CalendarDaysIcon" size={22} className="text-white/20" />
+                <Icon name="CalendarDaysIcon" size={22} className="text-white" />
               )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-white font-bold text-sm truncate">{ev.name}</p>
-              <span className="text-white/30 text-xs flex items-center gap-1 mt-1">
+              <span className="text-white text-xs flex items-center gap-1 mt-1">
                 <Icon name="CalendarIcon" size={11} />
-                {formatDate(ev.date)}
+                {formatDateRange(ev.start_date, ev.end_date ?? null)}
               </span>
             </div>
             <button
               onClick={() => handleDelete(ev.id)}
-              className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:text-primary hover:bg-primary/10 transition-all sm:opacity-0 sm:group-hover:opacity-100"
+              className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white hover:text-primary hover:bg-primary/10 transition-all sm:opacity-0 sm:group-hover:opacity-100"
               aria-label="Delete event"
             >
               <Icon name="TrashIcon" size={13} />

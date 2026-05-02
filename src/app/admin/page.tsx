@@ -77,14 +77,14 @@ export default function AdminDashboardPage() {
             <div className="flex items-center gap-2 shrink-0">
               <Link
                 to="/homepage"
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white/40 text-xs font-bold hover:text-white transition-colors"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-bold hover:text-white transition-colors"
               >
                 <Icon name="ArrowLeftOnRectangleIcon" size={14} />
                 <span className="hidden xs:inline">Site</span>
               </Link>
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white/60 text-xs font-bold"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-bold"
               >
                 <Icon name={mobileMenuOpen ? 'XMarkIcon' : 'Bars3Icon'} size={16} />
                 <span className="hidden xs:inline">Menu</span>
@@ -101,7 +101,7 @@ export default function AdminDashboardPage() {
                   onClick={() => { navigate(`/admin-dashboard/${item.label.toLowerCase()}`); setMobileMenuOpen(false); }}
                   className={`flex items-center gap-2.5 px-3 py-3 rounded-xl text-sm font-bold transition-all ${
                     activeSection === item.label
-                      ? 'bg-primary/15 text-primary border border-primary/20' :'text-white/40 hover:text-white hover:bg-white/5 border border-transparent'
+                      ? 'bg-primary/15 text-primary border border-primary/20' :'text-white hover:text-white hover:bg-white/5 border border-transparent'
                   }`}
                 >
                   <Icon name={item.icon as 'HomeIcon'} size={16} />

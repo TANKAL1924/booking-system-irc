@@ -42,7 +42,7 @@ export default function PaymentResultPage() {
     },
     unknown: {
       icon: 'QuestionMarkCircleIcon',
-      iconColor: 'text-white/40',
+      iconColor: 'text-white',
       iconBg: 'bg-white/10',
       title: 'Payment Status Unknown',
       message: 'We could not determine the payment status. Please contact us.',
@@ -61,9 +61,9 @@ export default function PaymentResultPage() {
               <Icon name={config.icon as Parameters<typeof Icon>[0]['name']} size={32} className={config.iconColor} />
             </div>
             <h2 className="text-3xl font-black text-white mb-3">{config.title}</h2>
-            <p className="text-white/50 text-sm leading-relaxed mb-2">{config.message}</p>
+            <p className="text-white text-sm leading-relaxed mb-2">{config.message}</p>
             {orderId && (
-              <p className="text-white/30 text-xs mb-8">
+              <p className="text-white text-xs mb-8">
                 Booking reference: <span className="text-accent font-bold">#{orderId}</span>
               </p>
             )}

@@ -83,7 +83,7 @@ export default function BookingFormSection() {
               <Icon name="CheckCircleIcon" size={32} className="text-[#25D366]" />
             </div>
             <h2 className="text-3xl font-black text-white mb-4">Booking Request Sent!</h2>
-            <p className="text-white/50 text-base leading-relaxed mb-8">
+            <p className="text-white text-base leading-relaxed mb-8">
               Thank you, <strong className="text-white">{form.name}</strong>. Your booking request for <strong className="text-accent">{form.facility}</strong> on <strong className="text-accent">{form.date}</strong> has been received. Our team will confirm within 24 hours.
             </p>
             <button
@@ -125,13 +125,13 @@ export default function BookingFormSection() {
                     Must Read
                   </span>
                 </div>
-                <Icon name={tncOpen ? 'ChevronUpIcon' : 'ChevronDownIcon'} size={18} className="text-white/40 shrink-0" />
+                <Icon name={tncOpen ? 'ChevronUpIcon' : 'ChevronDownIcon'} size={18} className="text-white shrink-0" />
               </button>
               {tncOpen && (
                 <div className="px-5 sm:px-6 pb-6 border-t border-white/5">
                   <ol className="space-y-3 mt-4">
                     {tncItems.map((item, i) => (
-                      <li key={i} className="flex gap-3 text-white/50 text-xs leading-relaxed">
+                      <li key={i} className="flex gap-3 text-white text-xs leading-relaxed">
                         <span className="text-primary font-bold shrink-0">{i + 1}.</span>
                         {item}
                       </li>
@@ -147,7 +147,7 @@ export default function BookingFormSection() {
                   onChange={(e) => setTncAccepted(e.target.checked)}
                   className="w-5 h-5 accent-red-600 cursor-pointer shrink-0"
                 />
-                <label htmlFor="tnc" className="text-sm text-white/60 cursor-pointer">
+                <label htmlFor="tnc" className="text-sm text-white cursor-pointer">
                   I have read and agree to the Terms & Conditions
                 </label>
               </div>
@@ -161,7 +161,7 @@ export default function BookingFormSection() {
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Full Name *</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-2">Full Name *</label>
                   <input
                     type="text"
                     name="name"
@@ -169,11 +169,11 @@ export default function BookingFormSection() {
                     onChange={handleChange}
                     required
                     placeholder="Ahmad bin Abdullah"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-primary transition-colors"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Phone Number *</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-2">Phone Number *</label>
                   <input
                     type="tel"
                     name="phone"
@@ -181,11 +181,11 @@ export default function BookingFormSection() {
                     onChange={handleChange}
                     required
                     placeholder="+60 12-345 6789"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-primary transition-colors"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
                   />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Email Address *</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-2">Email Address *</label>
                   <input
                     type="email"
                     name="email"
@@ -193,7 +193,7 @@ export default function BookingFormSection() {
                     onChange={handleChange}
                     required
                     placeholder="ahmad@email.com"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-primary transition-colors"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
                   />
                 </div>
               </div>
@@ -207,7 +207,7 @@ export default function BookingFormSection() {
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Select Facility *</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-2">Select Facility *</label>
                   <select
                     name="facility"
                     value={form.facility}
@@ -222,7 +222,7 @@ export default function BookingFormSection() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Date *</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-2">Date *</label>
                   <input
                     type="date"
                     name="date"
@@ -234,7 +234,7 @@ export default function BookingFormSection() {
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Estimated Pax</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-2">Estimated Pax</label>
                   <input
                     type="number"
                     name="pax"
@@ -242,11 +242,11 @@ export default function BookingFormSection() {
                     onChange={handleChange}
                     placeholder="e.g. 22"
                     min="1"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-primary transition-colors"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Start Time *</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-2">Start Time *</label>
                   <select
                     name="startTime"
                     value={form.startTime}
@@ -261,7 +261,7 @@ export default function BookingFormSection() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">End Time *</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-2">End Time *</label>
                   <select
                     name="endTime"
                     value={form.endTime}
@@ -276,14 +276,14 @@ export default function BookingFormSection() {
                   </select>
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Purpose / Event Name</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-2">Purpose / Event Name</label>
                   <textarea
                     name="purpose"
                     value={form.purpose}
                     onChange={handleChange}
                     rows={3}
                     placeholder="e.g. Football training session, School sports day..."
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-primary transition-colors resize-none"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors resize-none"
                   />
                 </div>
               </div>
@@ -309,7 +309,7 @@ export default function BookingFormSection() {
                     </div>
                     <span className="font-bold text-white text-sm">50% Deposit</span>
                   </div>
-                  <p className="text-white/40 text-xs">Pay half now, balance before event day.</p>
+                  <p className="text-white text-xs">Pay half now, balance before event day.</p>
                   {estimate && (
                     <p className="text-accent font-black text-lg mt-2">RM {estimate.deposit}</p>
                   )}
@@ -327,13 +327,13 @@ export default function BookingFormSection() {
                     </div>
                     <span className="font-bold text-white text-sm">Full Payment</span>
                   </div>
-                  <p className="text-white/40 text-xs">Pay in full and get priority confirmation.</p>
+                  <p className="text-white text-xs">Pay in full and get priority confirmation.</p>
                   {estimate && (
                     <p className="text-accent font-black text-lg mt-2">RM {estimate.total}</p>
                   )}
                 </button>
               </div>
-              <p className="text-white/30 text-xs">Payment via FPX, credit/debit card, or bank transfer.</p>
+              <p className="text-white text-xs">Payment via FPX, credit/debit card, or bank transfer.</p>
             </div>
 
             <button
@@ -341,7 +341,7 @@ export default function BookingFormSection() {
               disabled={!tncAccepted}
               className={`w-full py-4 sm:py-5 rounded-full font-black text-sm sm:text-base uppercase tracking-widest transition-all ${
                 tncAccepted
-                  ? 'bg-primary text-white hover:bg-red-700 pulse-glow-anim' :'bg-white/10 text-white/30 cursor-not-allowed'
+                  ? 'bg-primary text-white hover:bg-red-700 pulse-glow-anim' :'bg-white/10 text-white cursor-not-allowed'
               }`}
             >
               {tncAccepted ? 'Submit Booking Request' : 'Accept T&C to Continue'}
@@ -357,15 +357,15 @@ export default function BookingFormSection() {
               </h3>
               <div className="space-y-4">
                 <div className="flex justify-between text-sm">
-                  <span className="text-white/40">Facility</span>
+                  <span className="text-white">Facility</span>
                   <span className="font-bold text-white">{form.facility || '—'}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-white/40">Date</span>
+                  <span className="text-white">Date</span>
                   <span className="font-bold text-white">{form.date || '—'}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-white/40">Time</span>
+                  <span className="text-white">Time</span>
                   <span className="font-bold text-white text-right">
                     {form.startTime && form.endTime ? `${form.startTime} – ${form.endTime}` : '—'}
                   </span>
@@ -373,16 +373,16 @@ export default function BookingFormSection() {
                 {estimate && (
                   <>
                     <div className="flex justify-between text-sm">
-                      <span className="text-white/40">Duration</span>
+                      <span className="text-white">Duration</span>
                       <span className="font-bold text-white">{estimate.hours} hour{estimate.hours > 1 ? 's' : ''}</span>
                     </div>
                     <div className="border-t border-white/5 pt-4 space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-white/40">Total</span>
+                        <span className="text-white">Total</span>
                         <span className="font-black text-white text-base">RM {estimate.total}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-white/40">
+                        <span className="text-white">
                           {paymentOption === 'deposit' ? '50% Deposit' : 'Full Payment'}
                         </span>
                         <span className="font-black text-accent text-lg">

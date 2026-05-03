@@ -5,8 +5,8 @@ import { PDFDocument, StandardFonts, rgb } from "https://esm.sh/pdf-lib@1.17.1";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
-const RESEND_API_KEY = Deno.env.get("EMAIL") ?? "";
-const FROM_EMAIL = Deno.env.get("RESEND_FROM_EMAIL") ?? "onboarding@resend.dev";
+const BREVO_API_KEY = Deno.env.get("EMAIL_2") ?? "";
+const FROM_EMAIL = Deno.env.get("RESEND_FROM_EMAIL") ?? "izzathafizudin00@gmail.com";
 
 // ── Page & layout constants ──────────────────────────────────────────────────
 const PW = 595.28; // A4 width (pt)
@@ -382,10 +382,11 @@ async function generatePDF(booking: Booking, tnc: string[]): Promise<Uint8Array>
   // Payment type badge
   const BADGE_H = 26;
   const BADGE_Y = payStartY - 36 - 10 - BADGE_H;
-  const badgeStr = isDeposit ? "DEPOSIT (50%)" : "FULL PAYMENT";
-  fillRect(BOX_X + 10, BADGE_Y, BOX_W - 20, BADGE_H, WHITE, GREEN, 2);
+  const badgeStr   = isDeposit ? "DEPOSIT (50%)" : "FULL PAYMENT";
+  const badgeColor = isDeposit ? RED : GREEN;
+  fillRect(BOX_X + 10, BADGE_Y, BOX_W - 20, BADGE_H, WHITE, badgeColor, 2);
   const stW = bold.widthOfTextAtSize(badgeStr, 11);
-  tAt(badgeStr, BOX_X + 10 + (BOX_W - 20 - stW) / 2, BADGE_Y + 8, 11, bold, GREEN);
+  tAt(badgeStr, BOX_X + 10 + (BOX_W - 20 - stW) / 2, BADGE_Y + 8, 11, bold, badgeColor);
 
   down(20);
   need(16);
@@ -486,20 +487,18 @@ Deno.serve(async (req) => {
 
     const refNo = padRef(booking.id);
 
-    // Send via Resend (idempotency key prevents duplicates if triggered from both
-    // server callback and the client-side fallback on mobile)
-    const emailRes = await fetch("https://api.resend.com/emails", {
+    // Send via Brevo
+    const emailRes = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${RESEND_API_KEY}`,
+        "api-key": BREVO_API_KEY,
         "Content-Type": "application/json",
-        "Idempotency-Key": refNo,
       },
       body: JSON.stringify({
-        from: FROM_EMAIL,
-        to: [booking.email],
+        sender: { name: "Arena IRC Negeri Sembilan", email: FROM_EMAIL },
+        to: [{ email: booking.email, name: booking.customer_name }],
         subject: `Booking Confirmation – ${refNo}`,
-        html: `
+        htmlContent: `
           <p>Dear ${booking.customer_name},</p>
           <p>Thank you for your booking at <strong>Arena IRC Negeri Sembilan</strong>.</p>
           <p>Your booking reference is <strong>${refNo}</strong>. Please find your booking confirmation receipt attached as a PDF.</p>
@@ -507,13 +506,13 @@ Deno.serve(async (req) => {
           <br/>
           <p>Arena IRC Negeri Sembilan</p>
         `,
-        attachments: [{ filename: `${refNo}.pdf`, content: pdfBase64 }],
+        attachment: [{ name: `${refNo}.pdf`, content: pdfBase64 }],
       }),
     });
 
     if (!emailRes.ok) {
       const errText = await emailRes.text();
-      console.error("Resend error:", errText);
+      console.error("Brevo error:", errText);
       return new Response("Email failed: " + errText, { status: 500 });
     }
 

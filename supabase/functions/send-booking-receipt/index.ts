@@ -97,6 +97,15 @@ async function generatePDF(booking: Booking, tnc: string[]): Promise<Uint8Array>
   const regular = await doc.embedFont(StandardFonts.Helvetica);
   const bold    = await doc.embedFont(StandardFonts.HelveticaBold);
 
+  // Fetch and embed logo from Supabase Storage (fail silently)
+  let logoImg: Awaited<ReturnType<typeof doc.embedPng>> | null = null;
+  try {
+    const logoRes = await fetch(`${SUPABASE_URL}/storage/v1/object/public/logo/ARENA_IRC_LOGO.png`);
+    if (logoRes.ok) {
+      logoImg = await doc.embedPng(await logoRes.arrayBuffer());
+    }
+  } catch { /* logo unavailable – render without it */ }
+
   // Mutable draw context — page and y cursor
   const ctx = { page: doc.addPage([PW, PH]), y: PH - MT };
 
@@ -190,10 +199,15 @@ async function generatePDF(booking: Booking, tnc: string[]): Promise<Uint8Array>
   // ════════════════════════════════════════════════════════════════════════════
   const hdrY = ctx.y;
 
-  // Left — title
-  tAt("BOOKING CONFIRMATION", ML, hdrY, 18, bold, BLACK);
-  ctx.page.drawLine({ start: { x: ML, y: hdrY - 6 }, end: { x: ML + 215, y: hdrY - 6 }, thickness: 1.5, color: RED });
-  tAt("Arena IRC Negeri Sembilan", ML, hdrY - 19, 9, regular, GRAY);
+  // Left — logo + title
+  const LOGO_SIZE = 40;
+  const titleX = logoImg ? ML + LOGO_SIZE + 10 : ML;
+  if (logoImg) {
+    ctx.page.drawImage(logoImg, { x: ML, y: hdrY - LOGO_SIZE, width: LOGO_SIZE, height: LOGO_SIZE });
+  }
+  tAt("BOOKING CONFIRMATION", titleX, hdrY, 18, bold, BLACK);
+  ctx.page.drawLine({ start: { x: titleX, y: hdrY - 6 }, end: { x: titleX + 215, y: hdrY - 6 }, thickness: 1.5, color: RED });
+  tAt("Arena IRC Negeri Sembilan", titleX, hdrY - 19, 9, regular, GRAY);
 
   // Right — reference
   const refNo = padRef(booking.id);
@@ -431,8 +445,17 @@ async function generatePDF(booking: Booking, tnc: string[]): Promise<Uint8Array>
   return doc.save();
 }
 
+// ── CORS headers ────────────────────────────────────────────────────────────
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
 // ── Main handler ─────────────────────────────────────────────────────────────
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
 
   try {
@@ -463,12 +486,14 @@ Deno.serve(async (req) => {
 
     const refNo = padRef(booking.id);
 
-    // Send via Resend
+    // Send via Resend (idempotency key prevents duplicates if triggered from both
+    // server callback and the client-side fallback on mobile)
     const emailRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${RESEND_API_KEY}`,
         "Content-Type": "application/json",
+        "Idempotency-Key": refNo,
       },
       body: JSON.stringify({
         from: FROM_EMAIL,
@@ -494,7 +519,7 @@ Deno.serve(async (req) => {
 
     return new Response(JSON.stringify({ success: true, refNo }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {
     console.error("Receipt error:", err);

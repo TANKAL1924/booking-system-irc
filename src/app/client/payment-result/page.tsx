@@ -18,6 +18,19 @@ export default function PaymentResultPage() {
     else setStatus('unknown');
   }, [statusId]);
 
+  // Fallback: trigger receipt email from the client for mobile payments where
+  // the ToyyibPay server-side callback may not fire reliably.
+  // The Resend idempotency key in the function prevents duplicate emails.
+  useEffect(() => {
+    if (statusId === '1' && orderId) {
+      fetch(`${import.meta.env.VITE_FUNCTIONS_URL}/send-booking-receipt`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookingId: parseInt(orderId, 10) }),
+      }).catch(() => { /* fail silently — server callback is the primary path */ });
+    }
+  }, [statusId, orderId]);
+
   const config = {
     success: {
       icon: 'CheckCircleIcon',

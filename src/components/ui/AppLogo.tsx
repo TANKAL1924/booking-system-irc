@@ -2,6 +2,8 @@ import { memo, useMemo } from 'react';
 import AppIcon from './AppIcon';
 import AppImage from './AppImage';
 
+const LOGO_URL = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/logo/ARENA_IRC_LOGO.png`;
+
 interface AppLogoProps {
   src?: string; // Image source (optional)
   iconName?: string; // Icon name when no image
@@ -11,7 +13,7 @@ interface AppLogoProps {
 }
 
 const AppLogo = memo(function AppLogo({
-  src = '/ARENA_IRC_LOGO.png',
+  src = LOGO_URL,
   iconName = 'SparklesIcon',
   size = 64,
   className = '',

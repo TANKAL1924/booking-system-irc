@@ -570,7 +570,6 @@ export default function BookingFormSection() {
                         {slots.map((s, i) => {
                           const active = itemForm.selectedSlotIndices.includes(i);
                           const booked = isSlotBooked(i);
-                          if (active) return null;
                           return (
                             <button
                               key={i}
@@ -580,21 +579,22 @@ export default function BookingFormSection() {
                               className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold transition-all ${
                                 booked
                                   ? 'border-white/5 bg-white/5 text-white cursor-not-allowed line-through'
+                                  : active
+                                  ? 'border-primary bg-primary/15 text-primary'
                                   : 'border-white/10 bg-white/5 text-white hover:border-white/20 hover:text-white'
                               }`}
                             >
-                              <Icon name="ClockIcon" size={12} />
+                              <Icon name={active ? 'CheckIcon' : 'ClockIcon'} size={12} />
                               {s.start} – {s.end} · {s.hour}hr
                               {booked
                                 ? <span className="text-red-400/60 font-black">Booked</span>
+                                : active
+                                ? <span className="text-primary font-black">Selected</span>
                                 : <span className="text-white">RM {s.price}</span>
                               }
                             </button>
                           );
                         })}
-                        {slots.every((_, i) => itemForm.selectedSlotIndices.includes(i) || isSlotBooked(i)) && (
-                          <p className="text-white text-xs px-4 py-3 rounded-xl bg-white/5 border border-white/5">All available slots selected.</p>
-                        )}
                       </div>
                     )}
                   </div>

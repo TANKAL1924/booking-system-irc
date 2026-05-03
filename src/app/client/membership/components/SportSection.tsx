@@ -29,17 +29,25 @@ export default function SportSection() {
   return (
     <section className="py-20 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto w-full">
-        <div className="mb-12">
-          <span className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-3 block">
-            What We Offer
-          </span>
-          <h2 className="font-black text-4xl md:text-6xl tracking-tighter leading-none text-white">
-            IRC NEGERI SEMBILAN<br />
-            <span className="gradient-text-brand">SPORTS SECTION</span>
-          </h2>
-          {sectionDesc && (
-            <p className="mt-4 text-white text-sm md:text-base max-w-2xl leading-relaxed">{sectionDesc}</p>
-          )}
+        <div className="mb-12 flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
+          {/* Left: label + heading + description */}
+          <div className="flex-1 min-w-0">
+            <span className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-3 block">
+              What We Offer
+            </span>
+            <h2 className="font-black text-2xl md:text-4xl tracking-tighter leading-none text-white">
+              IRC NEGERI SEMBILAN <span className="gradient-text-brand"> SPORTS SECTION</span>
+            </h2>
+            {sectionDesc && (
+              <div className="mt-4 text-white text-sm leading-relaxed max-w-2xl space-y-3">
+                {sectionDesc
+                  .split('\n')
+                  .filter((p) => p.trim() !== '')
+                  .map((p, i) => <p key={i}>{p}</p>)}
+              </div>
+            )}
+          </div>
+
         </div>
 
         {loading ? (

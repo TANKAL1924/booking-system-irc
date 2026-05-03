@@ -15,7 +15,7 @@ import { useBase } from '@/lib/useBase';
 const highlights = [
 { icon: 'TrophyIcon', label: 'Sports Events', value: '70+' },
 { icon: 'UsersIcon', label: 'Max Capacity', value: '2000 Pax' },
-{ icon: 'BuildingOffice2Icon', label: 'Facilities', value: '18 Venues' },
+{ icon: 'BuildingOffice2Icon', label: 'Facilities', value: '18' },
 { icon: 'CalendarDaysIcon', label: 'Years Active', value: '9+ Yrs' }];
 
 

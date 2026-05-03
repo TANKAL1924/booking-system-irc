@@ -12,6 +12,7 @@ interface AboutForm {
 interface CompanyForm {
   address: string;
   whatsapp: string;
+  email: string;
   lat: string;
   long: string;
 }
@@ -29,7 +30,7 @@ export default function HomeManagementSection() {
   const [savedMsg, setSavedMsg] = useState('');
 
   const [about, setAbout] = useState<AboutForm>({ description: '', vision: '', mission: '', sport_description: '' });
-  const [company, setCompany] = useState<CompanyForm>({ address: '', whatsapp: '', lat: '', long: '' });
+  const [company, setCompany] = useState<CompanyForm>({ address: '', whatsapp: '', email: '', lat: '', long: '' });
   const [social, setSocial] = useState<SocialForm>({ facebook: '', insta: '', tiktok: '' });
   const [tnc, setTnc] = useState<string[]>([]);
   const [newTnc, setNewTnc] = useState('');
@@ -48,7 +49,7 @@ export default function HomeManagementSection() {
       .then(({ data }) => {
         if (data) {
           setAbout({ description: data.about_us ?? '', vision: data.vision ?? '', mission: data.mission ?? '', sport_description: data.sport_description ?? '' });
-          setCompany({ address: data.address ?? '', whatsapp: data.whatsapp ?? '', lat: data.lat != null ? String(data.lat) : '', long: data.long != null ? String(data.long) : '' });
+          setCompany({ address: data.address ?? '', whatsapp: data.whatsapp ?? '', email: data.email ?? '', lat: data.lat != null ? String(data.lat) : '', long: data.long != null ? String(data.long) : '' });
           setSocial({ facebook: data.facebook ?? '', insta: data.insta ?? '', tiktok: data.tiktok ?? '' });
           setTnc(Array.isArray(data.tnc) ? data.tnc : []);
           setLayoutUrl(data.layout ?? null);
@@ -79,6 +80,7 @@ export default function HomeManagementSection() {
       sport_description: about.sport_description,
       address: company.address,
       whatsapp: company.whatsapp,
+      email: company.email,
       lat: company.lat !== '' ? parseFloat(company.lat) : null,
       long: company.long !== '' ? parseFloat(company.long) : null,
     });
@@ -266,6 +268,16 @@ export default function HomeManagementSection() {
                 value={company.whatsapp}
                 onChange={(e) => setCompany((p) => ({ ...p, whatsapp: e.target.value }))}
                 placeholder="e.g. +60123456789"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Email</label>
+              <input
+                type="email"
+                value={company.email}
+                onChange={(e) => setCompany((p) => ({ ...p, email: e.target.value }))}
+                placeholder="e.g. info@arenairc.com"
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
               />
             </div>

@@ -13,6 +13,7 @@ export interface BaseData {
   location: string | null;
   address: string | null;
   whatsapp: string | null;
+  email: string | null;
   tnc: string[] | null;
   lat: number | null;
   long: number | null;

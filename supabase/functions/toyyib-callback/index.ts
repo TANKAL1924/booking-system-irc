@@ -49,6 +49,21 @@ Deno.serve(async (req) => {
         .update({ status: false })
         .eq("id", bookingId);
       if (error) console.error("DB update error (paid):", error.message);
+
+      // Fire receipt email
+      try {
+        const receiptRes = await fetch(`${SUPABASE_URL}/functions/v1/send-booking-receipt`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+          },
+          body: JSON.stringify({ bookingId }),
+        });
+        if (!receiptRes.ok) console.error("Receipt failed:", await receiptRes.text());
+      } catch (e) {
+        console.error("Receipt email error:", e);
+      }
     } else if (status === "3") {
       // Payment failed → mark as Cancelled (true)
       const { error } = await supabase

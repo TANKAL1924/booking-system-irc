@@ -2,27 +2,23 @@ import { Link } from 'react-router-dom';
 import AppLogo from '@/components/ui/AppLogo';
 import Icon from '@/components/ui/AppIcon';
 import { useBase } from '@/lib/useBase';
+import { FaFacebook, FaInstagram, FaTiktok } from 'react-icons/fa6';
 
 const quickLinks = [
-  { href: '/homepage', label: 'Upcoming Events' },
-  { href: '/the-arena', label: 'About Arena IRC' },
-  { href: '/the-arena', label: 'Gallery' },
-  { href: '/contact', label: 'Host an Event' },
+  { href: '/homepage', label: 'Home' },
+  { href: '/the-arena', label: 'The Arena' },
+  { href: '/membership', label: 'Membership' },
+  { href: '/book-now', label: 'Book Now' },
+  { href: '/contact', label: 'Contact Us' },
 ];
 
 export default function Footer() {
   const { base } = useBase();
-  const socialLinks = [
-    { href: base?.facebook ?? 'https://facebook.com', label: 'Facebook', icon: 'GlobeAltIcon' },
-    { href: base?.insta ?? 'https://instagram.com', label: 'Instagram', icon: 'GlobeAltIcon' },
-    { href: base?.tiktok ?? 'https://tiktok.com', label: 'TikTok', icon: 'GlobeAltIcon' },
-    { href: 'https://youtube.com', label: 'YouTube', icon: 'GlobeAltIcon' },
-  ];
   return (
     <footer className="bg-[#0A0A0A] border-t border-white/5 px-6 py-8">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
 
-        {/* Left: Logo + Tagline + Social + Book Now */}
+        {/* Left: Logo + Name + Social Icons */}
         <div className="flex flex-col gap-4">
           <Link to="/homepage" className="flex items-center gap-3">
             <AppLogo size={48} />
@@ -30,19 +26,25 @@ export default function Footer() {
           <p className="text-[11px] font-black tracking-[0.2em] uppercase text-white">
             ARENA IRC
           </p>
-          <div className="flex items-center gap-4">
-            {socialLinks.map((s) => (
-              <a
-                key={s.label}
-                href={s.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={s.label}
-                className="w-9 h-9 flex items-center justify-center rounded-full border border-white/10 text-white hover:text-white hover:border-white/30 transition-all duration-200"
-              >
-                <Icon name={s.icon as 'GlobeAltIcon'} size={15} />
+          <div className="flex items-center gap-3">
+            {base?.facebook && (
+              <a href={base.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook"
+                className="w-9 h-9 flex items-center justify-center rounded-full border border-white/10 text-white hover:border-white/30 transition-all">
+                <FaFacebook size={15} />
               </a>
-            ))}
+            )}
+            {base?.insta && (
+              <a href={base.insta} target="_blank" rel="noopener noreferrer" aria-label="Instagram"
+                className="w-9 h-9 flex items-center justify-center rounded-full border border-white/10 text-white hover:border-white/30 transition-all">
+                <FaInstagram size={15} />
+              </a>
+            )}
+            {base?.tiktok && (
+              <a href={base.tiktok} target="_blank" rel="noopener noreferrer" aria-label="TikTok"
+                className="w-9 h-9 flex items-center justify-center rounded-full border border-white/10 text-white hover:border-white/30 transition-all">
+                <FaTiktok size={15} />
+              </a>
+            )}
           </div>
         </div>
 
@@ -70,13 +72,15 @@ export default function Footer() {
             Contact
           </h4>
           <div className="flex flex-col gap-4">
-            <a
-              href="mailto:info@arenairc.com"
-              className="flex items-center gap-3 text-[11px] font-bold tracking-[0.1em] uppercase text-white hover:text-white transition-colors"
-            >
-              <Icon name="EnvelopeIcon" size={15} className="text-primary shrink-0" />
-              info@arenairc.com
-            </a>
+            {base?.email && (
+              <a
+                href={`mailto:${base.email}`}
+                className="flex items-center gap-3 text-[11px] font-bold tracking-[0.1em] uppercase text-white hover:text-white transition-colors"
+              >
+                <Icon name="EnvelopeIcon" size={15} className="text-primary shrink-0" />
+                {base.email}
+              </a>
+            )}
             <div className="flex items-start gap-3 text-[11px] font-bold tracking-[0.1em] uppercase text-white">
               <Icon name="MapPinIcon" size={15} className="text-primary shrink-0 mt-0.5" />
               <span>{base?.address ?? 'Arena IRC, Negeri Sembilan Darul Khusus'}</span>

@@ -26,6 +26,7 @@ interface Facility {
   type: boolean | null;
   slots: FacilitySlot[] | null;
   add_on: FacilityAddOn[] | null;
+  pic_contact: string | null;
 }
 
 interface SelectedAddOn {
@@ -89,7 +90,7 @@ export default function BookingFormSection() {
   useEffect(() => {
     supabase
       .from('facilities')
-      .select('id, name, status, type, slots, add_on')
+      .select('id, name, status, type, slots, add_on, pic_contact')
       .eq('status', true)
       .order('id')
       .then(({ data }) => setFacilities((data as Facility[]) ?? []));
@@ -505,7 +506,42 @@ export default function BookingFormSection() {
                     </select>
                   </div>
 
-                  {/* Date */}
+                  {/* Hall: contact only */}
+                  {selectedFacility && selectedFacility.type === false && (
+                    <div className="sm:col-span-2">
+                      <div className="rounded-xl border border-white/10 bg-white/5 p-5 space-y-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                            <Icon name="PhoneIcon" size={18} className="text-primary" />
+                          </div>
+                          <div>
+                            <p className="text-white font-black text-sm">Direct Booking Required</p>
+                            <p className="text-white/60 text-xs mt-0.5">This hall is booked via WhatsApp contact only.</p>
+                          </div>
+                        </div>
+                        {selectedFacility.pic_contact && (
+                          <>
+                            <div className="flex items-center gap-3 text-white text-sm font-bold">
+                              <Icon name="PhoneIcon" size={14} className="text-white shrink-0" />
+                              {selectedFacility.pic_contact}
+                            </div>
+                            <a
+                              href={`https://wa.me/${selectedFacility.pic_contact.replace(/\D/g, '')}?text=Hi%2C%20I%20would%20like%20to%20book%20${encodeURIComponent(selectedFacility.name ?? 'the hall')}.`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[#25D366]/10 border border-[#25D366]/20 text-[#25D366] font-bold text-[11px] uppercase tracking-widest hover:bg-[#25D366]/20 transition-all"
+                            >
+                              <Icon name="ChatBubbleLeftEllipsisIcon" size={14} />
+                              WhatsApp to Book
+                            </a>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Date — only for facilities (type=true) */}
+                  {(!selectedFacility || selectedFacility.type !== false) && (
                   <div className="sm:col-span-2">
                     <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-2">Date</label>
                     <input
@@ -517,8 +553,10 @@ export default function BookingFormSection() {
                       className={`${inputCls} disabled:opacity-30 disabled:cursor-not-allowed`}
                     />
                   </div>
+                  )}
 
-                  {/* Slot toggles */}
+                  {/* Slot toggles — only for facilities (type=true) */}
+                  {(!selectedFacility || selectedFacility.type !== false) && (
                   <div className="sm:col-span-2">
                     <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-2">Time Slot</label>
                     {slots.length === 0 ? (
@@ -560,10 +598,11 @@ export default function BookingFormSection() {
                       </div>
                     )}
                   </div>
+                  )}
                 </div>
 
-                {/* Per-slot Add-ons */}
-                {addOns.length > 0 && itemForm.selectedSlotIndices.length > 0 && (
+                {/* Per-slot Add-ons — only for facilities (type=true) */}
+                {(!selectedFacility || selectedFacility.type !== false) && addOns.length > 0 && itemForm.selectedSlotIndices.length > 0 && (
                   <div className="space-y-3">
                     <p className="text-[10px] font-bold uppercase tracking-widest text-white">Add-ons per Slot (optional)</p>
                     {itemForm.selectedSlotIndices.map((slotIdx) => {
@@ -652,6 +691,8 @@ export default function BookingFormSection() {
                   </div>
                 )}
 
+                {/* Add to Cart — only for facilities (type=true) */}
+                {(!selectedFacility || selectedFacility.type !== false) && (
                 <button
                   type="button"
                   onClick={addToCart}
@@ -667,6 +708,7 @@ export default function BookingFormSection() {
                     ? `Add ${itemForm.selectedSlotIndices.length} Item${itemForm.selectedSlotIndices.length > 1 ? 's' : ''} to Cart`
                     : 'Add to Cart'}
                 </button>
+                )}
               </div>
 
               {/* Cart items */}

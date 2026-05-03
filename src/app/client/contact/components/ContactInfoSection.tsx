@@ -30,7 +30,13 @@ export default function ContactInfoSection() {
             {/* Google Maps Embed */}
             <div className="rounded-2xl overflow-hidden border border-white/10 h-64 md:h-80">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d127483.55827756!2d101.9329!3d2.7257!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cdcb6b0c5b6e7b%3A0xa3c3a0c1e0b1b1b1!2sSeremban%2C%20Negeri%20Sembilan!5e0!3m2!1sen!2smy!4v1714000000000!5m2!1sen!2smy"
+                src={
+                  base?.lat != null && base?.long != null
+                    ? `https://maps.google.com/maps?q=${base.lat},${base.long}&z=16&output=embed`
+                    : base?.address
+                    ? `https://maps.google.com/maps?q=${encodeURIComponent(base.address)}&z=16&output=embed`
+                    : `https://maps.google.com/maps?q=Arena+IRC+Seremban&z=16&output=embed`
+                }
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
@@ -55,6 +61,22 @@ export default function ContactInfoSection() {
                 </div>
               </div>
 
+              {base?.email && (
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <Icon name="EnvelopeIcon" size={18} className="text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-white mb-1">Email</p>
+                    <a
+                      href={`mailto:${base.email}`}
+                      className="text-white text-sm font-medium hover:text-primary transition-colors"
+                    >
+                      {base.email}
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           </motion.div>
@@ -66,6 +88,24 @@ export default function ContactInfoSection() {
             transition={{ duration: 0.5, delay: 0.15, ease: 'easeOut' }}
           >
           <div className="space-y-6">
+
+            {/* Operation Hours */}
+            <div className="glass-card rounded-2xl p-6">
+              <div className="flex items-center gap-3 mb-5">
+                <Icon name="ClockIcon" size={18} className="text-primary" />
+                <h3 className="font-bold text-white text-base">Operation Hours</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-white">Monday – Saturday</span>
+                  <span className="text-[11px] font-bold text-accent">8:00 AM – 5:30 PM</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-white">Sunday</span>
+                  <span className="text-[11px] font-bold text-white/40">Closed</span>
+                </div>
+              </div>
+            </div>
 
             {/* Social Media */}
             <div className="glass-card rounded-2xl p-6">

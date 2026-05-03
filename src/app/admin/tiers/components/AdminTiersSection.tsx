@@ -111,7 +111,7 @@ export default function AdminTiersSection() {
               <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-1.5">Tier Name</label>
               <input
                 type="text"
-                placeholder="e.g. Pro"
+                placeholder=""
                 value={form.name}
                 onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
                 required
@@ -122,7 +122,7 @@ export default function AdminTiersSection() {
               <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-1.5">Price (RM)</label>
               <input
                 type="number"
-                placeholder="e.g. 120"
+                placeholder=""
                 value={form.price}
                 onChange={(e) => setForm((p) => ({ ...p, price: e.target.value }))}
                 required
@@ -137,7 +137,7 @@ export default function AdminTiersSection() {
             <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-1.5">Description</label>
             <input
               type="text"
-              placeholder="e.g. Perfect for casual players"
+              placeholder=""
               value={form.description}
               onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
@@ -148,7 +148,7 @@ export default function AdminTiersSection() {
             <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-1.5">WhatsApp Number</label>
             <input
               type="text"
-              placeholder="e.g. 60123456789"
+              placeholder=""
               value={form.wa_number}
               onChange={(e) => setForm((p) => ({ ...p, wa_number: e.target.value }))}
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
@@ -161,7 +161,7 @@ export default function AdminTiersSection() {
             </label>
             <textarea
               rows={5}
-              placeholder={"10% discount on bookings\nPriority booking (3 days)\nFree parking"}
+              placeholder=""
               value={form.list_details}
               onChange={(e) => setForm((p) => ({ ...p, list_details: e.target.value }))}
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors resize-none"

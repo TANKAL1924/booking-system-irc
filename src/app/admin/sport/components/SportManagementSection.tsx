@@ -105,7 +105,7 @@ export default function SportManagementSection() {
               required
               value={form.sport}
               onChange={(e) => setForm((p) => ({ ...p, sport: e.target.value }))}
-              placeholder="e.g. Badminton"
+              placeholder=""
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
             />
           </div>
@@ -117,7 +117,7 @@ export default function SportManagementSection() {
               rows={6}
               value={form.description}
               onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-              placeholder={"e.g.\nOpen to all skill levels\nEquipment available for rent\nBooking required"}
+              placeholder=""
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors resize-none"
             />
           </div>

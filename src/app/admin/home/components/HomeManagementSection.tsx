@@ -225,7 +225,7 @@ export default function HomeManagementSection() {
               value={about.sport_description}
               onChange={(e) => setAbout((p) => ({ ...p, sport_description: e.target.value }))}
               rows={4}
-              placeholder="A short description shown above the sports grid on the homepage..."
+              placeholder=""
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors resize-none"
             />
           </div>
@@ -257,7 +257,7 @@ export default function HomeManagementSection() {
                 value={company.address}
                 onChange={(e) => setCompany((p) => ({ ...p, address: e.target.value }))}
                 rows={3}
-                placeholder="e.g. Jalan Stadium, 70200 Seremban, Negeri Sembilan"
+                placeholder=""
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors resize-none"
               />
             </div>
@@ -267,7 +267,7 @@ export default function HomeManagementSection() {
                 type="text"
                 value={company.whatsapp}
                 onChange={(e) => setCompany((p) => ({ ...p, whatsapp: e.target.value }))}
-                placeholder="e.g. +60123456789"
+                placeholder=""
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
               />
             </div>
@@ -277,7 +277,7 @@ export default function HomeManagementSection() {
                 type="email"
                 value={company.email}
                 onChange={(e) => setCompany((p) => ({ ...p, email: e.target.value }))}
-                placeholder="e.g. info@arenairc.com"
+                placeholder=""
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
               />
             </div>
@@ -289,7 +289,7 @@ export default function HomeManagementSection() {
                   step="any"
                   value={company.lat}
                   onChange={(e) => setCompany((p) => ({ ...p, lat: e.target.value }))}
-                  placeholder="e.g. 2.7257"
+                  placeholder=""
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
                 />
               </div>
@@ -300,7 +300,7 @@ export default function HomeManagementSection() {
                   step="any"
                   value={company.long}
                   onChange={(e) => setCompany((p) => ({ ...p, long: e.target.value }))}
-                  placeholder="e.g. 101.9329"
+                  placeholder=""
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
                 />
               </div>
@@ -334,7 +334,7 @@ export default function HomeManagementSection() {
                   type="url"
                   value={social[s.key]}
                   onChange={(e) => setSocial((p) => ({ ...p, [s.key]: e.target.value }))}
-                  placeholder={s.placeholder}
+                  placeholder=""
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
                 />
               </div>
@@ -370,7 +370,7 @@ export default function HomeManagementSection() {
               type="text"
               value={newTnc}
               onChange={(e) => setNewTnc(e.target.value)}
-              placeholder="Add a new T&C item..."
+              placeholder=""
               className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
             />
             <button

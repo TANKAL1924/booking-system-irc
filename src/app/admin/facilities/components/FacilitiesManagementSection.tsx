@@ -238,7 +238,7 @@ export default function FacilitiesManagementSection() {
                 value={form.name ?? ''}
                 onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
                 required
-                placeholder="e.g. Upper Field"
+                placeholder=""
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
               />
             </div>
@@ -274,7 +274,7 @@ export default function FacilitiesManagementSection() {
                     value={descInput}
                     onChange={(e) => setDescInput(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addDescItem(); } }}
-                    placeholder="e.g. Seats up to 500 pax"
+                    placeholder=""
                     className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-primary transition-colors"
                   />
                   <button
@@ -386,7 +386,7 @@ export default function FacilitiesManagementSection() {
                   type="tel"
                   value={form.pic_contact ?? ''}
                   onChange={(e) => setForm((p) => ({ ...p, pic_contact: e.target.value }))}
-                  placeholder="e.g. 0123456789"
+                  placeholder=""
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
                 />
               </div>
@@ -487,7 +487,7 @@ export default function FacilitiesManagementSection() {
                       <input
                         type="text"
                         value={addon.name}
-                        placeholder="e.g. Equipment"
+                        placeholder=""
                         onChange={(e) => updateAddOn(i, 'name', e.target.value)}
                         className="w-full bg-transparent text-white text-sm focus:outline-none placeholder:text-white"
                       />

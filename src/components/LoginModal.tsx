@@ -67,7 +67,7 @@ export default function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@arenairc.com"
+              placeholder=""
               required
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
             />
@@ -79,7 +79,7 @@ export default function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder=""
                 required
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pr-12 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
               />

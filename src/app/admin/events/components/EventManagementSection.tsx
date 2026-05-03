@@ -119,7 +119,7 @@ export default function EventManagementSection() {
                 value={form.name}
                 onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
                 required
-                placeholder="e.g. NS State Hockey Championship 2026"
+                placeholder=""
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
               />
             </div>

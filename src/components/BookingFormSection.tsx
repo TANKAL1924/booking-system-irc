@@ -168,7 +168,7 @@ export default function BookingFormSection() {
                     value={form.name}
                     onChange={handleChange}
                     required
-                    placeholder="Ahmad bin Abdullah"
+                    placeholder=""
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
                   />
                 </div>
@@ -180,7 +180,7 @@ export default function BookingFormSection() {
                     value={form.phone}
                     onChange={handleChange}
                     required
-                    placeholder="+60 12-345 6789"
+                    placeholder=""
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
                   />
                 </div>
@@ -192,7 +192,7 @@ export default function BookingFormSection() {
                     value={form.email}
                     onChange={handleChange}
                     required
-                    placeholder="ahmad@email.com"
+                    placeholder=""
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
                   />
                 </div>
@@ -240,7 +240,7 @@ export default function BookingFormSection() {
                     name="pax"
                     value={form.pax}
                     onChange={handleChange}
-                    placeholder="e.g. 22"
+                    placeholder=""
                     min="1"
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"
                   />
@@ -282,7 +282,7 @@ export default function BookingFormSection() {
                     value={form.purpose}
                     onChange={handleChange}
                     rows={3}
-                    placeholder="e.g. Football training session, School sports day..."
+                    placeholder=""
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors resize-none"
                   />
                 </div>

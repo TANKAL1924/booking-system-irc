@@ -123,7 +123,7 @@ export default function BookingsTableSection() {
             <Icon name="MagnifyingGlassIcon" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white" />
             <input
               type="text"
-              placeholder="Search bookings..."
+              placeholder=""
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2.5 text-white text-sm placeholder:text-white focus:outline-none focus:border-primary transition-colors"

@@ -453,7 +453,7 @@ export default function BookingFormSection() {
                       value={contact.name}
                       onChange={(e) => setContact((p) => ({ ...p, name: e.target.value }))}
                       required
-                      placeholder="Ahmad bin Abdullah"
+                      placeholder=""
                       className={inputCls}
                     />
                   </div>
@@ -464,7 +464,7 @@ export default function BookingFormSection() {
                       value={contact.phone}
                       onChange={(e) => setContact((p) => ({ ...p, phone: e.target.value }))}
                       required
-                      placeholder="+60 12-345 6789"
+                      placeholder=""
                       className={inputCls}
                     />
                   </div>
@@ -475,7 +475,7 @@ export default function BookingFormSection() {
                       value={contact.email}
                       onChange={(e) => setContact((p) => ({ ...p, email: e.target.value }))}
                       required
-                      placeholder="ahmad@email.com"
+                      placeholder=""
                       className={inputCls}
                     />
                   </div>

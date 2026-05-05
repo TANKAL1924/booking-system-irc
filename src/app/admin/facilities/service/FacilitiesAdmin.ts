@@ -24,6 +24,8 @@ export interface Facility {
   add_on: FacilityAddOn[] | null;
   pic_contact: string | null;
   description: string[] | null;
+  morning_fee: number | null;
+  night_fee: number | null;
 }
 
 export type FacilityPayload = Omit<Facility, 'id'>;

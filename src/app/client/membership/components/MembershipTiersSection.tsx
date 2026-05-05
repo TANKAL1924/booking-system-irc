@@ -27,11 +27,11 @@ export default function MembershipTiersSection() {
   return (
     <section className="pt-32 pb-12 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto w-full">
-        <div className="mb-12 text-center">
-          <span className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-3 block">
+        <div className="mb-8 sm:mb-12 text-center">
+          <span className="text-primary text-[10px] font-bold uppercase tracking-widest sm:tracking-[0.5em] mb-3 block">
             Membership Plans
           </span>
-          <h2 className="font-black text-4xl md:text-6xl tracking-tighter leading-none text-white">
+          <h2 className="font-black text-3xl sm:text-4xl md:text-6xl tracking-tighter leading-none text-white">
             CHOOSE YOUR <span className="gradient-text-brand">TIER</span>
           </h2>
         </div>
@@ -56,16 +56,18 @@ export default function MembershipTiersSection() {
               >
                 <div className="bg-white/5 p-6 sm:p-8 border-b border-white/5">
                   <h3 className="text-2xl font-black text-white mb-1">{tier.name}</h3>
-                  <div className="flex items-end gap-1">
-                    <span className="text-4xl font-black text-accent">RM {tier.price}</span>
-                    <span className="text-white text-sm mb-1">/year</span>
-                  </div>
+                  {tier.price > 0 && (
+                    <div className="flex items-end gap-1">
+                      <span className="text-3xl sm:text-4xl font-black text-accent">RM {tier.price}</span>
+                      <span className="text-white text-sm mb-1">/year</span>
+                    </div>
+                  )}
                   {tier.description && (
                     <p className="text-white text-sm mt-2">{tier.description}</p>
                   )}
                 </div>
                 <div className="p-6 sm:p-8 flex-1 flex flex-col">
-                  <ul className="space-y-3 flex-1 mb-8">
+                  <ul className="space-y-3 flex-1 mb-6 sm:mb-8">
                     {(tier.list_details ?? []).map((benefit, i) => (
                       <li key={i} className="flex items-start gap-3 text-sm text-white">
                         <Icon name="CheckCircleIcon" size={16} className="text-accent shrink-0 mt-0.5" variant="solid" />

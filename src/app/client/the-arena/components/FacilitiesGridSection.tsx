@@ -29,6 +29,8 @@ interface Facility {
   add_on: FacilityAddOn[] | null;
   pic_contact: string | null;
   description: string[] | null;
+  morning_fee: number | null;
+  night_fee: number | null;
 }
 
 /* ── Image Gallery Modal ── */
@@ -218,6 +220,24 @@ function Carousel({ items }: { items: Facility[] }) {
                         <span className="text-white text-xs leading-relaxed">{item}</span>
                       </div>
                     ))}
+                  </div>
+                )}
+
+                {/* Morning / Night fee */}
+                {(f.morning_fee != null || f.night_fee != null) && (
+                  <div className="flex items-center gap-3">
+                    {f.morning_fee != null && (
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-yellow-400/10 border border-yellow-400/20">
+                        <span className="text-[10px]">☀</span>
+                        <span className="text-yellow-400 font-bold text-[11px]">RM {f.morning_fee.toFixed(2)}</span>
+                      </div>
+                    )}
+                    {f.night_fee != null && (
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-400/10 border border-blue-400/20">
+                        <span className="text-[10px]">🌙</span>
+                        <span className="text-blue-400 font-bold text-[11px]">RM {f.night_fee.toFixed(2)}</span>
+                      </div>
+                    )}
                   </div>
                 )}
 

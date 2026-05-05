@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Icon from '@/components/ui/AppIcon';
 import type { Sport } from '../service/SportAdmin';
-import { fetchSports, createSport, updateSport, deleteSport } from '../service/SportAdmin';
+import { fetchSports, createSport, updateSport, deleteSport, uploadSportPic, deleteSportPic } from '../service/SportAdmin';
 
-const emptyForm = { sport: '', description: '' };
+const emptyForm = { sport: '', description: '', sport_pic: null as string | null };
 
 export default function SportManagementSection() {
   const [sports, setSports] = useState<Sport[]>([]);
@@ -11,9 +11,12 @@ export default function SportManagementSection() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState<typeof emptyForm>(emptyForm);
+  const [picFile, setPicFile] = useState<File | null>(null);
+  const [picPreview, setPicPreview] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {
     setLoading(true);
@@ -29,26 +32,47 @@ export default function SportManagementSection() {
   const openAdd = () => {
     setEditingId(null);
     setForm(emptyForm);
+    setPicFile(null);
+    setPicPreview(null);
     setError('');
     setShowForm(true);
   };
 
   const openEdit = (s: Sport) => {
     setEditingId(s.id);
-    setForm({ sport: s.sport ?? '', description: (s.description ?? []).join('\n') });
+    setForm({ sport: s.sport ?? '', description: (s.description ?? []).join('\n'), sport_pic: s.sport_pic ?? null });
+    setPicFile(null);
+    setPicPreview(s.sport_pic ?? null);
     setError('');
     setShowForm(true);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    setPicFile(file);
+    if (file) {
+      setPicPreview(URL.createObjectURL(file));
+    }
   };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSaving(true);
-    const payload = {
-      sport: form.sport.trim(),
-      description: form.description.split('\n').map((l) => l.trim()).filter(Boolean),
-    };
     try {
+      const descriptionArr = form.description.split('\n').map((l) => l.trim()).filter(Boolean);
+      let sport_pic = form.sport_pic;
+
+      if (picFile) {
+        // If replacing an existing pic, delete the old one first
+        if (sport_pic) await deleteSportPic(sport_pic);
+        // Need an id for the path — use editingId or a temp timestamp for new
+        const tempId = editingId ?? Date.now();
+        sport_pic = await uploadSportPic(picFile, tempId);
+      }
+
+      const payload = { sport: form.sport.trim(), description: descriptionArr, sport_pic };
+
       if (editingId !== null) {
         await updateSport(editingId, payload);
       } else {
@@ -63,10 +87,11 @@ export default function SportManagementSection() {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    setDeletingId(id);
+  const handleDelete = async (s: Sport) => {
+    setDeletingId(s.id);
     try {
-      await deleteSport(id);
+      if (s.sport_pic) await deleteSportPic(s.sport_pic);
+      await deleteSport(s.id);
       load();
     } finally {
       setDeletingId(null);
@@ -121,6 +146,26 @@ export default function SportManagementSection() {
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors resize-none"
             />
           </div>
+          <div>
+            <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Sport Picture</label>
+            {picPreview && (
+              <div className="mb-3 relative w-32 h-20 rounded-xl overflow-hidden border border-white/10">
+                <img src={picPreview} alt="Preview" className="w-full h-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => { setPicFile(null); setPicPreview(null); setForm((p) => ({ ...p, sport_pic: null })); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+                  className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 flex items-center justify-center text-white text-[10px] hover:bg-black transition-all"
+                >✕</button>
+              </div>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="w-full text-white text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[11px] file:font-bold file:uppercase file:tracking-widest file:bg-primary file:text-white hover:file:bg-red-700 file:cursor-pointer"
+            />
+          </div>
           <div className="flex gap-3 pt-1">
             <button
               type="submit"
@@ -154,6 +199,15 @@ export default function SportManagementSection() {
         <div className="space-y-3">
           {sports.map((s) => (
             <div key={s.id} className="glass-card rounded-2xl p-5 border border-white/5 flex items-start gap-4">
+              {s.sport_pic ? (
+                <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-white/10">
+                  <img src={s.sport_pic} alt={s.sport} className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <div className="w-16 h-16 rounded-xl bg-white/5 border border-white/10 shrink-0 flex items-center justify-center">
+                  <Icon name="TrophyIcon" size={20} className="text-white/30" />
+                </div>
+              )}
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-white text-sm mb-2">{s.sport}</p>
                 <ul className="space-y-1">
@@ -173,7 +227,7 @@ export default function SportManagementSection() {
                   <Icon name="PencilSquareIcon" size={14} />
                 </button>
                 <button
-                  onClick={() => handleDelete(s.id)}
+                  onClick={() => handleDelete(s)}
                   disabled={deletingId === s.id}
                   className="p-2 rounded-xl bg-white/5 border border-white/10 text-white hover:text-red-400 transition-colors disabled:opacity-50"
                 >

@@ -1,9 +1,8 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import AboutBentoSection from './components/AboutBentoSection';
-import EventsSection from './components/EventsSection';
 import AnnouncementsSection from './components/AnnouncementsSection';
-import SportSection from '@/app/client/membership/components/SportSection';
+import SportSection from '@/app/client/homepage/components/SportSection';
+import HeaderSliderSection from './components/HeaderSliderSection';
 
 export default function HomepagePage() {
   return (
@@ -11,9 +10,8 @@ export default function HomepagePage() {
       <div className="grain-overlay" />
       <div className="grid-bg" />
       <Header />
-      <AboutBentoSection />
+      <HeaderSliderSection />
       <AnnouncementsSection />
-      <EventsSection />
       <SportSection />
       <Footer />
     </main>

@@ -9,6 +9,8 @@ import FacilitiesManagementSection from './facilities/components/FacilitiesManag
 import BookingsTableSection from './bookings/components/BookingsTableSection';
 import AdminTiersSection from './tiers/components/AdminTiersSection';
 import SportManagementSection from './sport/components/SportManagementSection';
+import GalleryManagementSection from './gallery/components/GalleryManagementSection';
+import AdminHeaderSection from './header/components/AdminHeaderSection';
 import Icon from '@/components/ui/AppIcon';
 
 const sectionTitles: Record<AdminSection, string> = {
@@ -18,6 +20,8 @@ const sectionTitles: Record<AdminSection, string> = {
   Bookings: 'Booking Management',
   Tiers: 'Membership Tiers',
   Sport: 'Sport Management',
+  Gallery: 'Gallery Management',
+  Header: 'Header Slider',
 };
 
 const mobileNavItems: Array<{ label: AdminSection; icon: string }> = [
@@ -27,6 +31,8 @@ const mobileNavItems: Array<{ label: AdminSection; icon: string }> = [
   { label: 'Bookings', icon: 'CalendarDaysIcon' },
   { label: 'Tiers', icon: 'StarIcon' },
   { label: 'Sport', icon: 'TrophyIcon' },
+  { label: 'Gallery', icon: 'PhotoIcon' },
+  { label: 'Header', icon: 'RectangleStackIcon' },
 ];
 
 export default function AdminDashboardPage() {
@@ -54,6 +60,10 @@ export default function AdminDashboardPage() {
         return <AdminTiersSection />;
       case 'Sport':
         return <SportManagementSection />;
+      case 'Gallery':
+        return <GalleryManagementSection />;
+      case 'Header':
+        return <AdminHeaderSection />;
       default:
         return null;
     }

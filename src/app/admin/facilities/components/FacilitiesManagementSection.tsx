@@ -23,6 +23,8 @@ const emptyForm: FacilityPayload = {
   add_on: [],
   pic_contact: null,
   description: [],
+  morning_fee: null,
+  night_fee: null,
 };
 
 export default function FacilitiesManagementSection() {
@@ -305,6 +307,32 @@ export default function FacilitiesManagementSection() {
                 )}
               </div>
             )}
+
+            {/* Morning / Night Fee */}
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Morning Fee (RM)</label>
+              <input
+                type="number"
+                value={form.morning_fee ?? ''}
+                min={0}
+                step={0.01}
+                onChange={(e) => setForm((p) => ({ ...p, morning_fee: e.target.value === '' ? null : parseFloat(e.target.value) }))}
+                placeholder="e.g. 30.00"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors placeholder:text-white/30"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Night Fee (RM)</label>
+              <input
+                type="number"
+                value={form.night_fee ?? ''}
+                min={0}
+                step={0.01}
+                onChange={(e) => setForm((p) => ({ ...p, night_fee: e.target.value === '' ? null : parseFloat(e.target.value) }))}
+                placeholder="e.g. 50.00"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors placeholder:text-white/30"
+              />
+            </div>
 
             {/* Status toggle */}
             <div className="flex items-center gap-3 pt-1">
@@ -623,6 +651,19 @@ export default function FacilitiesManagementSection() {
                         <Icon name="PhoneIcon" size={10} />
                         {f.pic_contact}
                       </p>
+                    )}
+                    {(f.morning_fee != null || f.night_fee != null) && (
+                      <div className="flex items-center gap-2 mt-0.5">
+                        {f.morning_fee != null && (
+                          <span className="text-[9px] font-bold text-yellow-400">☀ RM {f.morning_fee.toFixed(2)}</span>
+                        )}
+                        {f.morning_fee != null && f.night_fee != null && (
+                          <span className="text-white/20 text-[9px]">·</span>
+                        )}
+                        {f.night_fee != null && (
+                          <span className="text-[9px] font-bold text-blue-400">🌙 RM {f.night_fee.toFixed(2)}</span>
+                        )}
+                      </div>
                     )}
                   </div>
                   <button

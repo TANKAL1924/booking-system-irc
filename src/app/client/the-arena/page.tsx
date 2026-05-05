@@ -3,6 +3,7 @@ import Footer from '@/components/Footer';
 import FacilitiesGridSection from './components/FacilitiesGridSection';
 import AmenitiesSection from './components/AmenitiesSection';
 import PastEventsSection from './components/PastEventsSection';
+import AboutBentoSection from './components/AboutBentoSection';
 
 export default function TheArenaPage() {
   return (
@@ -10,6 +11,7 @@ export default function TheArenaPage() {
       <div className="grain-overlay" />
       <div className="grid-bg" />
       <Header />
+      <AboutBentoSection/>
       <FacilitiesGridSection />
       <AmenitiesSection />
       <PastEventsSection />

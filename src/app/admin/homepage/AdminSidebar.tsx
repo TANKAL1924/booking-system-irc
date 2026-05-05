@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/store/authStore';
 
 export type AdminSection =
-  | 'Home' |'Events' |'Facilities' |'Bookings' |'Tiers' |'Sport';
+  | 'Home' |'Events' |'Facilities' |'Bookings' |'Tiers' |'Sport' |'Gallery' |'Header';
 
 interface AdminSidebarProps {
   onMobileNavigate?: () => void;
@@ -17,6 +17,8 @@ const navItems: Array<{ label: AdminSection; icon: string; description: string }
   { label: 'Bookings', icon: 'CalendarDaysIcon', description: 'Customer bookings' },
   { label: 'Tiers', icon: 'StarIcon', description: 'Membership tiers' },
   { label: 'Sport', icon: 'TrophyIcon', description: 'Sport categories' },
+  { label: 'Gallery', icon: 'PhotoIcon', description: 'Gallery images' },
+  { label: 'Header', icon: 'RectangleStackIcon', description: 'Homepage slider' },
 ];
 
 export default function AdminSidebar({ onMobileNavigate }: AdminSidebarProps) {

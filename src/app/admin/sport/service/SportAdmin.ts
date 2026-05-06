@@ -7,6 +7,14 @@ export interface Sport {
   sport_pic: string | null;
 }
 
+export interface SportTeam {
+  id: number;
+  name: string | null;
+  phone: string | null;
+  position: string | null;
+  sport_id: number;
+}
+
 export async function fetchSports(): Promise<Sport[]> {
   const { data, error } = await supabase.from('sport').select('*').order('id');
   if (error) throw new Error(error.message);
@@ -41,4 +49,25 @@ export async function deleteSportPic(url: string): Promise<void> {
   const path = url.split('/sport/')[1];
   if (!path) return;
   await supabase.storage.from('sport').remove([path]);
+}
+
+export async function fetchTeamBySport(sportId: number): Promise<SportTeam[]> {
+  const { data, error } = await supabase.from('sport_team').select('*').eq('sport_id', sportId).order('id');
+  if (error) throw new Error(error.message);
+  return (data ?? []) as SportTeam[];
+}
+
+export async function createTeamMember(payload: Omit<SportTeam, 'id'>): Promise<void> {
+  const { error } = await supabase.from('sport_team').insert(payload);
+  if (error) throw new Error(error.message);
+}
+
+export async function updateTeamMember(id: number, payload: Partial<Omit<SportTeam, 'id'>>): Promise<void> {
+  const { error } = await supabase.from('sport_team').update(payload).eq('id', id);
+  if (error) throw new Error(error.message);
+}
+
+export async function deleteTeamMember(id: number): Promise<void> {
+  const { error } = await supabase.from('sport_team').delete().eq('id', id);
+  if (error) throw new Error(error.message);
 }

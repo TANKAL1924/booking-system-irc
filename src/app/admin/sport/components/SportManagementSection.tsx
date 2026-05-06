@@ -1,7 +1,196 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Icon from '@/components/ui/AppIcon';
-import type { Sport } from '../service/SportAdmin';
-import { fetchSports, createSport, updateSport, deleteSport, uploadSportPic, deleteSportPic } from '../service/SportAdmin';
+import type { Sport, SportTeam } from '../service/SportAdmin';
+import {
+  fetchSports, createSport, updateSport, deleteSport, uploadSportPic, deleteSportPic,
+  fetchTeamBySport, createTeamMember, updateTeamMember, deleteTeamMember,
+} from '../service/SportAdmin';
+
+const emptyMemberForm = { name: '', phone: '', position: '' };
+
+function TeamSection({ sport }: { sport: Sport }) {
+  const [members, setMembers] = useState<SportTeam[]>([]);
+  const [loadingMembers, setLoadingMembers] = useState(true);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [editingMember, setEditingMember] = useState<SportTeam | null>(null);
+  const [memberForm, setMemberForm] = useState(emptyMemberForm);
+  const [savingMember, setSavingMember] = useState(false);
+  const [deletingMemberId, setDeletingMemberId] = useState<number | null>(null);
+  const [memberError, setMemberError] = useState('');
+
+  const loadMembers = async () => {
+    setLoadingMembers(true);
+    try {
+      setMembers(await fetchTeamBySport(sport.id));
+    } finally {
+      setLoadingMembers(false);
+    }
+  };
+
+  useEffect(() => { loadMembers(); }, [sport.id]);
+
+  const openAddMember = () => {
+    setEditingMember(null);
+    setMemberForm(emptyMemberForm);
+    setMemberError('');
+    setShowAddForm(true);
+  };
+
+  const openEditMember = (m: SportTeam) => {
+    setEditingMember(m);
+    setMemberForm({ name: m.name ?? '', phone: m.phone ?? '', position: m.position ?? '' });
+    setMemberError('');
+    setShowAddForm(true);
+  };
+
+  const handleSaveMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMemberError('');
+    setSavingMember(true);
+    try {
+      const payload = {
+        name: memberForm.name.trim() || null,
+        phone: memberForm.phone.trim() || null,
+        position: memberForm.position.trim() || null,
+        sport_id: sport.id,
+      };
+      if (editingMember) {
+        await updateTeamMember(editingMember.id, payload);
+      } else {
+        await createTeamMember(payload);
+      }
+      setShowAddForm(false);
+      loadMembers();
+    } catch (err) {
+      setMemberError(err instanceof Error ? err.message : 'Something went wrong.');
+    } finally {
+      setSavingMember(false);
+    }
+  };
+
+  const handleDeleteMember = async (id: number) => {
+    setDeletingMemberId(id);
+    try {
+      await deleteTeamMember(id);
+      loadMembers();
+    } finally {
+      setDeletingMemberId(null);
+    }
+  };
+
+  return (
+    <div className="mt-4 pt-4 border-t border-white/10">
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-primary text-[10px] font-bold uppercase tracking-widest">
+          Team Members ({members.length})
+        </p>
+        <button
+          onClick={openAddMember}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 border border-primary/20 text-primary rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-primary/20 transition-all"
+        >
+          <Icon name="PlusIcon" size={11} />
+          Add Member
+        </button>
+      </div>
+
+      {/* Add / Edit member form */}
+      {showAddForm && (
+        <form onSubmit={handleSaveMember} className="bg-white/5 border border-white/10 rounded-xl p-4 mb-3 space-y-3">
+          {memberError && <p className="text-red-400 text-xs font-bold">{memberError}</p>}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-1.5">Name</label>
+              <input
+                type="text"
+                value={memberForm.name}
+                onChange={(e) => setMemberForm((p) => ({ ...p, name: e.target.value }))}
+                placeholder="Full name"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-primary transition-colors"
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-1.5">Position</label>
+              <input
+                type="text"
+                value={memberForm.position}
+                onChange={(e) => setMemberForm((p) => ({ ...p, position: e.target.value }))}
+                placeholder="e.g. Captain"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-primary transition-colors"
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-widest text-white mb-1.5">Phone</label>
+              <input
+                type="text"
+                value={memberForm.phone}
+                onChange={(e) => setMemberForm((p) => ({ ...p, phone: e.target.value }))}
+                placeholder="011-12345678"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-primary transition-colors"
+              />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              disabled={savingMember}
+              className="px-4 py-2 bg-primary text-white rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50"
+            >
+              {savingMember ? 'Saving...' : (editingMember ? 'Update' : 'Add')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowAddForm(false)}
+              className="px-4 py-2 bg-white/5 border border-white/10 text-white rounded-full font-bold text-[10px] uppercase tracking-widest hover:text-white transition-all"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* Members list */}
+      {loadingMembers ? (
+        <div className="flex items-center gap-2 py-3 text-white/40 text-xs">
+          <span className="w-3.5 h-3.5 border border-white/20 border-t-white rounded-full animate-spin" />
+          Loading...
+        </div>
+      ) : members.length === 0 ? (
+        <p className="text-white/30 text-xs py-2">No members yet. Add one above.</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+          {members.map((m) => (
+            <div key={m.id} className="flex items-center justify-between gap-3 bg-white/5 border border-white/10 rounded-xl px-3 py-2.5">
+              <div className="min-w-0">
+                <p className="font-bold text-white text-sm truncate">{m.name ?? '—'}</p>
+                {m.position && (
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-primary truncate">{m.position}</p>
+                )}
+                {m.phone && (
+                  <p className="text-[11px] text-white/40">{m.phone}</p>
+                )}
+              </div>
+              <div className="flex gap-1.5 shrink-0">
+                <button
+                  onClick={() => openEditMember(m)}
+                  className="p-1.5 rounded-lg bg-white/5 border border-white/10 text-white hover:text-white transition-colors"
+                >
+                  <Icon name="PencilSquareIcon" size={12} />
+                </button>
+                <button
+                  onClick={() => handleDeleteMember(m.id)}
+                  disabled={deletingMemberId === m.id}
+                  className="p-1.5 rounded-lg bg-white/5 border border-white/10 text-white hover:text-red-400 transition-colors disabled:opacity-50"
+                >
+                  <Icon name="TrashIcon" size={12} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 const emptyForm = { sport: '', description: '', sport_pic: null as string | null };
 
@@ -218,6 +407,7 @@ export default function SportManagementSection() {
                     </li>
                   ))}
                 </ul>
+                <TeamSection sport={s} />
               </div>
               <div className="flex gap-2 shrink-0">
                 <button

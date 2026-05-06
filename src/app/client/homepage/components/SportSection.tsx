@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Icon from '@/components/ui/AppIcon';
 import { supabase } from '@/lib/supabase';
-import { Tree, TreeNode } from 'react-organizational-chart';
 
 interface Sport {
   id: number;
@@ -11,58 +10,12 @@ interface Sport {
   sport_pic: string | null;
 }
 
-interface OrgNode {
+interface SportTeam {
   id: number;
   name: string | null;
   phone: string | null;
-  section: string | null;
-  parent_id: number | null;
-  children?: OrgNode[];
-}
-
-function buildTree(flat: OrgNode[]): OrgNode[] {
-  const map = new Map<number, OrgNode>();
-  flat.forEach((n) => map.set(n.id, { ...n, children: [] }));
-  const roots: OrgNode[] = [];
-  map.forEach((node) => {
-    if (node.parent_id === null) {
-      roots.push(node);
-    } else {
-      const parent = map.get(node.parent_id);
-      if (parent) parent.children!.push(node);
-    }
-  });
-  return roots;
-}
-
-function OrgCard({ node }: { node: OrgNode }) {
-  return (
-    <div className="inline-flex flex-col items-center px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white min-w-[120px]">
-      <span className="font-bold text-xs text-center leading-tight">{node.name ?? '—'}</span>
-      {node.section && (
-        <span className="text-[9px] font-bold uppercase tracking-widest text-primary mb-0.5">{node.section}</span>
-      )}
-      {node.phone && (
-        <span className="text-[10px] text-white/40 mt-0.5">{node.phone}</span>
-      )}
-    </div>
-  );
-}
-
-function OrgTreeNodes({ nodes }: { nodes: OrgNode[] }) {
-  return (
-    <>
-      {nodes.map((node) =>
-        node.children && node.children.length > 0 ? (
-          <TreeNode key={node.id} label={<OrgCard node={node} />}>
-            <OrgTreeNodes nodes={node.children} />
-          </TreeNode>
-        ) : (
-          <TreeNode key={node.id} label={<OrgCard node={node} />} />
-        )
-      )}
-    </>
-  );
+  position: string | null;
+  sport_id: number;
 }
 
 interface GalleryItem {
@@ -144,7 +97,7 @@ export default function SportSection() {
   const [loading, setLoading] = useState(true);
   const [sectionDesc, setSectionDesc] = useState<string>('');
   const [selected, setSelected] = useState<Sport | null>(null);
-  const [orgRoots, setOrgRoots] = useState<OrgNode[]>([]);
+  const [teamMap, setTeamMap] = useState<Record<number, SportTeam[]>>({});
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [lightbox, setLightbox] = useState<GalleryItem | null>(null);
 
@@ -156,8 +109,15 @@ export default function SportSection() {
       if (data) setSports(data as Sport[]);
       setLoading(false);
     });
-    supabase.from('organization').select('*').order('id').then(({ data }) => {
-      if (data) setOrgRoots(buildTree(data as OrgNode[]));
+    supabase.from('sport_team').select('*').order('id').then(({ data }) => {
+      if (data) {
+        const map: Record<number, SportTeam[]> = {};
+        (data as SportTeam[]).forEach((m) => {
+          if (!map[m.sport_id]) map[m.sport_id] = [];
+          map[m.sport_id].push(m);
+        });
+        setTeamMap(map);
+      }
     });
     supabase
       .from('gallery')
@@ -172,52 +132,29 @@ export default function SportSection() {
   if (!loading && sports.length === 0) return null;
 
   return (
-    <section className="py-20 px-4 sm:px-6">
+    <section className="pt-8 pb-20 px-4 sm:px-6">
       {selected && <SportModal sport={selected} onClose={() => setSelected(null)} />}
       {lightbox && <GalleryLightbox item={lightbox} onClose={() => setLightbox(null)} />}
       <div className="max-w-7xl mx-auto w-full">
-        <div className="mb-12 flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
-          {/* Left: label + heading + description */}
-          <div className="flex-1 min-w-0">
-            <span className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-3 block">
-              Introducing
-            </span>
-            <h2 className="font-black text-2xl md:text-4xl tracking-tighter leading-none text-white">
-              IRC NEGERI SEMBILAN <span className="gradient-text-brand"> CLUB</span>
-            </h2>
-            {sectionDesc && (
-              <div className="mt-4 text-white text-sm leading-relaxed max-w-2xl space-y-3">
-                {sectionDesc
-                  .split('\n')
-                  .filter((p) => p.trim() !== '')
-                  .map((p, i) => <p key={i}>{p}</p>)}
-              </div>
-            )}
-            <h2 className="font-black text-2xl md:text-4xl tracking-tighter leading-none text-white mt-8">
-              Organization <span className="gradient-text-brand"> Chart</span>
-            </h2>
-            {orgRoots.length > 0 && (
-              <div className="mt-6 overflow-x-auto pb-4">
-                {orgRoots.map((root) => (
-                  <Tree
-                    key={root.id}
-                    lineWidth="2px"
-                    lineColor="rgba(255,255,255,0.15)"
-                    lineBorderRadius="8px"
-                    label={<OrgCard node={root} />}
-                  >
-                    {root.children && <OrgTreeNodes nodes={root.children} />}
-                  </Tree>
-                ))}
-              </div>
-            )}
-
-            <h2 className="font-black text-2xl md:text-4xl tracking-tighter leading-none text-white mt-8">
-              <span className="gradient-text-brand"> SPORT SECTION</span>
-            </h2>
-
-          </div>
-
+        {/* Section header */}
+        <div className="mb-12">
+          <span className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-3 block">
+            Introducing
+          </span>
+          <h2 className="font-black text-4xl md:text-6xl tracking-tighter leading-none text-white">
+            IRC NEGERI SEMBILAN <span className="gradient-text-brand"> CLUB</span>
+          </h2>
+          {sectionDesc && (
+            <div className="mt-4 text-white text-sm leading-relaxed w-full space-y-3">
+              {sectionDesc
+                .split('\n')
+                .filter((p) => p.trim() !== '')
+                .map((p, i) => <p key={i}>{p}</p>)}
+            </div>
+          )}
+          <h2 className="font-black text-4xl md:text-6xl tracking-tighter leading-none text-white mt-8">
+            <span className="gradient-text-brand"> SPORTS SECTION</span>
+          </h2>
         </div>
 
         {loading ? (
@@ -225,53 +162,86 @@ export default function SportSection() {
             <span className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sports.map((s, idx) => (
-              <motion.div
-                key={s.id}
-                initial={{ opacity: 0, y: 32 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-60px' }}
-                transition={{ duration: 0.5, delay: idx * 0.08, ease: 'easeOut' }}
-                className="relative rounded-2xl overflow-hidden group cursor-pointer border border-white/10"
-                style={{ minHeight: '220px' }}
-                onClick={() => setSelected(s)}
-              >
-                {/* Background image or fallback */}
-                {s.sport_pic ? (
-                  <div
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                    style={{ backgroundImage: `url(${s.sport_pic})` }}
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-white/5" />
-                )}
-
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20" />
-
-                {/* Content */}
-                <div className="relative z-10 p-6 flex flex-col justify-end h-full" style={{ minHeight: '220px' }}>
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-8 h-8 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
-                      <Icon name="TrophyIcon" size={16} className="text-primary" />
+          <div className="space-y-6">
+            {sports.map((s, idx) => {
+              const members = teamMap[s.id] ?? [];
+              return (
+                <motion.div
+                  key={s.id}
+                  initial={{ opacity: 0, y: 32 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  transition={{ duration: 0.5, delay: idx * 0.06, ease: 'easeOut' }}
+                  className="glass-card rounded-2xl border border-white/10 overflow-hidden"
+                >
+                  <div className="flex flex-col lg:flex-row">
+                    {/* Left: Sport info */}
+                    <div
+                      className="lg:w-1/3 relative cursor-pointer group overflow-hidden"
+                      style={{ minHeight: '220px' }}
+                      onClick={() => setSelected(s)}
+                    >
+                      {s.sport_pic ? (
+                        <div
+                          className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                          style={{ backgroundImage: `url(${s.sport_pic})` }}
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-white/5" />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/10 lg:bg-gradient-to-r lg:from-black/10 lg:via-black/40 lg:to-black/80" />
+                      <div className="relative z-10 p-6 flex flex-col justify-end h-full" style={{ minHeight: '220px' }}>
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="w-8 h-8 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
+                            <Icon name="TrophyIcon" size={16} className="text-primary" />
+                          </div>
+                          <h3 className="font-black text-white text-xl">{s.sport}</h3>
+                        </div>
+                        <ul className="space-y-1.5">
+                          {(s.description ?? []).slice(0, 3).map((bullet, i) => (
+                            <li key={i} className="flex items-start gap-2 text-xs text-white/80">
+                              <Icon name="CheckCircleIcon" size={13} className="text-primary shrink-0 mt-0.5" variant="solid" />
+                              {bullet}
+                            </li>
+                          ))}
+                          {(s.description ?? []).length > 3 && (
+                            <li className="text-xs text-white/40 pl-5">+{s.description.length - 3} more</li>
+                          )}
+                        </ul>
+                        <span className="mt-4 text-[10px] font-bold uppercase tracking-widest text-primary/70">Tap for details</span>
+                      </div>
                     </div>
-                    <h3 className="font-black text-white text-lg">{s.sport}</h3>
+
+                    {/* Right: Team members */}
+                    <div className="lg:w-2/3 p-6 border-t border-white/10 lg:border-t-0 lg:border-l">
+                      <p className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-4">Team Members</p>
+                      {members.length === 0 ? (
+                        <div className="flex items-center justify-center h-24 text-white/20 text-sm font-bold">
+                          No team members listed yet.
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
+                          {members.map((m) => (
+                            <div
+                              key={m.id}
+                              className="rounded-xl bg-white/5 border border-white/10 p-3 flex flex-col gap-1"
+                            >
+                              <span className="font-black text-white text-sm leading-tight">{m.name ?? '—'}</span>
+                              {m.position && (
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-primary">{m.position}</span>
+                              )}
+                              {m.phone && (
+                                <span className="text-[11px] text-white/40 mt-0.5">{m.phone}</span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <ul className="space-y-1.5">
-                    {(s.description ?? []).slice(0, 3).map((bullet, i) => (
-                      <li key={i} className="flex items-start gap-2 text-xs text-white/80">
-                        <Icon name="CheckCircleIcon" size={13} className="text-primary shrink-0 mt-0.5" variant="solid" />
-                        {bullet}
-                      </li>
-                    ))}
-                    {(s.description ?? []).length > 3 && (
-                      <li className="text-xs text-white/40 pl-5">+{s.description.length - 3} more</li>
-                    )}
-                  </ul>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </div>
         )}
 
@@ -289,7 +259,7 @@ export default function SportSection() {
                 Memories
               </span>
               <h2 className="font-black text-4xl md:text-6xl tracking-tighter leading-none text-white">
-                GALLERY <span className="gradient-text-brand"> IRC</span>
+                GALLERY IRC SPORTS<span className="gradient-text-brand"> SECTION</span>
               </h2>
             </div>
 

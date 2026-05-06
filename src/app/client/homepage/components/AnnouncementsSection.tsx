@@ -82,7 +82,7 @@ export default function AnnouncementsSection() {
   if (loading || (!imageUrl && events.length === 0)) return null;
 
   return (
-    <section className="py-20 px-6">
+    <section className="pt-8 pb-8 px-6">
       {selected && <EventModal event={selected} onClose={() => setSelected(null)} />}
       <div className="max-w-7xl mx-auto w-full">
         <motion.div

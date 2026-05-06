@@ -31,7 +31,7 @@ export default function HeaderSliderSection() {
   if (loading || items.length === 0) return null;
 
   return (
-    <section className="pt-28 pb-16 px-4">
+    <section className="pt-28 pb-6 px-4">
       <Swiper
         modules={[EffectCoverflow, Autoplay, Pagination]}
         effect="coverflow"

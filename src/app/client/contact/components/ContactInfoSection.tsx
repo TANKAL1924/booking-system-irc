@@ -98,11 +98,7 @@ export default function ContactInfoSection() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-bold uppercase tracking-widest text-white">Monday – Saturday</span>
-                  <span className="text-[11px] font-bold text-accent">8:00 AM – 5:30 PM</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-white">Sunday</span>
-                  <span className="text-[11px] font-bold text-white/40">Closed</span>
+                  <span className="text-[11px] font-bold text-accent">8:30 AM - 5:30 PM</span>
                 </div>
               </div>
             </div>
@@ -134,7 +130,7 @@ export default function ContactInfoSection() {
 
             {/* Quick WhatsApp */}
             <a
-              href={base?.whatsapp ? `${base.whatsapp}?text=Hi%20Arena%20IRC%2C%20I%20have%20an%20enquiry.` : 'https://wa.me/60123456789?text=Hi%20Arena%20IRC%2C%20I%20have%20an%20enquiry.'}
+              href={`https://wa.me/${(base?.whatsapp ?? '60123456789').replace(/\D/g, '')}?text=Hi%20Arena%20IRC%2C%20I%20have%20an%20enquiry.`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-3 w-full py-5 bg-[#25D366] text-white rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-[#1ebe5d] transition-all"

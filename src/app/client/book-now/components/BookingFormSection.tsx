@@ -771,31 +771,55 @@ export default function BookingFormSection() {
                   Payment Option
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {(['deposit', 'full'] as const).map((opt) => (
-                    <button
-                      key={opt}
-                      type="button"
-                      onClick={() => setPaymentOption(opt)}
-                      className={`p-4 sm:p-5 rounded-xl border text-left transition-all ${
-                        paymentOption === opt ? 'border-primary bg-primary/10' : 'border-white/10 bg-white/5 hover:border-white/20'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${paymentOption === opt ? 'border-primary' : 'border-white/30'}`}>
-                          {paymentOption === opt && <div className="w-2 h-2 rounded-full bg-primary" />}
-                        </div>
-                        <span className="font-bold text-white text-sm">{opt === 'deposit' ? '50% Deposit' : 'Full Payment'}</span>
+                  {/* 50% Deposit */}
+                  <button
+                    type="button"
+                    onClick={() => setPaymentOption('deposit')}
+                    className={`p-4 sm:p-5 rounded-xl border-2 text-left transition-all ${
+                      paymentOption === 'deposit'
+                        ? 'border-amber-400 bg-amber-400/10 shadow-[0_0_16px_rgba(251,191,36,0.15)]'
+                        : 'border-white/10 bg-white/5 hover:border-amber-400/40'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 mb-2">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${paymentOption === 'deposit' ? 'border-amber-400' : 'border-white/30'}`}>
+                        {paymentOption === 'deposit' && <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />}
                       </div>
-                      <p className="text-white text-xs">
-                        {opt === 'deposit' ? 'Pay half now, balance before event day.' : 'Pay in full and get priority confirmation.'}
+                      <span className={`font-black text-sm ${paymentOption === 'deposit' ? 'text-amber-400' : 'text-white'}`}>50% Deposit</span>
+                      <span className="ml-auto text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/20">Flexible</span>
+                    </div>
+                    <p className="text-white/60 text-xs mb-2">Pay half now, settle the balance before event day.</p>
+                    {cart.length > 0 && (
+                      <p className="font-black text-xl text-amber-400">
+                        RM {Math.ceil(cartTotal * 0.5)}
                       </p>
-                      {cart.length > 0 && (
-                        <p className="text-accent font-black text-lg mt-2">
-                          RM {opt === 'deposit' ? Math.ceil(cartTotal * 0.5) : cartTotal}
-                        </p>
-                      )}
-                    </button>
-                  ))}
+                    )}
+                  </button>
+
+                  {/* Full Payment */}
+                  <button
+                    type="button"
+                    onClick={() => setPaymentOption('full')}
+                    className={`p-4 sm:p-5 rounded-xl border-2 text-left transition-all ${
+                      paymentOption === 'full'
+                        ? 'border-emerald-400 bg-emerald-400/10 shadow-[0_0_16px_rgba(52,211,153,0.15)]'
+                        : 'border-white/10 bg-white/5 hover:border-emerald-400/40'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 mb-2">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${paymentOption === 'full' ? 'border-emerald-400' : 'border-white/30'}`}>
+                        {paymentOption === 'full' && <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />}
+                      </div>
+                      <span className={`font-black text-sm ${paymentOption === 'full' ? 'text-emerald-400' : 'text-white'}`}>Full Payment</span>
+                      <span className="ml-auto text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">Recommended</span>
+                    </div>
+                    <p className="text-white/60 text-xs mb-2">Pay in full and get priority confirmation.</p>
+                    {cart.length > 0 && (
+                      <p className="font-black text-xl text-emerald-400">
+                        RM {cartTotal}
+                      </p>
+                    )}
+                  </button>
                 </div>
                 <p className="text-white text-xs">Payment via FPX, credit/debit card, or bank transfer.</p>
               </div>

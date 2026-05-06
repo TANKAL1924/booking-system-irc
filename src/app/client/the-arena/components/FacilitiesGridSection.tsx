@@ -187,6 +187,24 @@ function Carousel({ items }: { items: Facility[] }) {
               <div className="p-5 flex flex-col gap-3 flex-1">
                 <h3 className="text-base font-black text-white">{f.name}</h3>
 
+                {/* Morning / Night fee */}
+                {(f.morning_fee != null || f.night_fee != null) && (
+                  <div className="flex items-center gap-3">
+                    {f.morning_fee != null && (
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-yellow-400/10 border border-yellow-400/20">
+                        <span className="text-[10px]">☀</span>
+                        <span className="text-yellow-400 font-bold text-[11px]">RM {f.morning_fee.toFixed(2)}</span>
+                      </div>
+                    )}
+                    {f.night_fee != null && (
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-400/10 border border-blue-400/20">
+                        <span className="text-[10px]">🌙</span>
+                        <span className="text-blue-400 font-bold text-[11px]">RM {f.night_fee.toFixed(2)}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
                 {/* Facility: add-ons only */}
                 {f.type && (
                   <>
@@ -223,23 +241,7 @@ function Carousel({ items }: { items: Facility[] }) {
                   </div>
                 )}
 
-                {/* Morning / Night fee */}
-                {(f.morning_fee != null || f.night_fee != null) && (
-                  <div className="flex items-center gap-3">
-                    {f.morning_fee != null && (
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-yellow-400/10 border border-yellow-400/20">
-                        <span className="text-[10px]">☀</span>
-                        <span className="text-yellow-400 font-bold text-[11px]">RM {f.morning_fee.toFixed(2)}</span>
-                      </div>
-                    )}
-                    {f.night_fee != null && (
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-400/10 border border-blue-400/20">
-                        <span className="text-[10px]">🌙</span>
-                        <span className="text-blue-400 font-bold text-[11px]">RM {f.night_fee.toFixed(2)}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
+
 
                 {/* Hall: contact number + WhatsApp */}
                 {!f.type && f.pic_contact && (

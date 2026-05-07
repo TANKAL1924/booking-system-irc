@@ -56,7 +56,7 @@ export default function Header() {
             : 'bg-transparent py-5'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between relative">
           {/* Logo */}
           <Link to="/homepage" className="flex items-center gap-3 group">
             <AppLogo size={48} onClick={() => {}} />
@@ -71,7 +71,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
             {navLinks?.map((link) => (
               link?.href === '/book-now' ? (
                 <Link

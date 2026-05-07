@@ -294,6 +294,7 @@ export default function FacilitiesGridSection() {
       .from('facilities')
       .select('*')
       .eq('status', true)
+      .eq('purpose', false)
       .order('id')
       .then(({ data }) => {
         setFacilities(data ?? []);

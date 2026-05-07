@@ -20,6 +20,7 @@ export interface Facility {
   status: boolean | null;
   pic_link: string[] | null;
   type: boolean | null;
+  purpose: boolean | null;
   slots: FacilitySlot[] | null;
   add_on: FacilityAddOn[] | null;
   pic_contact: string | null;

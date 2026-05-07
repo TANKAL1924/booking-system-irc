@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AppLogo from '@/components/ui/AppLogo';
 import Icon from '@/components/ui/AppIcon';
 import LoginModal from '@/components/LoginModal';
-import { useAuthStore } from '@/store/authStore';
 
 const navLinks = [
   { href: '/homepage', label: 'Home' },
@@ -43,8 +42,6 @@ export default function Header() {
     window.addEventListener('scroll', handleMenuScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleMenuScroll);
   }, []);
-
-  const { user } = useAuthStore();
 
   const handleLogin = () => {
     navigate('/admin-dashboard');
@@ -103,16 +100,7 @@ export default function Header() {
             ))}
           </div>
 
-          {/* CTA */}
-          <div className="hidden md:flex items-center gap-3">
-              <button
-                onClick={() => setLoginOpen(true)}
-                className="flex items-center gap-2 px-4 py-2.5 border border-white/10 bg-white/5 text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:text-white hover:bg-white/10 transition-all duration-300"
-              >
-                <Icon name="LockClosedIcon" size={13} />
-                Admin
-              </button>
-          </div>
+
 
           {/* Mobile Hamburger */}
           <button
@@ -159,15 +147,6 @@ export default function Header() {
               </Link>
             ))}
             <div className="mt-6 space-y-3">
-              {!user && (
-                <button
-                  onClick={() => { setMenuOpen(false); setLoginOpen(true); }}
-                  className="flex items-center justify-center gap-2 w-full py-4 border border-white/10 bg-white/5 text-white rounded-full font-bold text-sm uppercase tracking-widest hover:text-white transition-all"
-                >
-                  <Icon name="LockClosedIcon" size={15} />
-                  Admin Login
-                </button>
-              ) }
               <Link
                 to="/book-now"
                 onClick={() => setMenuOpen(false)}

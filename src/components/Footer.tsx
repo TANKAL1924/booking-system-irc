@@ -1,8 +1,10 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import AppLogo from '@/components/ui/AppLogo';
 import Icon from '@/components/ui/AppIcon';
 import { useBase } from '@/lib/useBase';
 import { FaFacebook, FaInstagram, FaTiktok } from 'react-icons/fa6';
+import LoginModal from '@/components/LoginModal';
 
 const quickLinks = [
   { href: '/homepage', label: 'Home' },
@@ -14,7 +16,12 @@ const quickLinks = [
 
 export default function Footer() {
   const { base } = useBase();
+  const [loginOpen, setLoginOpen] = useState(false);
+  const navigate = useNavigate();
+  const handleLogin = () => navigate('/admin-dashboard');
   return (
+    <>
+      <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} onLogin={handleLogin} />
     <footer className="bg-[#0A0A0A] border-t border-white/5 px-6 py-8">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
 
@@ -46,6 +53,13 @@ export default function Footer() {
               </a>
             )}
           </div>
+          <button
+            onClick={() => setLoginOpen(true)}
+            className="hidden md:flex items-center gap-2 px-4 py-2 border border-white/10 bg-white/5 text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-white/10 transition-all duration-300 w-fit"
+          >
+            <Icon name="LockClosedIcon" size={13} />
+            Admin
+          </button>
         </div>
 
         {/* Center: Quick Links */}
@@ -105,5 +119,6 @@ export default function Footer() {
         </p>
       </div>
     </footer>
+    </>
   );
 }

@@ -19,6 +19,7 @@ const emptyForm: FacilityPayload = {
   status: true,
   pic_link: [],
   type: true,
+  purpose: false,
   slots: [],
   add_on: [],
   pic_contact: null,
@@ -107,6 +108,7 @@ export default function FacilitiesManagementSection() {
       ...rest,
       pic_link: rest.pic_link ?? [],
       type: rest.type ?? true,
+      purpose: rest.purpose ?? false,
       slots: rest.slots ?? [],
       add_on: rest.add_on ?? [],
       pic_contact: rest.pic_contact ?? null,
@@ -262,6 +264,27 @@ export default function FacilitiesManagementSection() {
                   className={`px-5 py-2 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all ${!form.type ? 'bg-primary text-white' : 'bg-white/5 border border-white/10 text-white hover:text-white'}`}
                 >
                   Hall
+                </button>
+              </div>
+            </div>
+
+            {/* Purpose toggle */}
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Purpose</label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setForm((p) => ({ ...p, purpose: true }))}
+                  className={`px-5 py-2 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all ${form.purpose ? 'bg-primary text-white' : 'bg-white/5 border border-white/10 text-white hover:text-white'}`}
+                >
+                  Internal
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setForm((p) => ({ ...p, purpose: false }))}
+                  className={`px-5 py-2 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all ${!form.purpose ? 'bg-primary text-white' : 'bg-white/5 border border-white/10 text-white hover:text-white'}`}
+                >
+                  Outsider
                 </button>
               </div>
             </div>
@@ -636,6 +659,9 @@ export default function FacilitiesManagementSection() {
                       </span>
                       <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-primary/10 text-primary">
                         {f.type ? 'Facility' : 'Hall'}
+                      </span>
+                      <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${f.purpose ? 'bg-yellow-500/10 text-yellow-400' : 'bg-blue-500/10 text-blue-400'}`}>
+                        {f.purpose ? 'Internal' : 'Outsider'}
                       </span>
                     </div>
                     <p className="text-white font-black text-base truncate">{f.name}</p>

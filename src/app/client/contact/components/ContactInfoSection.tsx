@@ -97,8 +97,12 @@ export default function ContactInfoSection() {
               </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-white">Monday – Saturday</span>
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-white">Monday – Friday</span>
                   <span className="text-[11px] font-bold text-accent">8:30 AM - 5:30 PM</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-white">Saturday</span>
+                  <span className="text-[11px] font-bold text-accent">8:30 AM - 1:30 PM</span>
                 </div>
               </div>
             </div>

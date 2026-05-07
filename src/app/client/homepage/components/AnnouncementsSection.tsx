@@ -64,7 +64,7 @@ export default function AnnouncementsSection() {
     const today = new Date().toISOString().split('T')[0];
     Promise.all([
       supabase.from('announcement').select('ann_link').eq('id', 1).maybeSingle(),
-      supabase.from('events').select('*').gte('start_date', today).order('start_date', { ascending: true }).limit(3),
+      supabase.from('events').select('*').gte('start_date', today).order('start_date', { ascending: true }),
     ]).then(([ann, evts]) => {
       setImageUrl(ann.data?.ann_link ?? null);
       if (evts.data) setEvents(evts.data);
@@ -102,7 +102,7 @@ export default function AnnouncementsSection() {
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
           {/* Left: Announcement */}
           {imageUrl && (
             <motion.div
@@ -124,6 +124,7 @@ export default function AnnouncementsSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.5, delay: 0.2, ease: 'easeOut' }}
+            className="flex flex-col max-h-[480px] overflow-y-auto scrollbar-dark"
           >
             <p className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-4">Upcoming Events</p>
             {events.length === 0 ? (

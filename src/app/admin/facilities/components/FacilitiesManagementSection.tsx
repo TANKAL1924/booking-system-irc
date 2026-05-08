@@ -203,13 +203,6 @@ export default function FacilitiesManagementSection() {
           <h2 className="text-xl font-black text-white">Facilities Management</h2>
           <p className="text-white text-sm mt-1">Add, edit, delete or disable facilities and set per-hour pricing</p>
         </div>
-        <button
-          onClick={openAdd}
-          className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-red-700 transition-all shrink-0"
-        >
-          <Icon name="PlusIcon" size={14} />
-          Add Facility
-        </button>
       </div>
 
       {toast && (

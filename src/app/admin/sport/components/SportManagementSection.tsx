@@ -29,13 +29,6 @@ function TeamSection({ sport }: { sport: Sport }) {
 
   useEffect(() => { loadMembers(); }, [sport.id]);
 
-  const openAddMember = () => {
-    setEditingMember(null);
-    setMemberForm(emptyMemberForm);
-    setMemberError('');
-    setShowAddForm(true);
-  };
-
   const openEditMember = (m: SportTeam) => {
     setEditingMember(m);
     setMemberForm({ name: m.name ?? '', phone: m.phone ?? '', position: m.position ?? '' });
@@ -84,13 +77,6 @@ function TeamSection({ sport }: { sport: Sport }) {
         <p className="text-primary text-[10px] font-bold uppercase tracking-widest">
           Team Members ({members.length})
         </p>
-        <button
-          onClick={openAddMember}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 border border-primary/20 text-primary rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-primary/20 transition-all"
-        >
-          <Icon name="PlusIcon" size={11} />
-          Add Member
-        </button>
       </div>
 
       {/* Add / Edit member form */}
@@ -218,15 +204,6 @@ export default function SportManagementSection() {
 
   useEffect(() => { load(); }, []);
 
-  const openAdd = () => {
-    setEditingId(null);
-    setForm(emptyForm);
-    setPicFile(null);
-    setPicPreview(null);
-    setError('');
-    setShowForm(true);
-  };
-
   const openEdit = (s: Sport) => {
     setEditingId(s.id);
     setForm({ sport: s.sport ?? '', description: (s.description ?? []).join('\n'), sport_pic: s.sport_pic ?? null });
@@ -294,13 +271,6 @@ export default function SportManagementSection() {
           <h2 className="text-xl font-black text-white">Sport Management</h2>
           <p className="text-white text-sm mt-1">Add and manage sports offered at the arena</p>
         </div>
-        <button
-          onClick={openAdd}
-          className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-red-700 transition-all"
-        >
-          <Icon name="PlusIcon" size={13} />
-          Add Sport
-        </button>
       </div>
 
       {/* Form */}
@@ -318,9 +288,9 @@ export default function SportManagementSection() {
               type="text"
               required
               value={form.sport}
-              onChange={(e) => setForm((p) => ({ ...p, sport: e.target.value }))}
-              placeholder=""
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
+              onChange={editingId === null ? (e) => setForm((p) => ({ ...p, sport: e.target.value })) : undefined}
+              readOnly={editingId !== null}
+              className={`w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors ${editingId !== null ? 'cursor-default' : 'focus:border-primary'}`}
             />
           </div>
           <div>
@@ -330,9 +300,9 @@ export default function SportManagementSection() {
             <textarea
               rows={6}
               value={form.description}
-              onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-              placeholder=""
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors resize-none"
+              onChange={editingId === null ? (e) => setForm((p) => ({ ...p, description: e.target.value })) : undefined}
+              readOnly={editingId !== null}
+              className={`w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors resize-none ${editingId !== null ? 'cursor-default' : 'focus:border-primary'}`}
             />
           </div>
           <div>

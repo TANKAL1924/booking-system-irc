@@ -24,7 +24,7 @@ interface SocialForm {
 }
 
 export default function HomeManagementSection() {
-  const [activeTab, setActiveTab] = useState<'about' | 'social' | 'tnc' | 'layout' | 'org'>('about');
+  const [activeTab, setActiveTab] = useState<'about' | 'social' | 'tnc' | 'layout'>('about');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState('');
@@ -40,20 +40,7 @@ export default function HomeManagementSection() {
   const [uploading, setUploading] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
 
-  interface OrgMember { id: number; name: string | null; phone: string | null; section: string | null; parent_id: number | null; }
-  const [orgMembers, setOrgMembers] = useState<OrgMember[]>([]);
-  const [orgShowForm, setOrgShowForm] = useState(false);
-  const [orgEditingId, setOrgEditingId] = useState<number | null>(null);
-  const [orgForm, setOrgForm] = useState({ name: '', phone: '', section: '', parent_id: '' });
-  const [orgSaving, setOrgSaving] = useState(false);
-  const [orgError, setOrgError] = useState('');
-  const [orgDeletingId, setOrgDeletingId] = useState<number | null>(null);
-
   useEffect(() => {
-    supabase.from('organization').select('*').order('id').then(({ data }) => {
-      if (data) setOrgMembers(data as OrgMember[]);
-    });
-
     supabase
       .from('base')
       .select('*')
@@ -174,65 +161,11 @@ export default function HomeManagementSection() {
     setTnc((prev) => prev.map((item, i) => (i === idx ? value : item)));
   };
 
-  const loadOrg = async () => {
-    const { data } = await supabase.from('organization').select('*').order('id');
-    if (data) setOrgMembers(data as OrgMember[]);
-  };
-
-  const handleOrgSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setOrgError('');
-    setOrgSaving(true);
-    const payload = {
-      name: orgForm.name.trim() || null,
-      phone: orgForm.phone.trim() || null,
-      section: orgForm.section.trim() || null,
-      parent_id: orgForm.parent_id !== '' ? Number(orgForm.parent_id) : null,
-    };
-    try {
-      if (orgEditingId !== null) {
-        const { error } = await supabase.from('organization').update(payload).eq('id', orgEditingId);
-        if (error) throw new Error(error.message);
-      } else {
-        const { error } = await supabase.from('organization').insert(payload);
-        if (error) throw new Error(error.message);
-      }
-      setOrgShowForm(false);
-      await loadOrg();
-    } catch (err) {
-      setOrgError(err instanceof Error ? err.message : 'Something went wrong.');
-    } finally {
-      setOrgSaving(false);
-    }
-  };
-
-  const handleOrgDelete = async (id: number) => {
-    setOrgDeletingId(id);
-    await supabase.from('organization').delete().eq('id', id);
-    await loadOrg();
-    setOrgDeletingId(null);
-  };
-
-  const openOrgAdd = () => {
-    setOrgEditingId(null);
-    setOrgForm({ name: '', phone: '', section: '', parent_id: '' });
-    setOrgError('');
-    setOrgShowForm(true);
-  };
-
-  const openOrgEdit = (m: OrgMember) => {
-    setOrgEditingId(m.id);
-    setOrgForm({ name: m.name ?? '', phone: m.phone ?? '', section: m.section ?? '', parent_id: m.parent_id != null ? String(m.parent_id) : '' });
-    setOrgError('');
-    setOrgShowForm(true);
-  };
-
   const tabs = [
     { key: 'about', label: 'About Us', icon: 'InformationCircleIcon' },
     { key: 'social', label: 'Social Media', icon: 'ShareIcon' },
     { key: 'tnc', label: 'Terms & Conditions', icon: 'DocumentTextIcon' },
     { key: 'layout', label: 'Layout', icon: 'PhotoIcon' },
-    { key: 'org', label: 'Organization', icon: 'UsersIcon' },
   ] as const;
 
   if (loading) {
@@ -276,24 +209,23 @@ export default function HomeManagementSection() {
 
       {/* About Us Tab */}
       {activeTab === 'about' && (
-        <form onSubmit={handleSaveAbout} className="glass-card rounded-2xl p-6 space-y-5">
+        <form className="glass-card rounded-2xl p-6 space-y-5">
           <div>
             <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">About Us</label>
             <textarea
               value={about.description}
-              onChange={(e) => setAbout((p) => ({ ...p, description: e.target.value }))}
+              readOnly
               rows={8}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors resize-none"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors resize-none cursor-default"
             />
           </div>
           <div>
             <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Sport Section Description</label>
             <textarea
               value={about.sport_description}
-              onChange={(e) => setAbout((p) => ({ ...p, sport_description: e.target.value }))}
+              readOnly
               rows={4}
-              placeholder=""
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors resize-none"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors resize-none cursor-default"
             />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -301,18 +233,18 @@ export default function HomeManagementSection() {
               <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Vision</label>
               <textarea
                 value={about.vision}
-                onChange={(e) => setAbout((p) => ({ ...p, vision: e.target.value }))}
+                readOnly
                 rows={3}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors resize-none"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors resize-none cursor-default"
               />
             </div>
             <div>
               <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Mission</label>
               <textarea
                 value={about.mission}
-                onChange={(e) => setAbout((p) => ({ ...p, mission: e.target.value }))}
+                readOnly
                 rows={3}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors resize-none"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors resize-none cursor-default"
               />
             </div>
           </div>
@@ -322,10 +254,9 @@ export default function HomeManagementSection() {
               <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Address</label>
               <textarea
                 value={company.address}
-                onChange={(e) => setCompany((p) => ({ ...p, address: e.target.value }))}
+                readOnly
                 rows={3}
-                placeholder=""
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors resize-none"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors resize-none cursor-default"
               />
             </div>
             <div>
@@ -333,9 +264,8 @@ export default function HomeManagementSection() {
               <input
                 type="text"
                 value={company.whatsapp}
-                onChange={(e) => setCompany((p) => ({ ...p, whatsapp: e.target.value }))}
-                placeholder=""
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
+                readOnly
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors cursor-default"
               />
             </div>
             <div>
@@ -343,9 +273,8 @@ export default function HomeManagementSection() {
               <input
                 type="email"
                 value={company.email}
-                onChange={(e) => setCompany((p) => ({ ...p, email: e.target.value }))}
-                placeholder=""
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
+                readOnly
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors cursor-default"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -355,9 +284,8 @@ export default function HomeManagementSection() {
                   type="number"
                   step="any"
                   value={company.lat}
-                  onChange={(e) => setCompany((p) => ({ ...p, lat: e.target.value }))}
-                  placeholder=""
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
+                  readOnly
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors cursor-default"
                 />
               </div>
               <div>
@@ -366,33 +294,25 @@ export default function HomeManagementSection() {
                   type="number"
                   step="any"
                   value={company.long}
-                  onChange={(e) => setCompany((p) => ({ ...p, long: e.target.value }))}
-                  placeholder=""
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
+                  readOnly
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors cursor-default"
                 />
               </div>
             </div>
           </div>
-          <button
-            type="submit"
-            disabled={saving}
-            className="px-6 py-2.5 bg-primary text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50"
-          >
-            {saving ? 'Saving...' : 'Save Changes'}
-          </button>
         </form>
       )}
 
       {/* Social Media Tab */}
       {activeTab === 'social' && (
-        <form onSubmit={handleSaveSocial} className="glass-card rounded-2xl p-6 space-y-5">
+        <form className="glass-card rounded-2xl p-6 space-y-5">
           <h3 className="font-bold text-white text-sm border-b border-white/5 pb-4">Social Media Links</h3>
           <div className="space-y-4">
             {(
               [
-                { key: 'facebook', label: 'Facebook', placeholder: 'https://facebook.com/arenairc' },
-                { key: 'insta', label: 'Instagram', placeholder: 'https://instagram.com/arenairc' },
-                { key: 'tiktok', label: 'TikTok', placeholder: 'https://tiktok.com/@arenairc' },
+                { key: 'facebook', label: 'Facebook' },
+                { key: 'insta', label: 'Instagram' },
+                { key: 'tiktok', label: 'TikTok' },
               ] as const
             ).map((s) => (
               <div key={s.key}>
@@ -400,20 +320,12 @@ export default function HomeManagementSection() {
                 <input
                   type="url"
                   value={social[s.key]}
-                  onChange={(e) => setSocial((p) => ({ ...p, [s.key]: e.target.value }))}
-                  placeholder=""
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
+                  readOnly
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors cursor-default"
                 />
               </div>
             ))}
           </div>
-          <button
-            type="submit"
-            disabled={saving}
-            className="px-6 py-2.5 bg-primary text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50"
-          >
-            {saving ? 'Saving...' : 'Save Changes'}
-          </button>
         </form>
       )}
 
@@ -494,135 +406,6 @@ export default function HomeManagementSection() {
               ))
             )}
           </div>
-        </div>
-      )}
-
-      {/* Organization Tab */}
-      {activeTab === 'org' && (
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-white text-sm">Organization Members</h3>
-            <button
-              onClick={openOrgAdd}
-              className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-red-700 transition-all"
-            >
-              <Icon name="PlusIcon" size={13} />
-              Add Member
-            </button>
-          </div>
-
-          {orgShowForm && (
-            <form onSubmit={handleOrgSave} className="glass-card rounded-2xl p-6 mb-4 space-y-4 border border-white/10">
-              <h4 className="font-bold text-white text-sm">{orgEditingId !== null ? 'Edit Member' : 'New Member'}</h4>
-              {orgError && <p className="text-red-400 text-xs font-bold">{orgError}</p>}
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Name / Position</label>
-                <input
-                  type="text"
-                  value={orgForm.name}
-                  onChange={(e) => setOrgForm((p) => ({ ...p, name: e.target.value }))}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Phone</label>
-                <input
-                  type="text"
-                  value={orgForm.phone}
-                  onChange={(e) => setOrgForm((p) => ({ ...p, phone: e.target.value }))}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">Section</label>
-                <input
-                  type="text"
-                  value={orgForm.section}
-                  onChange={(e) => setOrgForm((p) => ({ ...p, section: e.target.value }))}
-                  placeholder="e.g. Management, Technical"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-widest text-white mb-2">
-                  Parent (leave empty for root)
-                </label>
-                <select
-                  value={orgForm.parent_id}
-                  onChange={(e) => setOrgForm((p) => ({ ...p, parent_id: e.target.value }))}
-                  className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
-                >
-                  <option value="" className="bg-[#1a1a1a]">— No parent (root) —</option>
-                  {orgMembers
-                    .filter((m) => m.id !== orgEditingId)
-                    .map((m) => (
-                      <option key={m.id} value={m.id} className="bg-[#1a1a1a]">{m.name ?? `#${m.id}`}</option>
-                    ))}
-                </select>
-              </div>
-              <div className="flex gap-3 pt-1">
-                <button
-                  type="submit"
-                  disabled={orgSaving}
-                  className="px-6 py-2.5 bg-primary text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50"
-                >
-                  {orgSaving ? 'Saving...' : 'Save'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setOrgShowForm(false)}
-                  className="px-6 py-2.5 bg-white/5 border border-white/10 text-white rounded-full font-bold text-[11px] uppercase tracking-widest hover:text-white transition-all"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          )}
-
-          {orgMembers.length === 0 ? (
-            <div className="glass-card rounded-2xl p-12 text-center">
-              <Icon name="UsersIcon" size={32} className="text-white mx-auto mb-3" />
-              <p className="text-white text-sm font-bold">No members yet. Add one above.</p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {orgMembers.map((m) => {
-                const parent = orgMembers.find((p) => p.id === m.parent_id);
-                return (
-                  <div key={m.id} className="glass-card rounded-2xl p-4 border border-white/5 flex items-center gap-4">
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-white text-sm">{m.name ?? '—'}</p>
-                      <div className="flex items-center gap-3 mt-0.5">
-                        {m.section && <span className="text-primary text-[10px] font-bold uppercase tracking-widest">{m.section}</span>}
-                        {m.phone && <span className="text-white/40 text-xs">{m.phone}</span>}
-                        {parent && (
-                          <span className="text-primary text-[10px] font-bold uppercase tracking-widest">
-                            ↳ {parent.name ?? `#${parent.id}`}
-                          </span>
-                        )}
-                        <span className="text-white/20 text-[10px]">ID: {m.id}</span>
-                      </div>
-                    </div>
-                    <div className="flex gap-2 shrink-0">
-                      <button
-                        onClick={() => openOrgEdit(m)}
-                        className="p-2 rounded-xl bg-white/5 border border-white/10 text-white hover:text-white transition-colors"
-                      >
-                        <Icon name="PencilSquareIcon" size={14} />
-                      </button>
-                      <button
-                        onClick={() => handleOrgDelete(m.id)}
-                        disabled={orgDeletingId === m.id}
-                        className="p-2 rounded-xl bg-white/5 border border-white/10 text-white hover:text-red-400 transition-colors disabled:opacity-50"
-                      >
-                        <Icon name="TrashIcon" size={14} />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
         </div>
       )}
 

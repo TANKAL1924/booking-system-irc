@@ -95,13 +95,6 @@ export default function FacilitiesManagementSection() {
     }
   };
 
-  const openAdd = () => {
-    setForm(emptyForm);
-    setEditingId(null);
-    setPendingFiles([]);
-    setShowForm(true);
-  };
-
   const openEdit = (f: Facility) => {
     const { id, ...rest } = f;
     setForm({

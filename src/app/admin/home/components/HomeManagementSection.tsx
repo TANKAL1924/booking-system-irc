@@ -71,21 +71,6 @@ export default function HomeManagementSection() {
     showSaved();
   };
 
-  const handleSaveAbout = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await upsert({
-      about_us: about.description,
-      vision: about.vision,
-      mission: about.mission,
-      sport_description: about.sport_description,
-      address: company.address,
-      whatsapp: company.whatsapp,
-      email: company.email,
-      lat: company.lat !== '' ? parseFloat(company.lat) : null,
-      long: company.long !== '' ? parseFloat(company.long) : null,
-    });
-  };
-
   const deleteStorageFile = async (bucket: string, url: string) => {
     try {
       const parts = new URL(url).pathname.split(`/${bucket}/`);
@@ -135,11 +120,6 @@ export default function HomeManagementSection() {
     await upsert({ main_vid: publicUrl });
     setVideoUrl(publicUrl);
     setUploadingVideo(false);
-  };
-
-  const handleSaveSocial = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await upsert({ facebook: social.facebook, insta: social.insta, tiktok: social.tiktok });
   };
 
   const handleSaveTnc = async () => {

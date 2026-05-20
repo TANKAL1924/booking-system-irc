@@ -115,6 +115,12 @@ export default function BookingFormSection() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
+  /* promo code */
+  const [promoInput, setPromoInput] = useState('');
+  const [promoApplying, setPromoApplying] = useState(false);
+  const [promoError, setPromoError] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState<{ code: string; percent: number } | null>(null);
+
   /* derived */
   const selectedFacility = facilities.find((f) => f.id === Number(itemForm.facilityId));
   const slots = selectedFacility?.slots ?? [];
@@ -188,7 +194,9 @@ export default function BookingFormSection() {
     slot.price + selectedAddOns.reduce((sum, a) => sum + a.addOn.price * a.hours, 0);
 
   const cartTotal = cart.reduce((sum, i) => sum + itemTotal(i.slot, i.addOns), 0);
-  const payAmount = paymentOption === 'deposit' ? Math.ceil(cartTotal * 0.5) : cartTotal;
+  const discountAmount = appliedPromo ? Math.floor(cartTotal * appliedPromo.percent / 100) : 0;
+  const discountedTotal = cartTotal - discountAmount;
+  const payAmount = paymentOption === 'deposit' ? Math.ceil(discountedTotal * 0.5) : discountedTotal;
 
   const canAddItem =
     itemForm.facilityId !== '' &&
@@ -214,6 +222,26 @@ export default function BookingFormSection() {
 
   const removeFromCart = (idx: number) =>
     setCart((prev) => prev.filter((_, i) => i !== idx));
+
+  const applyPromo = async () => {
+    const code = promoInput.trim().toUpperCase();
+    if (!code) return;
+    setPromoError('');
+    setPromoApplying(true);
+    const { data } = await supabase
+      .from('promo')
+      .select('promo_code, promo_price')
+      .eq('promo_code', code)
+      .maybeSingle();
+    setPromoApplying(false);
+    if (!data) {
+      setPromoError('Invalid promo code.');
+      setAppliedPromo(null);
+      return;
+    }
+    setAppliedPromo({ code: data.promo_code, percent: data.promo_price });
+    setPromoInput('');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -249,6 +277,7 @@ export default function BookingFormSection() {
         email: contact.email,
         payment_type: paymentOption === 'full',
         total_amount: payAmount,
+        discount_amount: discountAmount,
       })
       .select('id')
       .single();
@@ -791,7 +820,7 @@ export default function BookingFormSection() {
                     <p className="text-white/60 text-xs mb-2">Pay half now, settle the balance before event day.</p>
                     {cart.length > 0 && (
                       <p className="font-black text-xl text-amber-400">
-                        RM {Math.ceil(cartTotal * 0.5)}
+                        RM {Math.ceil(discountedTotal * 0.5)}
                       </p>
                     )}
                   </button>
@@ -816,7 +845,7 @@ export default function BookingFormSection() {
                     <p className="text-white/60 text-xs mb-2">Pay in full and get priority confirmation.</p>
                     {cart.length > 0 && (
                       <p className="font-black text-xl text-emerald-400">
-                        RM {cartTotal}
+                        RM {discountedTotal}
                       </p>
                     )}
                   </button>
@@ -877,11 +906,59 @@ export default function BookingFormSection() {
                       </div>
                     ))}
 
-                    <div className="border-t border-white/10 pt-3 space-y-2">
+                    <div className="border-t border-white/10 pt-3 space-y-3">
                       <div className="flex justify-between text-sm">
                         <span className="text-white">Subtotal</span>
                         <span className="text-white font-bold">RM {cartTotal}</span>
                       </div>
+
+                      {/* Promo code */}
+                      {!appliedPromo ? (
+                        <div className="space-y-1.5">
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={promoInput}
+                              onChange={(e) => { setPromoInput(e.target.value.toUpperCase()); setPromoError(''); }}
+                              onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), applyPromo())}
+                              placeholder="Promo code"
+                              className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-xs placeholder:text-white/30 focus:outline-none focus:border-primary transition-colors"
+                            />
+                            <button
+                              type="button"
+                              onClick={applyPromo}
+                              disabled={promoApplying || !promoInput.trim()}
+                              className="px-3 py-2 bg-primary text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-red-700 transition-all disabled:opacity-50"
+                            >
+                              {promoApplying ? '…' : 'Apply'}
+                            </button>
+                          </div>
+                          {promoError && <p className="text-red-400 text-[10px] font-medium">{promoError}</p>}
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-emerald-400/10 border border-emerald-400/20">
+                          <div className="flex items-center gap-2">
+                            <Icon name="TicketIcon" size={13} className="text-emerald-400" />
+                            <span className="text-emerald-400 font-black text-xs tracking-widest">{appliedPromo.code}</span>
+                            <span className="text-emerald-400/70 text-[10px]">-{appliedPromo.percent}%</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setAppliedPromo(null)}
+                            className="text-emerald-400/60 hover:text-red-400 transition-colors"
+                          >
+                            <Icon name="XMarkIcon" size={13} />
+                          </button>
+                        </div>
+                      )}
+
+                      {discountAmount > 0 && (
+                        <div className="flex justify-between text-sm">
+                          <span className="text-emerald-400">Discount</span>
+                          <span className="text-emerald-400 font-bold">-RM {discountAmount}</span>
+                        </div>
+                      )}
+
                       <div className="flex justify-between text-sm">
                         <span className="text-white">{paymentOption === 'deposit' ? '50% Deposit' : 'Full Payment'}</span>
                         <span className="text-accent font-black text-lg">RM {payAmount}</span>

@@ -11,6 +11,7 @@ import AdminTiersSection from './tiers/components/AdminTiersSection';
 import SportManagementSection from './sport/components/SportManagementSection';
 import GalleryManagementSection from './gallery/components/GalleryManagementSection';
 import AdminHeaderSection from './header/components/AdminHeaderSection';
+import PromoManagementSection from './promo/components/PromoManagementSection';
 import Icon from '@/components/ui/AppIcon';
 
 const sectionTitles: Record<AdminSection, string> = {
@@ -22,6 +23,7 @@ const sectionTitles: Record<AdminSection, string> = {
   Sport: 'Sport Management',
   Gallery: 'Gallery Management',
   Header: 'Header Slider',
+  Promo: 'Promo Codes',
 };
 
 const mobileNavItems: Array<{ label: AdminSection; icon: string }> = [
@@ -33,6 +35,7 @@ const mobileNavItems: Array<{ label: AdminSection; icon: string }> = [
   { label: 'Sport', icon: 'TrophyIcon' },
   { label: 'Gallery', icon: 'PhotoIcon' },
   { label: 'Header', icon: 'RectangleStackIcon' },
+  { label: 'Promo', icon: 'TicketIcon' },
 ];
 
 export default function AdminDashboardPage() {
@@ -64,6 +67,8 @@ export default function AdminDashboardPage() {
         return <GalleryManagementSection />;
       case 'Header':
         return <AdminHeaderSection />;
+      case 'Promo':
+        return <PromoManagementSection />;
       default:
         return null;
     }

@@ -3,6 +3,8 @@ import Icon from '@/components/ui/AppIcon';
 import { useBase } from '@/lib/useBase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
+import { getCached, setCached } from '@/lib/queryCache';
+import { markPromoUsed } from '@/app/admin/promo/service/PromoAdmin';
 
 /* ── Types ── */
 interface FacilitySlot {
@@ -88,12 +90,16 @@ export default function BookingFormSection() {
   /* facilities from supabase */
   const [facilities, setFacilities] = useState<Facility[]>([]);
   useEffect(() => {
+    const cached = getCached<Facility[]>('facilities_active');
+    if (cached) { setFacilities(cached); return; }
     supabase
       .from('facilities')
       .select('id, name, status, type, slots, add_on, pic_contact')
       .eq('status', true)
       .order('id')
-      .then(({ data }) => setFacilities((data as Facility[]) ?? []));
+      .then(({ data }) => {
+        if (data) { setFacilities(data as Facility[]); setCached('facilities_active', data); }
+      });
   }, []);
 
   /* contact */
@@ -230,12 +236,17 @@ export default function BookingFormSection() {
     setPromoApplying(true);
     const { data } = await supabase
       .from('promo')
-      .select('promo_code, promo_price')
+      .select('promo_code, promo_price, used')
       .eq('promo_code', code)
       .maybeSingle();
     setPromoApplying(false);
     if (!data) {
       setPromoError('Invalid promo code.');
+      setAppliedPromo(null);
+      return;
+    }
+    if (!data.used) {
+      setPromoError('This promo code has already been used.');
       setAppliedPromo(null);
       return;
     }
@@ -311,6 +322,11 @@ export default function BookingFormSection() {
       setSubmitError('Booking created but items failed to save. Please contact us.');
       setSubmitting(false);
       return;
+    }
+
+    /* mark promo code as used (single-use) */
+    if (appliedPromo) {
+      await markPromoUsed(appliedPromo.code);
     }
 
     /* call Edge Function to create Toyyib bill */

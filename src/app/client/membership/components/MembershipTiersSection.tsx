@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Icon from '@/components/ui/AppIcon';
 import { supabase } from '@/lib/supabase';
+import { getCached, setCached } from '@/lib/queryCache';
 
 
 interface Tier {
@@ -18,8 +19,10 @@ export default function MembershipTiersSection() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.from('tier').select('*').order('id').then(({ data }) => {
-      if (data) setTiers(data as Tier[]);
+    const cached = getCached<Tier[]>('tiers');
+    if (cached) { setTiers(cached); setLoading(false); return; }
+    supabase.from('tier').select('id, name, description, price, list_details, wa_number').order('id').then(({ data }) => {
+      if (data) { setTiers(data as Tier[]); setCached('tiers', data); }
       setLoading(false);
     });
   }, []);

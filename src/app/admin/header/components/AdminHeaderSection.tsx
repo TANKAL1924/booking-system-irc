@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Icon from '@/components/ui/AppIcon';
 import { supabase } from '@/lib/supabase';
+import { uploadToR2, deleteFromR2 } from '@/lib/r2Storage';
 
 interface HeaderItem {
   id: number;
@@ -35,17 +36,12 @@ export default function AdminHeaderSection() {
     setUploading(true);
 
     for (const file of Array.from(files)) {
-      const ext = file.name.split('.').pop();
-      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error: uploadError } = await supabase.storage
-        .from('header')
-        .upload(path, file, { upsert: false });
-      if (uploadError) {
-        setError(`Failed to upload ${file.name}: ${uploadError.message}`);
-        continue;
+      try {
+        const url = await uploadToR2(file, 'header');
+        await supabase.from('header').insert({ link: url });
+      } catch {
+        setError(`Failed to upload ${file.name}`);
       }
-      const { data: urlData } = supabase.storage.from('header').getPublicUrl(path);
-      await supabase.from('header').insert({ link: urlData.publicUrl });
     }
 
     if (fileInputRef.current) fileInputRef.current.value = '';
@@ -56,8 +52,7 @@ export default function AdminHeaderSection() {
   const handleDelete = async (item: HeaderItem) => {
     setDeletingId(item.id);
     try {
-      const path = item.link.split('/header/')[1];
-      if (path) await supabase.storage.from('header').remove([path]);
+      await deleteFromR2(item.link).catch(() => {});
       await supabase.from('header').delete().eq('id', item.id);
       await load();
     } finally {

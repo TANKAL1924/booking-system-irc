@@ -33,13 +33,19 @@ export interface Booking {
   booking_item: BookingItem[];
 }
 
-export async function fetchBookings(): Promise<Booking[]> {
+const PAGE_SIZE = 50;
+
+export async function fetchBookings(page = 0): Promise<{ data: Booking[]; hasMore: boolean }> {
+  const from = page * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
   const { data, error } = await supabase
     .from('booking')
     .select('*, booking_item(*)')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(from, to);
   if (error) throw new Error(error.message);
-  return data as Booking[];
+  const list = (data ?? []) as Booking[];
+  return { data: list, hasMore: list.length === PAGE_SIZE };
 }
 
 export async function updateBookingStatus(id: number, status: boolean): Promise<void> {

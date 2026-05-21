@@ -8,7 +8,7 @@ import LoginModal from '@/components/LoginModal';
 
 const quickLinks = [
   { href: '/homepage', label: 'Home' },
-  { href: '/the-arena', label: 'The Arena' },
+  { href: '/the-arena', label: 'The Arena Club' },
   { href: '/membership', label: 'Membership' },
   { href: '/book-now', label: 'Book Now' },
   { href: '/contact', label: 'Contact Us' },
@@ -93,6 +93,15 @@ export default function Footer() {
               >
                 <Icon name="EnvelopeIcon" size={15} className="text-primary shrink-0" />
                 {base.email}
+              </a>
+            )}
+            {base?.email_2 && (
+              <a
+                href={`mailto:${base.email_2}`}
+                className="flex items-center gap-3 text-[11px] font-bold tracking-[0.1em] uppercase text-white hover:text-white transition-colors"
+              >
+                <Icon name="EnvelopeIcon" size={15} className="text-primary shrink-0" />
+                {base.email_2}
               </a>
             )}
             <div className="flex items-start gap-3 text-[11px] font-bold tracking-[0.1em] uppercase text-white">

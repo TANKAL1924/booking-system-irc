@@ -28,16 +28,37 @@ export default function BookingsTableSection() {
   const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'cancelled'>('all');
   const [expanded, setExpanded] = useState<number | null>(null);
   const [updating, setUpdating] = useState<number | null>(null);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   const load = async () => {
     setLoading(true);
     setFetchError('');
     try {
-      setBookings(await fetchBookings());
+      const { data, hasMore: more } = await fetchBookings(0);
+      setBookings(data);
+      setHasMore(more);
+      setPage(0);
     } catch (e: unknown) {
       setFetchError(e instanceof Error ? e.message : 'Failed to load bookings.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadMore = async () => {
+    setLoadingMore(true);
+    try {
+      const nextPage = page + 1;
+      const { data, hasMore: more } = await fetchBookings(nextPage);
+      setBookings((prev) => [...prev, ...data]);
+      setHasMore(more);
+      setPage(nextPage);
+    } catch {
+      // ignore
+    } finally {
+      setLoadingMore(false);
     }
   };
 
@@ -314,8 +335,18 @@ export default function BookingsTableSection() {
             </tbody>
           </table>
         </div>
-        <div className="px-5 py-4 border-t border-white/5">
-          <p className="text-xs text-white">Showing {filtered.length} of {bookings.length} bookings</p>
+        <div className="px-5 py-4 border-t border-white/5 flex items-center justify-between gap-4">
+          <p className="text-xs text-white">Showing {filtered.length} of {bookings.length} loaded bookings</p>
+          {hasMore && (
+            <button
+              onClick={loadMore}
+              disabled={loadingMore}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-bold hover:bg-white/10 transition-all disabled:opacity-50"
+            >
+              {loadingMore && <Icon name="ArrowPathIcon" size={13} className="animate-spin" />}
+              {loadingMore ? 'Loading…' : 'Load more'}
+            </button>
+          )}
         </div>
       </div>
     </div>

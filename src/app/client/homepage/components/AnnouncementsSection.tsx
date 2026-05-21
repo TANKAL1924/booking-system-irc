@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import AppImage from '@/components/ui/AppImage';
+import { setCached } from '@/lib/queryCache';
 
 interface Event {
   id: number;
@@ -64,10 +65,10 @@ export default function AnnouncementsSection() {
     const today = new Date().toISOString().split('T')[0];
     Promise.all([
       supabase.from('announcement').select('ann_link').eq('id', 1).maybeSingle(),
-      supabase.from('events').select('*').gte('start_date', today).order('start_date', { ascending: true }),
+      supabase.from('events').select('id, name, start_date, end_date, pic_link').gte('start_date', today).order('start_date', { ascending: true }),
     ]).then(([ann, evts]) => {
       setImageUrl(ann.data?.ann_link ?? null);
-      if (evts.data) setEvents(evts.data);
+      if (evts.data) { setEvents(evts.data as Event[]); setCached(`events_upcoming_${today}`, evts.data); }
       setLoading(false);
     });
   }, []);

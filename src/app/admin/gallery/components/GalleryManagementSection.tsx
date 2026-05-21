@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Icon from '@/components/ui/AppIcon';
 import { supabase } from '@/lib/supabase';
+import { uploadToR2, deleteFromR2 } from '@/lib/r2Storage';
 
 interface GalleryItem {
   id: number;
@@ -35,17 +36,12 @@ export default function GalleryManagementSection() {
     setUploading(true);
 
     for (const file of Array.from(files)) {
-      const ext = file.name.split('.').pop();
-      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error: uploadError } = await supabase.storage
-        .from('gallery')
-        .upload(path, file, { upsert: false });
-      if (uploadError) {
-        setError(`Failed to upload ${file.name}: ${uploadError.message}`);
-        continue;
+      try {
+        const url = await uploadToR2(file, 'gallery');
+        await supabase.from('gallery').insert({ gallery_link: url });
+      } catch {
+        setError(`Failed to upload ${file.name}`);
       }
-      const { data: urlData } = supabase.storage.from('gallery').getPublicUrl(path);
-      await supabase.from('gallery').insert({ gallery_link: urlData.publicUrl });
     }
 
     if (fileInputRef.current) fileInputRef.current.value = '';
@@ -56,10 +52,7 @@ export default function GalleryManagementSection() {
   const handleDelete = async (item: GalleryItem) => {
     setDeletingId(item.id);
     try {
-      // Remove from storage
-      const path = item.gallery_link.split('/gallery/')[1];
-      if (path) await supabase.storage.from('gallery').remove([path]);
-      // Remove from table
+      await deleteFromR2(item.gallery_link).catch(() => {});
       await supabase.from('gallery').delete().eq('id', item.id);
       await load();
     } finally {

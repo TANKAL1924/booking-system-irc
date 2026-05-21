@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Icon from '@/components/ui/AppIcon';
 import { supabase } from '@/lib/supabase';
+import { uploadToR2 } from '@/lib/r2Storage';
 
 interface Event {
   id: number;
@@ -46,15 +47,9 @@ export default function EventManagementSection() {
     let pic_link: string | null = null;
 
     if (form.imageFile) {
-      const ext = form.imageFile.name.split('.').pop();
-      const path = `event-${Date.now()}.${ext}`;
-      const { error: uploadError } = await supabase.storage
-        .from('events')
-        .upload(path, form.imageFile, { upsert: false });
-      if (!uploadError) {
-        const { data: urlData } = supabase.storage.from('events').getPublicUrl(path);
-        pic_link = urlData.publicUrl;
-      }
+      try {
+        pic_link = await uploadToR2(form.imageFile, 'events');
+      } catch { /* upload failed – continue without image */ }
     }
 
     await supabase.from('events').insert({

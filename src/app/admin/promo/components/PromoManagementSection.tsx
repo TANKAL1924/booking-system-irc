@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Icon from '@/components/ui/AppIcon';
 import type { Promo } from '../service/PromoAdmin';
-import { fetchPromos, createPromo, updatePromo, deletePromo } from '../service/PromoAdmin';
+import { fetchPromos, createPromo, updatePromo, deletePromo, resetPromo } from '../service/PromoAdmin';
 
 const emptyForm = { promo_code: '', promo_price: '' };
 
@@ -170,6 +170,7 @@ export default function PromoManagementSection() {
               <tr className="border-b border-white/10">
                 <th className="text-left px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-white">Code</th>
                 <th className="text-left px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-white">Discount</th>
+                <th className="text-left px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-white">Status</th>
                 <th className="text-right px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-white">Actions</th>
               </tr>
             </thead>
@@ -179,7 +180,26 @@ export default function PromoManagementSection() {
                   <td className="px-6 py-4 font-black text-white tracking-widest">{promo.promo_code}</td>
                   <td className="px-6 py-4 text-accent font-bold">{promo.promo_price}%</td>
                   <td className="px-6 py-4">
+                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
+                      promo.used
+                        ? 'bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/20'
+                        : 'bg-white/5 text-white/40 border border-white/10'
+                    }`}>
+                      {promo.used ? 'Available' : 'Used'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
+                      {!promo.used && (
+                        <button
+                          onClick={async () => { await resetPromo(promo.id); loadPromos(); }}
+                          className="w-8 h-8 rounded-lg bg-[#25D366]/10 flex items-center justify-center text-[#25D366] hover:bg-[#25D366]/20 transition-all"
+                          aria-label="Reset promo"
+                          title="Reset to available"
+                        >
+                          <Icon name="ArrowPathIcon" size={14} />
+                        </button>
+                      )}
                       <button
                         onClick={() => openEdit(promo)}
                         className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white hover:bg-white/10 transition-all"

@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { uploadToR2, deleteFromR2 } from '@/lib/r2Storage';
 
 export interface Sport {
   id: number;
@@ -36,19 +37,12 @@ export async function deleteSport(id: number): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
-export async function uploadSportPic(file: File, sportId: number): Promise<string> {
-  const ext = file.name.split('.').pop();
-  const path = `${sportId}-${Date.now()}.${ext}`;
-  const { error: uploadError } = await supabase.storage.from('sport').upload(path, file, { upsert: true });
-  if (uploadError) throw new Error(uploadError.message);
-  const { data } = supabase.storage.from('sport').getPublicUrl(path);
-  return data.publicUrl;
+export async function uploadSportPic(file: File): Promise<string> {
+  return uploadToR2(file, 'sport');
 }
 
 export async function deleteSportPic(url: string): Promise<void> {
-  const path = url.split('/sport/')[1];
-  if (!path) return;
-  await supabase.storage.from('sport').remove([path]);
+  await deleteFromR2(url).catch(() => {});
 }
 
 export async function fetchTeamBySport(sportId: number): Promise<SportTeam[]> {

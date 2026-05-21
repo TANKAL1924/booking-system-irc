@@ -232,9 +232,7 @@ export default function SportManagementSection() {
       if (picFile) {
         // If replacing an existing pic, delete the old one first
         if (sport_pic) await deleteSportPic(sport_pic);
-        // Need an id for the path — use editingId or a temp timestamp for new
-        const tempId = editingId ?? Date.now();
-        sport_pic = await uploadSportPic(picFile, tempId);
+        sport_pic = await uploadSportPic(picFile);
       }
 
       const payload = { sport: form.sport.trim(), description: descriptionArr, sport_pic };

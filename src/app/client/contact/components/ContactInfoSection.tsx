@@ -77,6 +77,22 @@ export default function ContactInfoSection() {
                   </div>
                 </div>
               )}
+              {base?.email_2 && (
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <Icon name="EnvelopeIcon" size={18} className="text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-white mb-1">Email 2</p>
+                    <a
+                      href={`mailto:${base.email_2}`}
+                      className="text-white text-sm font-medium hover:text-primary transition-colors"
+                    >
+                      {base.email_2}
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           </motion.div>

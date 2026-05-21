@@ -6,7 +6,7 @@ import LoginModal from '@/components/LoginModal';
 
 const navLinks = [
   { href: '/homepage', label: 'Home' },
-  { href: '/the-arena', label: 'The Arena' },
+  { href: '/the-arena', label: 'The Arena Club' },
   { href: '/book-now', label: 'Book Now' },
   { href: '/membership', label: 'Membership' },
   { href: '/contact', label: 'Contact' },
@@ -65,7 +65,7 @@ export default function Header() {
                 ARENA <span className="text-primary">IRC</span>
               </span>
               <span className="text-[9px] font-bold tracking-[0.15em] uppercase text-white hidden sm:block">
-                Negeri Sembilan
+                Negeri Sembilan Malaysia
               </span>
             </div>
           </Link>

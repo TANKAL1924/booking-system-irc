@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Icon from '@/components/ui/AppIcon';
 import { supabase } from '@/lib/supabase';
+import { getCached, setCached } from '@/lib/queryCache';
 
 interface Sport {
   id: number;
@@ -21,6 +22,18 @@ interface SportTeam {
 interface GalleryItem {
   id: number;
   gallery_link: string;
+}
+
+function formatMalaysianPhone(phone: string): string {
+  const digits = phone.replace(/\D/g, '');
+  const local = digits.startsWith('60') ? digits.slice(2) : digits;
+  if (local.startsWith('11') && local.length === 10) {
+    return `+60${local.slice(0, 2)}-${local.slice(2, 6)} ${local.slice(6)}`;
+  }
+  if (local.startsWith('1') && local.length === 9) {
+    return `+60${local.slice(0, 2)}-${local.slice(2, 5)} ${local.slice(5)}`;
+  }
+  return phone;
 }
 
 function GalleryLightbox({ item, onClose }: { item: GalleryItem; onClose: () => void }) {
@@ -105,20 +118,37 @@ export default function SportSection() {
     supabase.from('base').select('sport_description').eq('id', 1).single().then(({ data }) => {
       if (data) setSectionDesc(data.sport_description ?? '');
     });
-    supabase.from('sport').select('*').order('id').then(({ data }) => {
-      if (data) setSports(data as Sport[]);
+    const cachedSports = getCached<Sport[]>('sports');
+    if (cachedSports) {
+      setSports(cachedSports);
       setLoading(false);
-    });
-    supabase.from('sport_team').select('*').order('id').then(({ data }) => {
-      if (data) {
-        const map: Record<number, SportTeam[]> = {};
-        (data as SportTeam[]).forEach((m) => {
-          if (!map[m.sport_id]) map[m.sport_id] = [];
-          map[m.sport_id].push(m);
-        });
-        setTeamMap(map);
-      }
-    });
+    } else {
+      supabase.from('sport').select('id, sport, description, sport_pic').order('id').then(({ data }) => {
+        if (data) { setSports(data as Sport[]); setCached('sports', data); }
+        setLoading(false);
+      });
+    }
+    const cachedTeams = getCached<SportTeam[]>('sport_teams');
+    if (cachedTeams) {
+      const map: Record<number, SportTeam[]> = {};
+      cachedTeams.forEach((m) => {
+        if (!map[m.sport_id]) map[m.sport_id] = [];
+        map[m.sport_id].push(m);
+      });
+      setTeamMap(map);
+    } else {
+      supabase.from('sport_team').select('id, name, phone, position, sport_id').order('id').then(({ data }) => {
+        if (data) {
+          const map: Record<number, SportTeam[]> = {};
+          (data as SportTeam[]).forEach((m) => {
+            if (!map[m.sport_id]) map[m.sport_id] = [];
+            map[m.sport_id].push(m);
+          });
+          setTeamMap(map);
+          setCached('sport_teams', data);
+        }
+      });
+    }
     supabase
       .from('gallery')
       .select('id, gallery_link')
@@ -214,7 +244,7 @@ export default function SportSection() {
 
                     {/* Right: Team members */}
                     <div className="lg:w-2/3 p-6 border-t border-white/10 lg:border-t-0 lg:border-l">
-                      <p className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-4">Team Members</p>
+                      <p className="text-primary text-[10px] font-bold uppercase tracking-[0.5em] mb-4">Office Bearers</p>
                       {members.length === 0 ? (
                         <div className="flex items-center justify-center h-24 text-white/20 text-sm font-bold">
                           No team members listed yet.
@@ -231,7 +261,7 @@ export default function SportSection() {
                                 <span className="text-[10px] font-bold uppercase tracking-widest text-primary">{m.position}</span>
                               )}
                               {m.phone && (
-                                <span className="text-[11px] text-white/40 mt-0.5">{m.phone}</span>
+                                <span className="text-[11px] text-white/40 mt-0.5">{formatMalaysianPhone(m.phone)}</span>
                               )}
                             </div>
                           ))}

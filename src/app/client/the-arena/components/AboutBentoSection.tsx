@@ -68,7 +68,7 @@ export default function AboutBentoSection() {
             </div>
             <div className="relative z-10">
               <h3 className="text-3xl font-black mb-4 text-white leading-tight">
-                Arena IRC &<br />IRC Negeri Sembilan
+                Arena IRC &<br />IRC Negeri Sembilan Club
               </h3>
               <div className="text-white text-sm leading-relaxed mb-6 space-y-3">
                 {(base?.about_us ?? 'A state-of-the-art multipurpose facility serving athletes, schools, corporations, and families across Negeri Sembilan since 2010.')

@@ -8,7 +8,7 @@ import LoginModal from '@/components/LoginModal';
 
 const quickLinks = [
   { href: '/homepage', label: 'Home' },
-  { href: '/the-arena', label: 'The Arena Club' },
+  { href: '/the-arena', label: 'The Arena' },
   { href: '/membership', label: 'Membership' },
   { href: '/book-now', label: 'Book Now' },
   { href: '/contact', label: 'Contact Us' },

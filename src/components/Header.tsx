@@ -6,7 +6,7 @@ import LoginModal from '@/components/LoginModal';
 
 const navLinks = [
   { href: '/homepage', label: 'Home' },
-  { href: '/the-arena', label: 'The Arena Club' },
+  { href: '/the-arena', label: 'The Arena' },
   { href: '/book-now', label: 'Book Now' },
   { href: '/membership', label: 'Membership' },
   { href: '/contact', label: 'Contact' },
@@ -115,7 +115,7 @@ export default function Header() {
 
       {/* Mobile Menu Overlay */}
       {menuOpen && (
-        <div className="fixed inset-0 z-[99] bg-[#0A0A0A]/98 backdrop-blur-2xl flex flex-col">
+        <div className="fixed inset-0 z-[101] bg-[#0A0A0A]/98 backdrop-blur-2xl flex flex-col">
           <div className="flex items-center justify-between px-6 py-5 border-b border-white/5">
             <Link to="/homepage" className="flex items-center gap-3" onClick={() => setMenuOpen(false)}>
               <AppLogo size={48} />

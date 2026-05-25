@@ -10,6 +10,7 @@ import NotFound from '@/app/not-found';
 import ProtectedRoute from './ProtectedRoute';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import AnnouncementPopup from '@/components/AnnouncementPopup';
+import TopProgressBar from '@/components/TopProgressBar';
 
 export default function AppRoutes() {
   const location = useLocation();
@@ -17,6 +18,7 @@ export default function AppRoutes() {
 
   return (
     <>
+      <TopProgressBar />
       {!isAdmin && <AnimatedBackground />}
       {!isAdmin && <AnnouncementPopup />}
       <Routes>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Icon from '@/components/ui/AppIcon';
 import { supabase } from '@/lib/supabase';
+import { uploadToR2, deleteFromR2 } from '@/lib/r2Storage';
 
 interface AboutForm {
   description: string;
@@ -72,32 +73,16 @@ export default function HomeManagementSection() {
     showSaved();
   };
 
-  const deleteStorageFile = async (bucket: string, url: string) => {
-    try {
-      const parts = new URL(url).pathname.split(`/${bucket}/`);
-      if (parts.length > 1) await supabase.storage.from(bucket).remove([parts[1]]);
-    } catch { /* ignore */ }
-  };
-
   const handleLayoutUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    // Delete old file first (handles extension changes)
-    if (layoutUrl) await deleteStorageFile('layout', layoutUrl);
-    const ext = file.name.split('.').pop();
-    const path = `layout-main.${ext}`;
-    const { error: uploadError } = await supabase.storage
-      .from('layout')
-      .upload(path, file, { upsert: true });
-    if (uploadError) {
-      setUploading(false);
-      return;
-    }
-    const { data: urlData } = supabase.storage.from('layout').getPublicUrl(path);
-    const publicUrl = urlData.publicUrl;
-    await upsert({ layout: publicUrl });
-    setLayoutUrl(publicUrl);
+    if (layoutUrl) await deleteFromR2(layoutUrl);
+    try {
+      const publicUrl = await uploadToR2(file, 'layout');
+      await upsert({ layout: publicUrl });
+      setLayoutUrl(publicUrl);
+    } catch { /* ignore upload errors */ }
     setUploading(false);
   };
 
@@ -105,21 +90,12 @@ export default function HomeManagementSection() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingVideo(true);
-    // Delete old file first (handles extension changes)
-    if (videoUrl) await deleteStorageFile('layout', videoUrl);
-    const ext = file.name.split('.').pop();
-    const path = `layout-video.${ext}`;
-    const { error: uploadError } = await supabase.storage
-      .from('layout')
-      .upload(path, file, { upsert: true });
-    if (uploadError) {
-      setUploadingVideo(false);
-      return;
-    }
-    const { data: urlData } = supabase.storage.from('layout').getPublicUrl(path);
-    const publicUrl = urlData.publicUrl;
-    await upsert({ main_vid: publicUrl });
-    setVideoUrl(publicUrl);
+    if (videoUrl) await deleteFromR2(videoUrl);
+    try {
+      const publicUrl = await uploadToR2(file, 'layout');
+      await upsert({ main_vid: publicUrl });
+      setVideoUrl(publicUrl);
+    } catch { /* ignore upload errors */ }
     setUploadingVideo(false);
   };
 

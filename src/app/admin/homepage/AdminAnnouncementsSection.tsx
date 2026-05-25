@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Icon from '@/components/ui/AppIcon';
 import { supabase } from '@/lib/supabase';
+import { uploadToR2, deleteFromR2 } from '@/lib/r2Storage';
 
 export default function AdminAnnouncementsSection() {
   const [annImageUrl, setAnnImageUrl] = useState<string | null>(null);
@@ -17,26 +18,15 @@ export default function AdminAnnouncementsSection() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingAnn(true);
-    // Delete old file first (handles extension changes)
-    if (annImageUrl) {
-      try {
-        const parts = new URL(annImageUrl).pathname.split('/layout/');
-        if (parts.length > 1) await supabase.storage.from('layout').remove([parts[1]]);
-      } catch { /* ignore */ }
-    }
-    const ext = file.name.split('.').pop();
-    const path = `announcement-main.${ext}`;
-    const { error: uploadError } = await supabase.storage
-      .from('layout')
-      .upload(path, file, { upsert: true });
-    if (uploadError) { setUploadingAnn(false); return; }
-    const { data: urlData } = supabase.storage.from('layout').getPublicUrl(path);
-    const publicUrl = urlData.publicUrl;
-    await supabase.from('announcement').upsert({ id: 1, ann_link: publicUrl });
-    setAnnImageUrl(publicUrl);
+    if (annImageUrl) await deleteFromR2(annImageUrl);
+    try {
+      const publicUrl = await uploadToR2(file, 'layout');
+      await supabase.from('announcement').upsert({ id: 1, ann_link: publicUrl });
+      setAnnImageUrl(publicUrl);
+      setAnnSavedMsg('Announcement updated!');
+      setTimeout(() => setAnnSavedMsg(''), 3000);
+    } catch { /* ignore upload errors */ }
     setUploadingAnn(false);
-    setAnnSavedMsg('Announcement updated!');
-    setTimeout(() => setAnnSavedMsg(''), 3000);
   };
 
   return (

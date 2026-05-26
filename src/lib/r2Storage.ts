@@ -34,11 +34,12 @@ export async function uploadToR2(file: File, folder: string): Promise<string> {
   if (!config) throw new Error(`Unknown R2 bucket folder: "${folder}"`);
   const ext = file.name.split('.').pop();
   const key = `${Date.now()}.${ext}`;
+  const buffer = await file.arrayBuffer();
   await r2Client.send(
     new PutObjectCommand({
       Bucket: config.bucket,
       Key: key,
-      Body: file,
+      Body: new Uint8Array(buffer),
       ContentType: file.type,
     })
   );

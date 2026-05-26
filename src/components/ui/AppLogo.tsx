@@ -2,7 +2,7 @@ import { memo, useMemo } from 'react';
 import AppIcon from './AppIcon';
 import AppImage from './AppImage';
 
-const LOGO_URL = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/logo/ARENA_IRC_LOGO.png`;
+const LOGO_URL = `${import.meta.env.VITE_R2_PUBLIC_URL_LOGO}/ARENA_IRC_LOGO.jpeg`;
 
 interface AppLogoProps {
   src?: string; // Image source (optional)

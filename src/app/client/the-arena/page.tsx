@@ -3,6 +3,7 @@ import Footer from '@/components/Footer';
 import FacilitiesGridSection from './components/FacilitiesGridSection';
 import AmenitiesSection from './components/AmenitiesSection';
 import AboutBentoSection from './components/AboutBentoSection';
+import PastEventsSection from './components/PastEventsSection';
 
 export default function TheArenaPage() {
   return (
@@ -13,6 +14,7 @@ export default function TheArenaPage() {
       <AboutBentoSection/>
       <FacilitiesGridSection />
       <AmenitiesSection />
+      <PastEventsSection />
       <Footer />
     </main>
   );

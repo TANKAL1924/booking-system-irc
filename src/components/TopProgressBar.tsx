@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function TopProgressBar() {
-  const { state } = useNavigation();
+  const location = useLocation();
   const [visible, setVisible] = useState(false);
   const [progress, setProgress] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const isFirstMount = useRef(true);
 
   const clearTimer = () => {
     if (timerRef.current) {
@@ -16,26 +17,34 @@ export default function TopProgressBar() {
   };
 
   useEffect(() => {
-    if (state === 'loading' || state === 'submitting') {
-      setProgress(0);
-      setVisible(true);
-      timerRef.current = setInterval(() => {
-        setProgress((prev) => {
-          const step = Math.max((90 - prev) * 0.08, 0.5);
-          return Math.min(prev + step, 90);
-        });
-      }, 50);
-    } else {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
+
+    setProgress(0);
+    setVisible(true);
+    timerRef.current = setInterval(() => {
+      setProgress((prev) => {
+        const step = Math.max((90 - prev) * 0.08, 0.5);
+        return Math.min(prev + step, 90);
+      });
+    }, 50);
+
+    const complete = setTimeout(() => {
       clearTimer();
       setProgress(100);
-      const hide = setTimeout(() => {
+      setTimeout(() => {
         setVisible(false);
         setProgress(0);
       }, 400);
-      return () => clearTimeout(hide);
-    }
-    return clearTimer;
-  }, [state]);
+    }, 300);
+
+    return () => {
+      clearTimer();
+      clearTimeout(complete);
+    };
+  }, [location.pathname]);
 
   return (
     <AnimatePresence>

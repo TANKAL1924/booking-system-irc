@@ -288,7 +288,7 @@ export default function BookingFormSection() {
         email: contact.email,
         payment_type: paymentOption === 'full',
         total_amount: payAmount,
-        discount_amount: discountAmount,
+        discount_price: discountAmount,
       })
       .select('id')
       .single();

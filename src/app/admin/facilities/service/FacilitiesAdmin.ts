@@ -28,6 +28,7 @@ export interface Facility {
   description: string[] | null;
   morning_fee: number | null;
   night_fee: number | null;
+  off_day: string[] | null;
 }
 
 export type FacilityPayload = Omit<Facility, 'id'>;

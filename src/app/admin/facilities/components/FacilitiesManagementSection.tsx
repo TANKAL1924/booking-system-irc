@@ -26,6 +26,7 @@ const emptyForm: FacilityPayload = {
   description: [],
   morning_fee: null,
   night_fee: null,
+  off_day: [],
 };
 
 export default function FacilitiesManagementSection() {
@@ -106,6 +107,7 @@ export default function FacilitiesManagementSection() {
       add_on: rest.add_on ?? [],
       pic_contact: rest.pic_contact ?? null,
       description: rest.description ?? [],
+      off_day: rest.off_day ?? [],
     });
     setEditingId(id);
     setPendingFiles([]);
@@ -590,6 +592,66 @@ export default function FacilitiesManagementSection() {
                 ))}
               </div>
             </div>}
+
+            {/* Off Days */}
+            <div className="md:col-span-2">
+              <div className="flex items-center justify-between mb-3">
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-white">Off Days (Blocked Dates)</label>
+              </div>
+              <div className="flex gap-2 mb-2">
+                <input
+                  type="date"
+                  id="off-day-input"
+                  min={new Date().toISOString().split('T')[0]}
+                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-primary transition-colors [color-scheme:dark]"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      const val = (e.target as HTMLInputElement).value;
+                      if (val && !(form.off_day ?? []).includes(val)) {
+                        setForm((p) => ({ ...p, off_day: [...(p.off_day ?? []), val].sort() }));
+                        (e.target as HTMLInputElement).value = '';
+                      }
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const input = document.getElementById('off-day-input') as HTMLInputElement;
+                    const val = input?.value;
+                    if (val && !(form.off_day ?? []).includes(val)) {
+                      setForm((p) => ({ ...p, off_day: [...(p.off_day ?? []), val].sort() }));
+                      input.value = '';
+                    }
+                  }}
+                  className="px-4 py-2.5 rounded-xl bg-primary/10 border border-primary/30 text-primary font-bold text-xs uppercase tracking-widest hover:bg-primary/20 transition-all"
+                >
+                  Add
+                </button>
+              </div>
+              {(form.off_day ?? []).length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {(form.off_day ?? []).map((date, i) => (
+                    <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 border border-primary/20">
+                      <Icon name="CalendarDaysIcon" size={12} className="text-primary shrink-0" />
+                      <span className="text-white text-xs font-mono">{date}</span>
+                      <button
+                        type="button"
+                        onClick={() => setForm((p) => ({ ...p, off_day: (p.off_day ?? []).filter((_, idx) => idx !== i) }))}
+                        className="text-white hover:text-red-400 transition-colors ml-0.5"
+                      >
+                        <Icon name="XMarkIcon" size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {(form.off_day ?? []).length === 0 && (
+                <p className="text-white text-xs">No off days set.</p>
+              )}
+            </div>
+
           </div>
 
           <div className="flex gap-3 pt-2">

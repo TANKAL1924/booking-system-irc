@@ -29,6 +29,7 @@ interface Facility {
   slots: FacilitySlot[] | null;
   add_on: FacilityAddOn[] | null;
   pic_contact: string | null;
+  off_day: string[] | null;
 }
 
 interface SelectedAddOn {
@@ -94,7 +95,7 @@ export default function BookingFormSection() {
     if (cached) { setFacilities(cached); return; }
     supabase
       .from('facilities')
-      .select('id, name, status, type, slots, add_on, pic_contact')
+      .select('id, name, status, type, slots, add_on, pic_contact, off_day')
       .eq('status', true)
       .order('id')
       .then(({ data }) => {
@@ -148,6 +149,10 @@ export default function BookingFormSection() {
   }, [itemForm.facilityId]);
 
   /* check if a slot is booked on the currently selected date */
+  const isOffDay = Boolean(
+    itemForm.date &&
+    selectedFacility?.off_day?.includes(itemForm.date)
+  );
   const isSlotBooked = (slotIdx: number) => {
     const slot = slots[slotIdx];
     if (!slot || !itemForm.facilityId || !itemForm.date) return false;
@@ -207,6 +212,7 @@ export default function BookingFormSection() {
   const canAddItem =
     itemForm.facilityId !== '' &&
     itemForm.date !== '' &&
+    !isOffDay &&
     itemForm.selectedSlotIndices.length > 0;
 
   const addToCart = () => {
@@ -597,6 +603,12 @@ export default function BookingFormSection() {
                       disabled={!itemForm.facilityId}
                       className={`${inputCls} disabled:opacity-30 disabled:cursor-not-allowed`}
                     />
+                    {isOffDay && (
+                      <p className="flex items-center gap-1.5 mt-2 text-xs font-bold text-primary">
+                        <Icon name="ExclamationCircleIcon" size={14} />
+                        This date is unavailable for booking.
+                      </p>
+                    )}
                   </div>
                   )}
 
@@ -608,6 +620,8 @@ export default function BookingFormSection() {
                       <p className="text-white text-xs px-4 py-3 rounded-xl bg-white/5 border border-white/5">Select a facility first...</p>
                     ) : !itemForm.date ? (
                       <p className="text-white text-xs px-4 py-3 rounded-xl bg-white/5 border border-white/5">Pick a date to see availability...</p>
+                    ) : isOffDay ? (
+                      <p className="text-primary text-xs px-4 py-3 rounded-xl bg-primary/10 border border-primary/20 font-bold">This facility is closed on this date.</p>
                     ) : loadingBooked ? (
                       <p className="text-white text-xs px-4 py-3 rounded-xl bg-white/5 border border-white/5">Checking availability...</p>
                     ) : (

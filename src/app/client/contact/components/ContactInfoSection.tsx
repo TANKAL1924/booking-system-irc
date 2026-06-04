@@ -47,6 +47,20 @@ export default function ContactInfoSection() {
               />
             </div>
 
+            {base?.lat != null && base?.long != null && (
+              <a
+                href={`https://waze.com/ul?ll=${base.lat},${base.long}&navigate=yes`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-3 w-full py-5 bg-[#33CCFF] text-white rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-[#1ab8e8] transition-all"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
+                Open in Waze
+              </a>
+            )}
+
             {/* Address & Contact */}
             <div className="glass-card rounded-2xl p-6 space-y-5">
               <div className="flex items-start gap-4">
@@ -94,22 +108,10 @@ export default function ContactInfoSection() {
                 </div>
               )}
             </div>
-            {base?.lat != null && base?.long != null && (
-              <a
-                href={`https://waze.com/ul?ll=${base.lat},${base.long}&navigate=yes`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-3 w-full py-5 bg-[#33CCFF] text-white rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-[#1ab8e8] transition-all"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                </svg>
-                Open in Waze
-              </a>
-            )}
           </div>
           </motion.div>
           {/* Right: Hours + Social */}
+
           <motion.div
             initial={{ opacity: 0, y: 32 }}
             whileInView={{ opacity: 1, y: 0 }}

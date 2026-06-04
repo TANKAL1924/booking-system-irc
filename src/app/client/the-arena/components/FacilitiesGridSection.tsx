@@ -251,7 +251,7 @@ function Carousel({ items }: { items: Facility[] }) {
                       <span className="text-white text-sm">{f.pic_contact}</span>
                     </div>
                     <a
-                      href={`https://wa.me/${f.pic_contact.replace(/\D/g, '')}`}
+                      href={`https://wa.me/${f.pic_contact.replace(/\D/g, '').replace(/^0/, '60')}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}

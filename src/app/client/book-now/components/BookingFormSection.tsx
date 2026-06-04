@@ -577,7 +577,7 @@ export default function BookingFormSection() {
                               {selectedFacility.pic_contact}
                             </div>
                             <a
-                              href={`https://wa.me/${selectedFacility.pic_contact.replace(/\D/g, '')}?text=Hi%2C%20I%20would%20like%20to%20book%20${encodeURIComponent(selectedFacility.name ?? 'the hall')}.`}
+                              href={`https://wa.me/${selectedFacility.pic_contact.replace(/\D/g, '').replace(/^0/, '60')}?text=Hi%2C%20I%20would%20like%20to%20book%20${encodeURIComponent(selectedFacility.name ?? 'the hall')}.`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[#25D366]/10 border border-[#25D366]/20 text-[#25D366] font-bold text-[11px] uppercase tracking-widest hover:bg-[#25D366]/20 transition-all"

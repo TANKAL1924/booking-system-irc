@@ -21,9 +21,14 @@ interface CartItem {
 const inputCls =
   'w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder:text-white/40 focus:outline-none focus:border-primary transition-colors';
 
+const selectCls =
+  'w-full bg-[#1a1a2e] border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors [&>option]:bg-[#1a1a2e] [&>option]:text-white';
+
 function itemTotal(slot: FacilitySlot) {
   return slot.price;
 }
+
+const toHHMM = (t: string) => t.slice(0, 5);
 
 export default function AdminCreateBookingModal({ isOpen, onClose, onCreated }: Props) {
   const [facilities, setFacilities] = useState<Facility[]>([]);
@@ -32,6 +37,8 @@ export default function AdminCreateBookingModal({ isOpen, onClose, onCreated }: 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [checkingConflict, setCheckingConflict] = useState(false);
+  const [conflictError, setConflictError] = useState('');
 
   // Item form state
   const [selFacilityId, setSelFacilityId] = useState('');
@@ -68,10 +75,41 @@ export default function AdminCreateBookingModal({ isOpen, onClose, onCreated }: 
   const cartTotal = cart.reduce((sum, i) => sum + i.item_amount, 0);
   const payAmount = paymentType === 'deposit' ? Math.ceil(cartTotal * 0.5) : cartTotal;
 
-  const addItem = () => {
+  const addItem = async () => {
     if (!selFacilityId || !selDate || selSlotIdx === '') return;
     const slot = slots[Number(selSlotIdx)];
     if (!slot) return;
+    setConflictError('');
+    setCheckingConflict(true);
+
+    // Check against existing DB bookings
+    const { data: conflicts } = await supabase
+      .from('booking_item')
+      .select('id')
+      .eq('facility_id', Number(selFacilityId))
+      .eq('date', selDate)
+      .lt('time_start', slot.end)
+      .gt('time_end', slot.start)
+      .limit(1);
+
+    // Also check against items already in cart
+    const cartConflict = cart.some(
+      (c) =>
+        c.facilityId === Number(selFacilityId) &&
+        c.date === selDate &&
+        toHHMM(c.slot.start) < slot.end &&
+        toHHMM(c.slot.end) > slot.start
+    );
+
+    setCheckingConflict(false);
+
+    if ((conflicts && conflicts.length > 0) || cartConflict) {
+      setConflictError(
+        `This slot (${slot.start}–${slot.end}) on ${selDate} is already booked. Please choose a different slot.`
+      );
+      return;
+    }
+
     setCart((prev) => [
       ...prev,
       {
@@ -83,6 +121,7 @@ export default function AdminCreateBookingModal({ isOpen, onClose, onCreated }: 
       },
     ]);
     setSelSlotIdx('');
+    setConflictError('');
   };
 
   const removeItem = (idx: number) => {
@@ -181,8 +220,8 @@ export default function AdminCreateBookingModal({ isOpen, onClose, onCreated }: 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <select
                 value={selFacilityId}
-                onChange={(e) => { setSelFacilityId(e.target.value); setSelSlotIdx(''); }}
-                className={inputCls}
+                onChange={(e) => { setSelFacilityId(e.target.value); setSelSlotIdx(''); setConflictError(''); }}
+                className={selectCls}
               >
                 <option value="">Select facility</option>
                 {facilities.map((f) => (
@@ -192,14 +231,14 @@ export default function AdminCreateBookingModal({ isOpen, onClose, onCreated }: 
               <input
                 type="date"
                 value={selDate}
-                onChange={(e) => setSelDate(e.target.value)}
+                onChange={(e) => { setSelDate(e.target.value); setConflictError(''); }}
                 className={inputCls}
               />
               <select
                 value={selSlotIdx}
-                onChange={(e) => setSelSlotIdx(e.target.value)}
+                onChange={(e) => { setSelSlotIdx(e.target.value); setConflictError(''); }}
                 disabled={slots.length === 0}
-                className={inputCls}
+                className={selectCls}
               >
                 <option value="">Select slot</option>
                 {slots.map((s, i) => (
@@ -207,14 +246,21 @@ export default function AdminCreateBookingModal({ isOpen, onClose, onCreated }: 
                 ))}
               </select>
             </div>
+            {conflictError && (
+              <div className="mt-2 flex items-start gap-2 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+                <Icon name="ExclamationCircleIcon" size={13} className="shrink-0 mt-0.5" />
+                <span>{conflictError}</span>
+              </div>
+            )}
             <button
               type="button"
               onClick={addItem}
-              disabled={!selFacilityId || !selDate || selSlotIdx === ''}
+              disabled={!selFacilityId || !selDate || selSlotIdx === '' || checkingConflict}
               className="mt-3 flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 border border-primary/30 text-primary text-xs font-bold uppercase tracking-widest hover:bg-primary/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <Icon name="PlusIcon" size={13} />
-              Add to Booking
+              {checkingConflict
+                ? <><Icon name="ArrowPathIcon" size={13} className="animate-spin" />Checking…</>
+                : <><Icon name="PlusIcon" size={13} />Add to Booking</>}
             </button>
           </div>
 

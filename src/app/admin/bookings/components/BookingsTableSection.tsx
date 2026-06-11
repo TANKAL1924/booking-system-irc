@@ -7,6 +7,7 @@ import {
   upgradeDepositToFull,
 } from '../service/BookingAdmin';
 import type { Booking } from '../service/BookingAdmin';
+import AdminCreateBookingModal from './AdminCreateBookingModal';
 
 function fmtAmount(n: number) {
   return `RM ${n.toLocaleString('en-MY', { minimumFractionDigits: 2 })}`;
@@ -32,6 +33,7 @@ export default function BookingsTableSection() {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -149,6 +151,13 @@ export default function BookingsTableSection() {
         <h2 className="text-xl font-black text-white">Bookings Management</h2>
         <div className="flex items-center gap-3">
           <button
+            onClick={() => setCreateOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 border border-primary/30 text-primary text-xs font-bold uppercase tracking-widest hover:bg-primary/20 transition-all"
+          >
+            <Icon name="PlusIcon" size={13} />
+            Create Booking
+          </button>
+          <button
             onClick={load}
             className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white hover:text-white hover:bg-white/10 transition-all"
             aria-label="Refresh"
@@ -168,7 +177,11 @@ export default function BookingsTableSection() {
         </div>
       </div>
 
-      {/* Payment Filter Tabs */}
+      <AdminCreateBookingModal
+        isOpen={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onCreated={load}
+      />
       <div className="flex gap-2 flex-wrap mb-3">
         {([['all', 'All'], ['full', 'Full Payment'], ['deposit', '50% Deposit']] as const).map(([val, label]) => (
           <button

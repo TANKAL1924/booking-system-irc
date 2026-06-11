@@ -58,6 +58,49 @@ export async function deleteBooking(id: number): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
+export interface CreateAdminBookingPayload {
+  customer_name: string;
+  phone: string;
+  email: string;
+  payment_type: boolean; // true = full, false = deposit
+  total_amount: number;
+  items: {
+    facility_id: number;
+    facility_name: string;
+    date: string;
+    time_start: string;
+    time_end: string;
+    slot_price: number;
+    add_ons: BookingAddOn[];
+    item_amount: number;
+  }[];
+}
+
+export async function createAdminBooking(payload: CreateAdminBookingPayload): Promise<void> {
+  const { data: bookingRow, error: bookingErr } = await supabase
+    .from('booking')
+    .insert({
+      customer_name: payload.customer_name,
+      phone: payload.phone,
+      email: payload.email,
+      payment_type: payload.payment_type,
+      total_amount: payload.total_amount,
+      status: false, // always Paid for admin-created bookings
+    })
+    .select('id')
+    .single();
+
+  if (bookingErr || !bookingRow) throw new Error(bookingErr?.message ?? 'Failed to create booking');
+
+  const items = payload.items.map((item) => ({
+    booking_id: bookingRow.id,
+    ...item,
+  }));
+
+  const { error: itemsErr } = await supabase.from('booking_item').insert(items);
+  if (itemsErr) throw new Error(itemsErr.message);
+}
+
 export async function upgradeDepositToFull(id: number, currentAmount: number): Promise<void> {
   const fullAmount = currentAmount * 2;
   const { error } = await supabase

@@ -993,6 +993,10 @@ export default function BookingFormSection() {
                         <span className="text-white">{paymentOption === 'deposit' ? '50% Deposit' : 'Full Payment'}</span>
                         <span className="text-accent font-black text-lg">RM {payAmount}</span>
                       </div>
+                      <div className="flex justify-between text-xs pt-1 border-t border-white/5">
+                        <span className="text-white/50">Transaction fee (by bank)</span>
+                        <span className="text-white/50">+RM 1.00</span>
+                      </div>
                     </div>
                   </div>
                 )}

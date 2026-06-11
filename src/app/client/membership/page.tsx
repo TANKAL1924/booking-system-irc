@@ -10,6 +10,7 @@ export default function MembershipPage() {
         title="Membership"
         description="Join Arena IRC as a member and enjoy exclusive benefits, discounted court rates, and priority booking. Choose from multiple membership tiers."
         url="https://arena-irc.com.my/membership"
+        keywords="Arena IRC membership, sports membership Malaysia, badminton membership, futsal membership, court discount"
       />
       <div className="grain-overlay" />
       <div className="grid-bg" />

@@ -57,3 +57,12 @@ export async function deleteBooking(id: number): Promise<void> {
   const { error } = await supabase.from('booking').delete().eq('id', id);
   if (error) throw new Error(error.message);
 }
+
+export async function upgradeDepositToFull(id: number, currentAmount: number): Promise<void> {
+  const fullAmount = currentAmount * 2;
+  const { error } = await supabase
+    .from('booking')
+    .update({ payment_type: true, total_amount: fullAmount })
+    .eq('id', id);
+  if (error) throw new Error(error.message);
+}

@@ -4,6 +4,7 @@ import {
   fetchBookings,
   deleteBooking,
   updateBookingStatus,
+  upgradeDepositToFull,
 } from '../service/BookingAdmin';
 import type { Booking } from '../service/BookingAdmin';
 
@@ -70,6 +71,20 @@ export default function BookingsTableSection() {
       const next = !b.status;
       await updateBookingStatus(b.id, next);
       setBookings((prev) => prev.map((x) => x.id === b.id ? { ...x, status: next } : x));
+    } catch { /* silent */ }
+    setUpdating(null);
+  };
+
+  const handleUpgradeToFull = async (b: Booking) => {
+    if (!window.confirm(`Upgrade booking #${b.id} from 50% deposit (${fmtAmount(b.total_amount)}) to full payment (${fmtAmount(b.total_amount * 2)})?`)) return;
+    setUpdating(b.id);
+    try {
+      await upgradeDepositToFull(b.id, b.total_amount);
+      setBookings((prev) =>
+        prev.map((x) =>
+          x.id === b.id ? { ...x, payment_type: true, total_amount: x.total_amount * 2 } : x
+        )
+      );
     } catch { /* silent */ }
     setUpdating(null);
   };
@@ -295,6 +310,16 @@ export default function BookingsTableSection() {
                                 <span className="text-white uppercase tracking-widest text-[10px] mr-1">Booked:</span>
                                 {new Date(b.created_at).toLocaleString('en-MY')}
                               </span>
+                              {!b.payment_type && (
+                                <button
+                                  onClick={() => handleUpgradeToFull(b)}
+                                  disabled={updating === b.id}
+                                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-400/10 border border-amber-400/30 text-amber-400 text-[11px] font-bold uppercase tracking-widest hover:bg-amber-400/20 transition-all disabled:opacity-50"
+                                >
+                                  <Icon name="ArrowUpCircleIcon" size={13} />
+                                  Mark as Full Payment
+                                </button>
+                              )}
                             </div>
                             <div className="grid gap-2">
                               {b.booking_item.map((item) => (

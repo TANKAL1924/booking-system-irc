@@ -11,8 +11,9 @@ export default function TheArenaPage() {
     <main className="relative min-h-screen bg-background">
       <SEOHead
         title="The Arena"
-        description="Explore Arena IRC's world-class facilities including badminton courts, futsal fields, amenities, and past events. A premier sports hub in Malaysia."
+        description="Explore Arena IRC's world-class facilities in Bandar Sri Sendayan including badminton courts, futsal fields, amenities, and past events."
         url="https://arena-irc.com.my/the-arena"
+        keywords="Arena IRC facilities, badminton court Negeri Sembilan, futsal field, sports amenities, Bandar Sri Sendayan sports hub"
       />
       <div className="grain-overlay" />
       <div className="grid-bg" />

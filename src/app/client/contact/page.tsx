@@ -8,8 +8,9 @@ export default function ContactPage() {
     <main className="relative min-h-screen bg-background">
       <SEOHead
         title="Contact Us"
-        description="Get in touch with Arena IRC. Find our location, operating hours, and contact details. We're here to help with bookings, enquiries, and feedback."
+        description="Contact Arena IRC at Persiaran 1, Sendayan Bayu, Bandar Sri Sendayan, Negeri Sembilan. Call +60129851855. Open daily 9am–6pm."
         url="https://arena-irc.com.my/contact"
+        keywords="Arena IRC contact, Arena IRC location, sports facility Bandar Sri Sendayan, Arena IRC phone number"
       />
       <div className="grain-overlay" />
       <div className="grid-bg" />

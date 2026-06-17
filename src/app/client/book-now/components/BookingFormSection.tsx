@@ -564,7 +564,7 @@ export default function BookingFormSection() {
                       type="date"
                       value={itemForm.date}
                       onChange={(e) => setItemForm((p) => ({ ...p, date: e.target.value, selectedSlotIndices: [] }))}
-                      min={new Date().toISOString().split('T')[0]}
+                      min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
                       disabled={!itemForm.facilityId}
                       className={`${inputCls} disabled:opacity-30 disabled:cursor-not-allowed`}
                     />

@@ -52,34 +52,41 @@ Deno.serve(async (req) => {
 
       if (fetchErr) console.error("Failed to fetch booking:", fetchErr.message);
 
-      if (booking?.pending_cart && Array.isArray(booking.pending_cart)) {
-        // Insert booking_item rows now that payment is confirmed
-        const items = (booking.pending_cart as Array<{
-          facilityId: number;
-          facilityName: string;
-          date: string;
-          slot: { start: string; end: string; price: number; hour: number };
-          addOns: Array<{ addOn: { name: string; price: number }; hours: number }>;
-          itemAmount: number;
-        }>).map((item) => ({
-          booking_id: bookingId,
-          facility_id: item.facilityId,
-          facility_name: item.facilityName,
-          date: item.date,
-          time_start: item.slot.start,
-          time_end: item.slot.end,
-          slot_price: item.slot.price,
-          add_ons: item.addOns.map((a) => ({
-            name: a.addOn.name,
-            price_per_hour: a.addOn.price,
-            hours: a.hours,
-            subtotal: a.addOn.price * a.hours,
-          })),
-          item_amount: item.itemAmount,
-        }));
+      if (!booking?.pending_cart || !Array.isArray(booking.pending_cart) || booking.pending_cart.length === 0) {
+        console.error(`Booking ${bookingId}: pending_cart is missing or empty — cannot insert booking items.`);
+        return new Response("OK", { status: 200 });
+      }
 
-        const { error: itemsErr } = await supabase.from("booking_item").insert(items);
-        if (itemsErr) console.error("Failed to insert booking items:", itemsErr.message);
+      // Insert booking_item rows now that payment is confirmed
+      const items = (booking.pending_cart as Array<{
+        facilityId: number;
+        facilityName: string;
+        date: string;
+        slot: { start: string; end: string; price: number; hour: number };
+        addOns: Array<{ addOn: { name: string; price: number }; hours: number }>;
+        itemAmount: number;
+      }>).map((item) => ({
+        booking_id: bookingId,
+        facility_id: item.facilityId,
+        facility_name: item.facilityName,
+        date: item.date,
+        time_start: item.slot.start,
+        time_end: item.slot.end,
+        slot_price: item.slot.price,
+        add_ons: item.addOns.map((a) => ({
+          name: a.addOn.name,
+          price_per_hour: a.addOn.price,
+          hours: a.hours,
+          subtotal: a.addOn.price * a.hours,
+        })),
+        item_amount: item.itemAmount,
+      }));
+
+      const { error: itemsErr } = await supabase.from("booking_item").insert(items);
+      if (itemsErr) {
+        // Do NOT update status or clear pending_cart — leave booking as pending so it can be retried
+        console.error(`Booking ${bookingId}: booking_item insert failed — status left as pending. Error:`, itemsErr.message);
+        return new Response("OK", { status: 200 });
       }
 
       // Mark promo code as used if one was applied
@@ -91,7 +98,7 @@ Deno.serve(async (req) => {
         if (promoErr) console.error("Failed to mark promo used:", promoErr.message);
       }
 
-      // Mark booking as Paid and clear the pending cart
+      // Mark booking as Paid and clear the pending cart (only reached if items inserted successfully)
       const { error: updateErr } = await supabase
         .from("booking")
         .update({ status: false, pending_cart: null, promo_code: null })

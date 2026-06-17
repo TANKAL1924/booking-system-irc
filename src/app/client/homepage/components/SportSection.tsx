@@ -220,7 +220,7 @@ export default function SportSection() {
                         <div className="absolute inset-0 bg-white/5" />
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/10 lg:bg-gradient-to-r lg:from-black/10 lg:via-black/40 lg:to-black/80" />
-                      <div className="relative z-10 p-6 flex flex-col justify-between h-full" style={{ minHeight: '220px' }}>
+                      <div className="relative z-10 pt-0 px-6 pb-6 flex flex-col justify-between h-full" style={{ minHeight: '220px' }}>
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
                             <Icon name="TrophyIcon" size={16} className="text-primary" />

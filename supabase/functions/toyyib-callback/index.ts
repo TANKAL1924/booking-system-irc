@@ -120,12 +120,51 @@ Deno.serve(async (req) => {
         console.error("Receipt email error:", e);
       }
     } else if (status === "3") {
-      // Payment failed → delete the booking row entirely (frees any slot locks)
-      const { error: deleteErr } = await supabase
+      // Payment failed → insert booking_item rows so admin can see what was attempted,
+      // but leave status as null (not paid) and clear pending_cart
+      const { data: failedBooking, error: fetchErr } = await supabase
         .from("booking")
-        .delete()
+        .select("pending_cart")
+        .eq("id", bookingId)
+        .single();
+
+      if (fetchErr) console.error("Failed to fetch booking (failed payment):", fetchErr.message);
+
+      if (failedBooking?.pending_cart && Array.isArray(failedBooking.pending_cart) && failedBooking.pending_cart.length > 0) {
+        const items = (failedBooking.pending_cart as Array<{
+          facilityId: number;
+          facilityName: string;
+          date: string;
+          slot: { start: string; end: string; price: number; hour: number };
+          addOns: Array<{ addOn: { name: string; price: number }; hours: number }>;
+          itemAmount: number;
+        }>).map((item) => ({
+          booking_id: bookingId,
+          facility_id: item.facilityId,
+          facility_name: item.facilityName,
+          date: item.date,
+          time_start: item.slot.start,
+          time_end: item.slot.end,
+          slot_price: item.slot.price,
+          add_ons: item.addOns.map((a) => ({
+            name: a.addOn.name,
+            price_per_hour: a.addOn.price,
+            hours: a.hours,
+            subtotal: a.addOn.price * a.hours,
+          })),
+          item_amount: item.itemAmount,
+        }));
+
+        const { error: itemsErr } = await supabase.from("booking_item").insert(items);
+        if (itemsErr) console.error("Failed to insert booking items (failed payment):", itemsErr.message);
+      }
+
+      // Clear pending_cart but keep status as null (unpaid)
+      const { error: updateErr } = await supabase
+        .from("booking")
+        .update({ pending_cart: null, promo_code: null })
         .eq("id", bookingId);
-      if (deleteErr) console.error("DB delete error (failed payment):", deleteErr.message);
+      if (updateErr) console.error("DB update error (failed payment):", updateErr.message);
     }
     // status === "2" is pending — no action needed
 

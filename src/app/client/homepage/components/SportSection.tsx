@@ -220,25 +220,27 @@ export default function SportSection() {
                         <div className="absolute inset-0 bg-white/5" />
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/10 lg:bg-gradient-to-r lg:from-black/10 lg:via-black/40 lg:to-black/80" />
-                      <div className="relative z-10 p-6 flex flex-col justify-end h-full" style={{ minHeight: '220px' }}>
-                        <div className="flex items-center gap-3 mb-3">
+                      <div className="relative z-10 p-6 flex flex-col justify-between h-full" style={{ minHeight: '220px' }}>
+                        <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
                             <Icon name="TrophyIcon" size={16} className="text-primary" />
                           </div>
                           <h3 className="font-black text-white text-xl">{s.sport}</h3>
                         </div>
-                        <ul className="space-y-1.5">
-                          {(s.description ?? []).slice(0, 3).map((bullet, i) => (
-                            <li key={i} className="flex items-start gap-2 text-xs text-white/80">
-                              <Icon name="CheckCircleIcon" size={13} className="text-primary shrink-0 mt-0.5" variant="solid" />
-                              {bullet}
-                            </li>
-                          ))}
-                          {(s.description ?? []).length > 3 && (
-                            <li className="text-xs text-white/40 pl-5">+{s.description.length - 3} more</li>
-                          )}
-                        </ul>
-                        <span className="mt-4 text-[10px] font-bold uppercase tracking-widest text-primary/70">Tap for details</span>
+                        <div>
+                          <ul className="space-y-1.5 mb-4">
+                            {(s.description ?? []).slice(0, 3).map((bullet, i) => (
+                              <li key={i} className="flex items-start gap-2 text-xs text-white/80">
+                                <Icon name="CheckCircleIcon" size={13} className="text-primary shrink-0 mt-0.5" variant="solid" />
+                                {bullet}
+                              </li>
+                            ))}
+                            {(s.description ?? []).length > 3 && (
+                              <li className="text-xs text-white/40 pl-5">+{s.description.length - 3} more</li>
+                            )}
+                          </ul>
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-primary/70">Tap for details</span>
+                        </div>
                       </div>
                     </div>
 

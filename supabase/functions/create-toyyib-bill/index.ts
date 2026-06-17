@@ -1,5 +1,6 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 import "@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const TOYYIB_BASE_URL = Deno.env.get("TOYYIB_SANDBOX") === "true"
   ? "https://dev.toyyibpay.com"
@@ -8,6 +9,8 @@ const TOYYIB_SECRET_KEY = Deno.env.get("TOYYIB_SECRET_KEY") ?? "";
 const TOYYIB_CATEGORY_CODE = Deno.env.get("TOYYIB_CATEGORY_CODE") ?? "";
 const APP_URL = Deno.env.get("APP_URL") ?? "";
 const SUPABASE_FUNCTIONS_URL = Deno.env.get("FUNCTIONS_BASE_URL") ?? "";
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -21,15 +24,54 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { bookingId, customerName, customerEmail, customerPhone, amountCents, description } =
-      await req.json();
+    const {
+      customerName,
+      customerEmail,
+      customerPhone,
+      paymentOption,
+      totalAmount,
+      discountAmount,
+      promoCode,
+      amountCents,
+      description,
+      cart,
+    } = await req.json();
 
-    if (!bookingId || !customerName || !amountCents) {
+    if (!customerName || !amountCents || !Array.isArray(cart) || cart.length === 0) {
       return new Response(
         JSON.stringify({ error: "Missing required fields" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    // Create booking row with pending_cart (items inserted only after payment succeeds)
+    const { data: bookingRow, error: bookingErr } = await supabase
+      .from("booking")
+      .insert({
+        customer_name: customerName,
+        phone: customerPhone ?? "",
+        email: customerEmail ?? "",
+        payment_type: paymentOption === "full",
+        total_amount: totalAmount,
+        discount_price: discountAmount ?? 0,
+        promo_code: promoCode ?? null,
+        pending_cart: cart,
+        // status intentionally omitted — DB default (null) means "pending payment"
+      })
+      .select("id")
+      .single();
+
+    if (bookingErr || !bookingRow) {
+      console.error("Booking insert error:", bookingErr?.message);
+      return new Response(
+        JSON.stringify({ error: "Failed to create booking session" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    const bookingId = bookingRow.id;
 
     // Build form data for Toyyib createBill API
     const formData = new URLSearchParams();
@@ -60,6 +102,8 @@ Deno.serve(async (req) => {
     // Toyyib returns [{"BillCode":"xxxxxxxx"}] on success
     if (!Array.isArray(result) || !result[0]?.BillCode) {
       console.error("Toyyib error response:", result);
+      // Clean up the pending booking row since bill creation failed
+      await supabase.from("booking").delete().eq("id", bookingId);
       return new Response(
         JSON.stringify({ error: "Failed to create Toyyib bill", detail: result }),
         { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
@@ -70,7 +114,7 @@ Deno.serve(async (req) => {
     const paymentUrl = `${TOYYIB_BASE_URL}/${billCode}`;
 
     return new Response(
-      JSON.stringify({ billCode, paymentUrl }),
+      JSON.stringify({ billCode, paymentUrl, bookingId }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (err) {

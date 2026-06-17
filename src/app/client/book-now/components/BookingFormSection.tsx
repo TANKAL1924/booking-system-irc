@@ -4,7 +4,7 @@ import { useBase } from '@/lib/useBase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { getCached, setCached } from '@/lib/queryCache';
-import { markPromoUsed } from '@/app/admin/promo/service/PromoAdmin';
+
 
 /* ── Types ── */
 interface FacilitySlot {
@@ -285,59 +285,10 @@ export default function BookingFormSection() {
       }
     }
 
-    /* insert booking header */
-    const { data: bookingRow, error: bookingErr } = await supabase
-      .from('booking')
-      .insert({
-        customer_name: contact.name,
-        phone: contact.phone,
-        email: contact.email,
-        payment_type: paymentOption === 'full',
-        total_amount: payAmount,
-        discount_price: discountAmount,
-      })
-      .select('id')
-      .single();
-
-    if (bookingErr || !bookingRow) {
-      setSubmitError('Failed to create booking. Please try again.');
-      setSubmitting(false);
-      return;
-    }
-
-    /* insert booking items */
-    const items = cart.map((item) => ({
-      booking_id: bookingRow.id,
-      facility_id: item.facilityId,
-      facility_name: item.facilityName,
-      date: item.date,
-      time_start: item.slot.start,
-      time_end: item.slot.end,
-      slot_price: item.slot.price,
-      add_ons: item.addOns.map((a) => ({
-        name: a.addOn.name,
-        price_per_hour: a.addOn.price,
-        hours: a.hours,
-        subtotal: a.addOn.price * a.hours,
-      })),
-      item_amount: itemTotal(item.slot, item.addOns),
-    }));
-
-    const { error: itemsErr } = await supabase.from('booking_item').insert(items);
-    if (itemsErr) {
-      setSubmitError('Booking created but items failed to save. Please contact us.');
-      setSubmitting(false);
-      return;
-    }
-
-    /* mark promo code as used (single-use) */
-    if (appliedPromo) {
-      await markPromoUsed(appliedPromo.code);
-    }
-
-    /* call Edge Function to create Toyyib bill */
+    /* call Edge Function — it creates the booking record & Toyyib bill.
+       booking_item rows are only inserted by the callback after payment succeeds. */
     const facilitySummary = cart.map((i) => `${i.facilityName} ${i.date}`).join(', ');
-    const billDescription = `Arena IRC Booking #${bookingRow.id} - ${facilitySummary}`.slice(0, 100).replace(/[^a-zA-Z0-9 _]/g, '_');
+    const billDescription = `Arena IRC Booking - ${facilitySummary}`.slice(0, 100).replace(/[^a-zA-Z0-9 _]/g, '_');
 
     try {
       const res = await fetch(
@@ -346,25 +297,36 @@ export default function BookingFormSection() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            bookingId: bookingRow.id,
             customerName: contact.name,
             customerEmail: contact.email,
             customerPhone: contact.phone,
+            paymentOption,
+            totalAmount: payAmount,
+            discountAmount,
+            promoCode: appliedPromo?.code ?? null,
             amountCents: payAmount * 100,
             description: billDescription,
+            cart: cart.map((item) => ({
+              facilityId: item.facilityId,
+              facilityName: item.facilityName,
+              date: item.date,
+              slot: item.slot,
+              addOns: item.addOns,
+              itemAmount: itemTotal(item.slot, item.addOns),
+            })),
           }),
         }
       );
       const data = await res.json();
       if (!res.ok || !data.paymentUrl) {
-        setSubmitError('Booking saved but payment link failed. Please contact us with booking #' + bookingRow.id);
+        setSubmitError(data.error ?? 'Payment link creation failed. Please try again.');
         setSubmitting(false);
         return;
       }
       /* redirect to Toyyib payment page */
       window.location.href = data.paymentUrl;
     } catch {
-      setSubmitError('Booking saved but payment redirect failed. Please contact us with booking #' + bookingRow.id);
+      setSubmitError('Payment redirect failed. Please try again or contact us.');
       setSubmitting(false);
     }
   };

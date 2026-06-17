@@ -43,12 +43,60 @@ Deno.serve(async (req) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     if (status === "1") {
-      // Payment successful → mark as Paid (false)
-      const { error } = await supabase
+      // Payment successful — fetch pending cart data stored at booking creation
+      const { data: booking, error: fetchErr } = await supabase
         .from("booking")
-        .update({ status: false })
+        .select("pending_cart, promo_code")
+        .eq("id", bookingId)
+        .single();
+
+      if (fetchErr) console.error("Failed to fetch booking:", fetchErr.message);
+
+      if (booking?.pending_cart && Array.isArray(booking.pending_cart)) {
+        // Insert booking_item rows now that payment is confirmed
+        const items = (booking.pending_cart as Array<{
+          facilityId: number;
+          facilityName: string;
+          date: string;
+          slot: { start: string; end: string; price: number; hour: number };
+          addOns: Array<{ addOn: { name: string; price: number }; hours: number }>;
+          itemAmount: number;
+        }>).map((item) => ({
+          booking_id: bookingId,
+          facility_id: item.facilityId,
+          facility_name: item.facilityName,
+          date: item.date,
+          time_start: item.slot.start,
+          time_end: item.slot.end,
+          slot_price: item.slot.price,
+          add_ons: item.addOns.map((a) => ({
+            name: a.addOn.name,
+            price_per_hour: a.addOn.price,
+            hours: a.hours,
+            subtotal: a.addOn.price * a.hours,
+          })),
+          item_amount: item.itemAmount,
+        }));
+
+        const { error: itemsErr } = await supabase.from("booking_item").insert(items);
+        if (itemsErr) console.error("Failed to insert booking items:", itemsErr.message);
+      }
+
+      // Mark promo code as used if one was applied
+      if (booking?.promo_code) {
+        const { error: promoErr } = await supabase
+          .from("promo")
+          .update({ used: false })
+          .eq("promo_code", booking.promo_code);
+        if (promoErr) console.error("Failed to mark promo used:", promoErr.message);
+      }
+
+      // Mark booking as Paid and clear the pending cart
+      const { error: updateErr } = await supabase
+        .from("booking")
+        .update({ status: false, pending_cart: null, promo_code: null })
         .eq("id", bookingId);
-      if (error) console.error("DB update error (paid):", error.message);
+      if (updateErr) console.error("DB update error (paid):", updateErr.message);
 
       // Fire receipt email
       try {
@@ -65,12 +113,12 @@ Deno.serve(async (req) => {
         console.error("Receipt email error:", e);
       }
     } else if (status === "3") {
-      // Payment failed → mark as Cancelled (true)
-      const { error } = await supabase
+      // Payment failed → delete the booking row entirely (frees any slot locks)
+      const { error: deleteErr } = await supabase
         .from("booking")
-        .update({ status: true })
+        .delete()
         .eq("id", bookingId);
-      if (error) console.error("DB update error (cancelled):", error.message);
+      if (deleteErr) console.error("DB delete error (failed payment):", deleteErr.message);
     }
     // status === "2" is pending — no action needed
 

@@ -295,7 +295,10 @@ export default function BookingFormSection() {
         `${import.meta.env.VITE_FUNCTIONS_URL}/create-toyyib-bill`,
         {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
           body: JSON.stringify({
             customerName: contact.name,
             customerEmail: contact.email,

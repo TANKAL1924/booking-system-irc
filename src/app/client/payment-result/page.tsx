@@ -25,7 +25,10 @@ export default function PaymentResultPage() {
     if (statusId === '1' && orderId) {
       fetch(`${import.meta.env.VITE_FUNCTIONS_URL}/send-booking-receipt`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
         body: JSON.stringify({ bookingId: parseInt(orderId, 10) }),
       }).catch(() => { /* fail silently — server callback is the primary path */ });
     }

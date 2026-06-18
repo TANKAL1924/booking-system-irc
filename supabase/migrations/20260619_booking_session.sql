@@ -22,3 +22,13 @@ CREATE TABLE IF NOT EXISTS booking_session (
 -- Optional: clean up stale sessions (payment never completed) older than 2 days.
 -- Run manually or via pg_cron:
 --   DELETE FROM booking_session WHERE booking_id IS NULL AND created_at < now() - interval '2 days';
+
+-- Allow the client (anon key) to read a session by its UUID so the payment-result
+-- page can poll for booking_id after a successful payment.
+ALTER TABLE booking_session ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "read own session by uuid"
+  ON booking_session
+  FOR SELECT
+  TO anon, authenticated
+  USING (true);

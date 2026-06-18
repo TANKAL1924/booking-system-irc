@@ -460,15 +460,29 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
 
   try {
-    const { bookingId } = await req.json();
-    if (!bookingId) return new Response(JSON.stringify({ error: "Missing bookingId" }), { status: 400 });
+    const { bookingId, sessionId } = await req.json();
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    // Resolve bookingId from sessionId when called from the client-side fallback
+    let resolvedBookingId: number | undefined = bookingId;
+    if (!resolvedBookingId && sessionId) {
+      const { data: session } = await supabase
+        .from("booking_session")
+        .select("booking_id")
+        .eq("id", sessionId)
+        .single();
+      resolvedBookingId = session?.booking_id ?? undefined;
+    }
+
+    if (!resolvedBookingId) {
+      return new Response(JSON.stringify({ error: "Missing or unresolvable bookingId" }), { status: 400 });
+    }
 
     const { data: booking, error } = await supabase
       .from("booking")
       .select("*, booking_item(*)")
-      .eq("id", bookingId)
+      .eq("id", resolvedBookingId)
       .single();
 
     if (error || !booking) return new Response("Booking not found", { status: 404 });

@@ -24,6 +24,8 @@ Deno.serve(async (req) => {
     const order_id = params.get("order_id") ?? "";
     const receivedHash = params.get("hash") ?? "";
 
+    const sessionId = order_id; // UUID set as billExternalReferenceNo
+
     // Validate hash: MD5(userSecretKey + status + order_id + refno + "ok")
     const expectedHash = createHash("md5")
       .update(TOYYIB_SECRET_KEY + status + order_id + refno + "ok")
@@ -34,8 +36,7 @@ Deno.serve(async (req) => {
       return new Response("Forbidden", { status: 403 });
     }
 
-    const bookingId = parseInt(order_id, 10);
-    if (!bookingId || isNaN(bookingId)) {
+    if (!sessionId || sessionId.length < 10) {
       return new Response("Invalid order_id", { status: 400 });
     }
 
@@ -43,29 +44,64 @@ Deno.serve(async (req) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     if (status === "1") {
-      // Payment successful — fetch pending cart data stored at booking creation
-      const { data: booking, error: fetchErr } = await supabase
-        .from("booking")
-        .select("pending_cart, promo_code")
-        .eq("id", bookingId)
+      // Payment successful — read session data
+      const { data: session, error: sessionErr } = await supabase
+        .from("booking_session")
+        .select("*")
+        .eq("id", sessionId)
         .single();
 
-      if (fetchErr) console.error("Failed to fetch booking:", fetchErr.message);
-
-      if (!booking?.pending_cart || !Array.isArray(booking.pending_cart) || booking.pending_cart.length === 0) {
-        console.error(`Booking ${bookingId}: pending_cart is missing or empty — cannot insert booking items.`);
+      if (sessionErr || !session) {
+        console.error(`Session ${sessionId} not found:`, sessionErr?.message);
         return new Response("OK", { status: 200 });
       }
 
-      // Insert booking_item rows now that payment is confirmed
-      const items = (booking.pending_cart as Array<{
+      // Idempotency: if booking_id is already set, this callback already ran
+      if (session.booking_id) {
+        console.log(`Session ${sessionId} already processed as booking #${session.booking_id}`);
+        return new Response("OK", { status: 200 });
+      }
+
+      // Insert booking row (status=false = Paid)
+      const { data: bookingRow, error: bookingErr } = await supabase
+        .from("booking")
+        .insert({
+          customer_name: session.customer_name,
+          phone: session.phone,
+          email: session.email,
+          payment_type: session.payment_type,
+          total_amount: session.total_amount,
+          discount_price: session.discount_price,
+          status: false,
+        })
+        .select("id")
+        .single();
+
+      if (bookingErr || !bookingRow) {
+        console.error(`Failed to insert booking for session ${sessionId}:`, bookingErr?.message);
+        return new Response("OK", { status: 200 });
+      }
+
+      const bookingId: number = bookingRow.id;
+
+      // Store the new booking id on the session so the client-side receipt
+      // fallback can resolve the real booking id from the session UUID.
+      await supabase
+        .from("booking_session")
+        .update({ booking_id: bookingId })
+        .eq("id", sessionId);
+
+      // Insert booking_item rows from cart
+      const cartItems = session.cart as Array<{
         facilityId: number;
         facilityName: string;
         date: string;
         slot: { start: string; end: string; price: number; hour: number };
         addOns: Array<{ addOn: { name: string; price: number }; hours: number }>;
         itemAmount: number;
-      }>).map((item) => ({
+      }>;
+
+      const items = cartItems.map((item) => ({
         booking_id: bookingId,
         facility_id: item.facilityId,
         facility_name: item.facilityName,
@@ -84,26 +120,19 @@ Deno.serve(async (req) => {
 
       const { error: itemsErr } = await supabase.from("booking_item").insert(items);
       if (itemsErr) {
-        // Do NOT update status or clear pending_cart — leave booking as pending so it can be retried
-        console.error(`Booking ${bookingId}: booking_item insert failed — status left as pending. Error:`, itemsErr.message);
+        console.error(`Booking #${bookingId}: booking_item insert failed:`, itemsErr.message);
+        // booking row was created but items failed — log for manual recovery
         return new Response("OK", { status: 200 });
       }
 
       // Mark promo code as used if one was applied
-      if (booking?.promo_code) {
+      if (session.promo_code) {
         const { error: promoErr } = await supabase
           .from("promo")
           .update({ used: false })
-          .eq("promo_code", booking.promo_code);
+          .eq("promo_code", session.promo_code);
         if (promoErr) console.error("Failed to mark promo used:", promoErr.message);
       }
-
-      // Mark booking as Paid and clear the pending cart (only reached if items inserted successfully)
-      const { error: updateErr } = await supabase
-        .from("booking")
-        .update({ status: false, pending_cart: null, promo_code: null })
-        .eq("id", bookingId);
-      if (updateErr) console.error("DB update error (paid):", updateErr.message);
 
       // Fire receipt email
       try {
@@ -119,52 +148,14 @@ Deno.serve(async (req) => {
       } catch (e) {
         console.error("Receipt email error:", e);
       }
+
     } else if (status === "3") {
-      // Payment failed → insert booking_item rows so admin can see what was attempted,
-      // but leave status as null (not paid) and clear pending_cart
-      const { data: failedBooking, error: fetchErr } = await supabase
-        .from("booking")
-        .select("pending_cart")
-        .eq("id", bookingId)
-        .single();
-
-      if (fetchErr) console.error("Failed to fetch booking (failed payment):", fetchErr.message);
-
-      if (failedBooking?.pending_cart && Array.isArray(failedBooking.pending_cart) && failedBooking.pending_cart.length > 0) {
-        const items = (failedBooking.pending_cart as Array<{
-          facilityId: number;
-          facilityName: string;
-          date: string;
-          slot: { start: string; end: string; price: number; hour: number };
-          addOns: Array<{ addOn: { name: string; price: number }; hours: number }>;
-          itemAmount: number;
-        }>).map((item) => ({
-          booking_id: bookingId,
-          facility_id: item.facilityId,
-          facility_name: item.facilityName,
-          date: item.date,
-          time_start: item.slot.start,
-          time_end: item.slot.end,
-          slot_price: item.slot.price,
-          add_ons: item.addOns.map((a) => ({
-            name: a.addOn.name,
-            price_per_hour: a.addOn.price,
-            hours: a.hours,
-            subtotal: a.addOn.price * a.hours,
-          })),
-          item_amount: item.itemAmount,
-        }));
-
-        const { error: itemsErr } = await supabase.from("booking_item").insert(items);
-        if (itemsErr) console.error("Failed to insert booking items (failed payment):", itemsErr.message);
-      }
-
-      // Clear pending_cart but keep status as null (unpaid)
-      const { error: updateErr } = await supabase
-        .from("booking")
-        .update({ pending_cart: null, promo_code: null })
-        .eq("id", bookingId);
-      if (updateErr) console.error("DB update error (failed payment):", updateErr.message);
+      // Payment failed — delete the session (no booking row was ever created)
+      const { error: deleteErr } = await supabase
+        .from("booking_session")
+        .delete()
+        .eq("id", sessionId);
+      if (deleteErr) console.error("Failed to delete failed session:", deleteErr.message);
     }
     // status === "2" is pending — no action needed
 

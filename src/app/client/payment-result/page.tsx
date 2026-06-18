@@ -29,7 +29,7 @@ export default function PaymentResultPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ bookingId: parseInt(orderId, 10) }),
+        body: JSON.stringify({ sessionId: orderId }),
       }).catch(() => { /* fail silently — server callback is the primary path */ });
     }
   }, [statusId, orderId]);

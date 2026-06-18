@@ -46,9 +46,10 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Create booking row with pending_cart (items inserted only after payment succeeds)
-    const { data: bookingRow, error: bookingErr } = await supabase
-      .from("booking")
+    // Store booking data in booking_session — booking + booking_item rows are
+    // only inserted after the payment callback confirms success.
+    const { data: sessionRow, error: sessionErr } = await supabase
+      .from("booking_session")
       .insert({
         customer_name: customerName,
         phone: customerPhone ?? "",
@@ -57,34 +58,33 @@ Deno.serve(async (req) => {
         total_amount: totalAmount,
         discount_price: discountAmount ?? 0,
         promo_code: promoCode ?? null,
-        pending_cart: cart,
-        // status intentionally omitted — DB default (null) means "pending payment"
+        cart,
       })
       .select("id")
       .single();
 
-    if (bookingErr || !bookingRow) {
-      console.error("Booking insert error:", bookingErr?.message);
+    if (sessionErr || !sessionRow) {
+      console.error("Session insert error:", sessionErr?.message);
       return new Response(
         JSON.stringify({ error: "Failed to create booking session" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
-    const bookingId = bookingRow.id;
+    const sessionId: string = sessionRow.id;
 
     // Build form data for Toyyib createBill API
     const formData = new URLSearchParams();
     formData.append("userSecretKey", TOYYIB_SECRET_KEY);
     formData.append("categoryCode", TOYYIB_CATEGORY_CODE);
-    formData.append("billName", `Booking_${bookingId}`);
-    formData.append("billDescription", description ?? `Arena IRC Booking #${bookingId}`);
+    formData.append("billName", `Booking_${sessionId.slice(0, 8)}`);
+    formData.append("billDescription", description ?? `Arena IRC Booking`);
     formData.append("billPriceSetting", "1");       // fixed amount
     formData.append("billPayorInfo", "1");           // collect payer info
     formData.append("billAmount", String(amountCents)); // in cents e.g. 5000 = RM50
     formData.append("billReturnUrl", `${APP_URL}/payment-result`);
     formData.append("billCallbackUrl", `${SUPABASE_FUNCTIONS_URL}/toyyib-callback`);
-    formData.append("billExternalReferenceNo", String(bookingId));
+    formData.append("billExternalReferenceNo", sessionId);
     formData.append("billTo", customerName);
     formData.append("billEmail", customerEmail ?? "");
     formData.append("billPhone", customerPhone ?? "");
@@ -102,8 +102,8 @@ Deno.serve(async (req) => {
     // Toyyib returns [{"BillCode":"xxxxxxxx"}] on success
     if (!Array.isArray(result) || !result[0]?.BillCode) {
       console.error("Toyyib error response:", result);
-      // Clean up the pending booking row since bill creation failed
-      await supabase.from("booking").delete().eq("id", bookingId);
+      // Clean up the pending session since bill creation failed
+      await supabase.from("booking_session").delete().eq("id", sessionId);
       return new Response(
         JSON.stringify({ error: "Failed to create Toyyib bill", detail: result }),
         { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
@@ -114,7 +114,7 @@ Deno.serve(async (req) => {
     const paymentUrl = `${TOYYIB_BASE_URL}/${billCode}`;
 
     return new Response(
-      JSON.stringify({ billCode, paymentUrl, bookingId }),
+      JSON.stringify({ billCode, paymentUrl, sessionId }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (err) {

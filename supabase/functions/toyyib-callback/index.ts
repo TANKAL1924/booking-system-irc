@@ -24,7 +24,8 @@ Deno.serve(async (req) => {
     const order_id = params.get("order_id") ?? "";
     const receivedHash = params.get("hash") ?? "";
 
-    const sessionId = order_id; // UUID set as billExternalReferenceNo
+    // order_id is the 32-char hex billRef (UUID without hyphens) we set as billExternalReferenceNo
+    const billRef = order_id;
 
     // Validate hash: MD5(userSecretKey + status + order_id + refno + "ok")
     const expectedHash = createHash("md5")
@@ -36,9 +37,14 @@ Deno.serve(async (req) => {
       return new Response("Forbidden", { status: 403 });
     }
 
-    if (!sessionId || sessionId.length < 10) {
+    if (!billRef || billRef.length < 10) {
       return new Response("Invalid order_id", { status: 400 });
     }
+
+    // Reconstruct UUID from 32-char hex
+    const sessionId = billRef.length === 32
+      ? `${billRef.slice(0,8)}-${billRef.slice(8,12)}-${billRef.slice(12,16)}-${billRef.slice(16,20)}-${billRef.slice(20)}`
+      : billRef;
 
     // Use service role to bypass RLS
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);

@@ -72,19 +72,22 @@ Deno.serve(async (req) => {
     }
 
     const sessionId: string = sessionRow.id;
+    // Toyyibpay has strict limits on billExternalReferenceNo — strip hyphens so
+    // it stays as a plain 32-char hex string that round-trips through their system.
+    const billRef = sessionId.replace(/-/g, "");
 
     // Build form data for Toyyib createBill API
     const formData = new URLSearchParams();
     formData.append("userSecretKey", TOYYIB_SECRET_KEY);
     formData.append("categoryCode", TOYYIB_CATEGORY_CODE);
-    formData.append("billName", `Booking_${sessionId.slice(0, 8)}`);
+    formData.append("billName", `Booking_${billRef.slice(0, 8)}`);
     formData.append("billDescription", description ?? `Arena IRC Booking`);
     formData.append("billPriceSetting", "1");       // fixed amount
     formData.append("billPayorInfo", "1");           // collect payer info
     formData.append("billAmount", String(amountCents)); // in cents e.g. 5000 = RM50
     formData.append("billReturnUrl", `${APP_URL}/payment-result`);
     formData.append("billCallbackUrl", `${SUPABASE_FUNCTIONS_URL}/toyyib-callback`);
-    formData.append("billExternalReferenceNo", sessionId);
+    formData.append("billExternalReferenceNo", billRef);
     formData.append("billTo", customerName);
     formData.append("billEmail", customerEmail ?? "");
     formData.append("billPhone", customerPhone ?? "");

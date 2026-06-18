@@ -38,23 +38,30 @@ export default function PaymentResultPage() {
     setStatus('confirming');
 
     const poll = async () => {
+      // orderId from Toyyibpay is the 32-char hex billRef — reconstruct UUID
+      const sessionUUID = orderId && orderId.length === 32
+        ? `${orderId.slice(0,8)}-${orderId.slice(8,12)}-${orderId.slice(12,16)}-${orderId.slice(16,20)}-${orderId.slice(20)}`
+        : orderId;
       const { data } = await supabase
         .from('booking_session')
         .select('booking_id')
-        .eq('id', orderId)
+        .eq('id', sessionUUID)
         .maybeSingle();
 
       if (data?.booking_id) {
         stopPolling();
         setStatus('confirmed');
         // Best-effort receipt email (server callback is primary path)
+        const sessionUUIDForReceipt = orderId && orderId.length === 32
+          ? `${orderId.slice(0,8)}-${orderId.slice(8,12)}-${orderId.slice(12,16)}-${orderId.slice(16,20)}-${orderId.slice(20)}`
+          : orderId;
         fetch(`${import.meta.env.VITE_FUNCTIONS_URL}/send-booking-receipt`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
-          body: JSON.stringify({ sessionId: orderId }),
+          body: JSON.stringify({ sessionId: sessionUUIDForReceipt }),
         }).catch(() => {});
       }
     };

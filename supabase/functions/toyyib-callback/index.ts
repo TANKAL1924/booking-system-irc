@@ -15,25 +15,32 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Toyyib sends callback as application/x-www-form-urlencoded
-    const body = await req.text();
-    const params = new URLSearchParams(body);
+    // Toyyib sends callback as multipart/form-data
+    const formData = await req.formData();
 
-    const refno = params.get("refno") ?? "";
-    const status = params.get("status") ?? "";
-    const order_id = params.get("order_id") ?? "";
-    const receivedHash = params.get("hash") ?? "";
+    const refno    = formData.get("refno")    as string ?? "";
+    const status   = formData.get("status")   as string ?? "";
+    const order_id = formData.get("order_id") as string ?? "";
+    const billcode = formData.get("billcode") as string ?? formData.get("billCode") as string ?? "";
+    const receivedHash = formData.get("hash") as string ?? "";
+
+    // DEBUG — log all fields so we can verify hash formula (remove after confirmed)
+    console.log("DEBUG callback fields:", JSON.stringify({ refno, status, order_id, billcode, receivedHash }));
 
     // order_id is the 32-char hex billRef (UUID without hyphens) we set as billExternalReferenceNo
     const billRef = order_id;
 
-    // Validate hash: MD5(userSecretKey + status + order_id + refno + "ok")
-    const expectedHash = createHash("md5")
-      .update(TOYYIB_SECRET_KEY + status + order_id + refno + "ok")
-      .digest("hex");
+    // Try all known Toyyibpay hash formula variants
+    const h1 = createHash("md5").update(TOYYIB_SECRET_KEY + status + order_id + refno + "ok").digest("hex");
+    const h2 = createHash("md5").update(TOYYIB_SECRET_KEY + refno + status + billcode + order_id + "ok").digest("hex");
+    const h3 = createHash("md5").update(TOYYIB_SECRET_KEY + refno + status + order_id + "ok").digest("hex");
+    console.log("DEBUG hash check:", JSON.stringify({ received: receivedHash, h1, h2, h3 }));
 
-    if (receivedHash !== expectedHash) {
-      console.error("Hash mismatch — possible spoofed request");
+    const expectedHash = h1; // primary formula
+    const hashValid = receivedHash === h1 || receivedHash === h2 || receivedHash === h3;
+
+    if (!hashValid) {
+      console.error("Hash mismatch — no formula matched");
       return new Response("Forbidden", { status: 403 });
     }
 

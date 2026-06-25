@@ -153,7 +153,7 @@ export default function SportSection() {
       .from('gallery')
       .select('id, gallery_link')
       .not('gallery_link', 'is', null)
-      .order('created_at', { ascending: true })
+      .order('created_at', { ascending: false })
       .then(({ data }) => {
         if (data) setGallery(data as GalleryItem[]);
       });

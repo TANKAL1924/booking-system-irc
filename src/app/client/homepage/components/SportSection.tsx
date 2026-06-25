@@ -153,7 +153,7 @@ export default function SportSection() {
       .from('gallery')
       .select('id, gallery_link')
       .not('gallery_link', 'is', null)
-      .order('created_at', { ascending: false })
+      .order('created_at', { ascending: true })
       .then(({ data }) => {
         if (data) setGallery(data as GalleryItem[]);
       });
@@ -295,11 +295,11 @@ export default function SportSection() {
               </h2>
             </div>
 
-            <div className="columns-2 md:columns-3 lg:columns-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 [direction:ltr]">
               {gallery.map((item, idx) => (
                 <motion.div
                   key={item.id}
-                  className="break-inside-avoid mb-4 rounded-xl overflow-hidden cursor-pointer group"
+                  className="rounded-xl overflow-hidden cursor-pointer group"
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, margin: '-40px' }}
@@ -309,7 +309,7 @@ export default function SportSection() {
                   <img
                     src={item.gallery_link}
                     alt="Gallery"
-                    className="w-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    className="w-full h-40 md:h-48 object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                 </motion.div>
               ))}

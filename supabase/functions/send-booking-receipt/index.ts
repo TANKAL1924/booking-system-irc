@@ -62,14 +62,14 @@ const padRef = (id: number) =>
   `BR-${new Date().getFullYear()}-${String(id).padStart(5, "0")}`;
 
 const fmtDate = (s: string) =>
-  new Date(s).toLocaleDateString("en-MY", { day: "2-digit", month: "2-digit", year: "numeric" });
+  new Date(s).toLocaleDateString("en-MY", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Kuala_Lumpur" });
 
 const fmtDateTime = (s: string) => {
   const d = new Date(s);
   return (
-    d.toLocaleDateString("en-MY", { day: "2-digit", month: "2-digit", year: "numeric" }) +
+    d.toLocaleDateString("en-MY", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Kuala_Lumpur" }) +
     " " +
-    d.toLocaleTimeString("en-MY", { hour: "2-digit", minute: "2-digit", hour12: true })
+    d.toLocaleTimeString("en-MY", { hour: "2-digit", minute: "2-digit", hour12: true, timeZone: "Asia/Kuala_Lumpur" })
   );
 };
 

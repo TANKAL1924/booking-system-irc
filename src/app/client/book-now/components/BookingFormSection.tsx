@@ -845,7 +845,7 @@ export default function BookingFormSection() {
                     )}
                   </button>
                 </div>
-                <p className="text-white text-xs">Payment via FPX, credit/debit card, or bank transfer.</p>
+                <p className="text-white text-xs">Payment via FPX, DuitNow QR, credit/debit card, or bank transfer.</p>
               </div>
 
               {/* Submit */}

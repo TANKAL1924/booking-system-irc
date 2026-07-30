@@ -93,6 +93,8 @@ Deno.serve(async (req) => {
     formData.append("billPhone", customerPhone ?? "");
     formData.append("billPaymentChannel", "2");     // 0=FPX, 1=CC, 2=Both
     formData.append("billChargeToCustomer", "0");   // charge fees to customer (0=customer, 1=merchant)
+    formData.append("enableDuitNowQR", "1");        // enable DuitNow QR payment channel
+    formData.append("chargeDuitNowQR", "1");        // 0=merchant pays, 1=customer pays
     formData.append("billExpiryDays", "1");          // bill expires in 1 day
 
     const toyyibRes = await fetch(`${TOYYIB_BASE_URL}/index.php/api/createBill`, {
